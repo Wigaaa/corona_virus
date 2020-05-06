@@ -1,0 +1,40 @@
+name: coronavirus
+description: coronavirus data APP.
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.2.2 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  google_fonts: ^1.0.0
+  cupertino_icons: ^0.1.2
+  http: ^0.12.0+3
+  flag: ^1.0.3
+  connectivity: ^0.4.8+2
+  flutter_spinkit: ^4.1.2+1
+  font_awesome_flutter: ^8.8.1
+  autocomplete_textfield: ^1.7.3
+  charts_flutter: ^0.9.0
+  pie_chart: ^3.1.1
+
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+flutter:
+
+
+  uses-material-design: true
+
+  assets:
+    - images/
+  fonts:
+    - family: Pacifico
+      fonts:
+        - asset: fonts/Pacifico-Regular.ttf
