@@ -60,32 +60,43 @@
     return { v: k * I * L * (r * pf + x * Math.sin(phi)) / (par || 1), r: r * 1000, x: Xmohm, k };
   };
 
+  const BUNDLE = !!window.ETO_BUNDLE, REG = {};
+  const href = f => (BUNDLE ? '#' + f : f);
+
   function skeleton(cfg) {
     const me = PAGES.find(p => p.f === cfg.file) || {};
     const k = PAGES.indexOf(me);
     const prev = PAGES[k - 1], next = PAGES[k + 1];
     const opts = PAGES.map(p => `<option value="${p.f}" ${p.f === cfg.file ? 'selected' : ''}>${p.i}  ${esc(p.n)}</option>`).join('');
     return `
-<header class="top"><a class="home" href="index.html">◀ ETO Toolkit</a>
+<header class="top"><a class="home" href="${href('index.html')}">◀ ETO Toolkit</a>
   <select class="jump" aria-label="Jump to page">${opts}</select>
   <button class="btn" id="theme" title="Toggle dark mode">🌓</button>
   <button class="btn" id="print">🖨 Print</button></header>
 <section class="hero"><div class="ico">${cfg.icon}</div><div><h1>${esc(cfg.title)}</h1><p>${esc(cfg.subtitle)}</p>
   <div class="chips">${(cfg.refs || []).map(r => `<span class="chip">${esc(r)}</span>`).join('')}</div></div></section>
 <div class="layout"><nav class="tabs" id="tabs"></nav><main class="panel" id="panel"></main></div>
-<footer><div class="nav">${prev ? `<a href="${prev.f}">◀ ${esc(prev.n)}</a>` : ''}</div>
-  <div class="nav">${next ? `<a href="${next.f}">${esc(next.n)} ▶</a>` : ''}</div>
+<footer><div class="nav">${prev ? `<a href="${href(prev.f)}">◀ ${esc(prev.n)}</a>` : ''}</div>
+  <div class="nav">${next ? `<a href="${href(next.f)}">${esc(next.n)} ▶</a>` : ''}</div>
   <div class="disc">⚠ Calculation aid only. Always verify against the vessel's electrical drawings, equipment nameplates, manufacturer data and class / flag rules before acting on any result.</div></footer>`;
   }
 
   function page(cfg) {
+    if (BUNDLE) { cfg.file = window.ETO_FILE; REG[cfg.file] = cfg; return; }
     cfg.file = location.pathname.split('/').pop() || 'index.html';
+    const api = mount(cfg);
+    const route = () => api.go(location.hash.slice(1));
+    window.addEventListener('hashchange', route);
+    route();
+  }
+
+  function mount(cfg) {
     document.title = cfg.title + ' • ETO Toolkit';
     document.documentElement.style.setProperty('--accent', cfg.accent);
     const app = document.getElementById('app');
     app.innerHTML = skeleton(cfg);
     const tabs = document.getElementById('tabs'), panel = document.getElementById('panel');
-    app.querySelector('.jump').onchange = e => (location.href = e.target.value);
+    app.querySelector('.jump').onchange = e => (location.href = href(e.target.value));
     document.getElementById('print').onclick = () => window.print();
     document.getElementById('theme').onclick = () => {
       const r = document.documentElement;
@@ -94,7 +105,7 @@
       try { localStorage.setItem('eto:theme', dark ? 'light' : 'dark'); } catch (e) { /* ignore */ }
     };
     cfg.calcs.forEach(c => {
-      const a = el('a', { class: 'tab', href: '#' + c.id, 'data-id': c.id }, `<span class="ti">${c.icon || '•'}</span><span>${esc(c.title)}</span>`);
+      const a = el('a', { class: 'tab', href: '#' + (BUNDLE ? cfg.file + ':' : '') + c.id, 'data-id': c.id }, `<span class="ti">${c.icon || '•'}</span><span>${esc(c.title)}</span>`);
       tabs.appendChild(a);
     });
 
@@ -271,11 +282,26 @@
       return wrap;
     }
 
-    function route() {
-      const id = location.hash.slice(1);
-      const c = cfg.calcs.find(x => x.id === id) || cfg.calcs[0];
-      show(c);
-    }
+    return { go: id => show(cfg.calcs.find(x => x.id === id) || cfg.calcs[0]) };
+  }
+
+  // single-file bundle router
+  function start() {
+    const iv = document.getElementById('indexView'), app = document.getElementById('app');
+    let cur = null;
+    const route = () => {
+      const [f, id] = location.hash.slice(1).split(':');
+      const cfg = REG[f];
+      if (!cfg) {
+        iv.style.display = ''; app.style.display = 'none'; cur = null;
+        document.title = 'ETO Toolkit – Electrical Calculators';
+        document.documentElement.style.setProperty('--accent', '#2563eb');
+        return;
+      }
+      iv.style.display = 'none'; app.style.display = '';
+      if (!cur || cur.file !== f) { cur = { file: f, api: mount(cfg) }; window.scrollTo(0, 0); }
+      cur.api.go(id);
+    };
     window.addEventListener('hashchange', route);
     route();
   }
@@ -283,5 +309,5 @@
   // theme restore
   try { const t = localStorage.getItem('eto:theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) { /* ignore */ }
 
-  window.ETO = { PAGES, S3, STD_SIZES, STD_BREAKERS, STD_FUSES, esc, fmt, R, lvl, std, rho, interp, vdrop, page };
+  window.ETO = { PAGES, S3, STD_SIZES, STD_BREAKERS, STD_FUSES, esc, fmt, R, lvl, std, rho, interp, vdrop, page, start };
 })();
