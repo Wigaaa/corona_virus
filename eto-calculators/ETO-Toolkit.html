@@ -269,6 +269,7 @@ footer .disc{flex-basis:100%}
   };
   // voltage drop (V) for a cable: k = sqrt3 (3-ph) or 2 (1-ph); R,X in ohm/m
   const vdrop = (sys, I, L, size, mat, T, Xmohm, pf, par) => {
+    if (sys === 'dc') { pf = 1; Xmohm = 0; }
     const k = sys === '3' ? S3 : 2;
     const r = rho(mat, T) / size; // ohm/m
     const x = Xmohm / 1000;       // ohm/m
@@ -790,6 +791,27 @@ footer .disc{flex-basis:100%}
   const KFAC = [[143, 'Cu – XLPE / EPR (k=143)'], [115, 'Cu – PVC (k=115)'], [94, 'Al – XLPE / EPR (k=94)'], [76, 'Al – PVC (k=76)']];
   const GRP = [[1, 1, '1 circuit'], [2, 0.80, '2 circuits'], [3, 0.70, '3 circuits'], [4, 0.65, '4 circuits'], [5, 0.60, '5 circuits'], [6, 0.57, '6 circuits'], [8, 0.52, '8 circuits'], [9, 0.50, '9 circuits'], [12, 0.45, '12 circuits'], [16, 0.41, '16 circuits'], [20, 0.38, '20 circuits']];
   const TMAX = [[60, '60 °C (PVC marine)'], [70, '70 °C (PVC)'], [85, '85 °C (EPR / HEPR)'], [90, '90 °C (XLPE / EPR)']];
+  const SYSX = [['3', '3-phase AC'], ['1', 'Single-phase AC'], ['dc', 'DC (2-wire)']];
+  const MODE = [['i', 'Load current (A)'], ['p', 'Load power (kW)']];
+  const isac = v => v.sys !== 'dc';
+  // shared inputs: system, voltage, load as current or power
+  const loadInputs = (def) => [
+    { k: 'sys', l: 'System', opts: SYSX, v: def.sys || '3' },
+    { k: 'v', l: 'Nominal voltage (line voltage for 3-phase)', u: 'V', v: def.v || 440, min: 1 },
+    { k: 'mode', l: 'Load given as', opts: MODE, v: def.mode || 'i' },
+    { k: 'i', l: 'Load current', u: 'A', v: def.i, min: 0.001, show: v => v.mode === 'i' },
+    { k: 'p', l: 'Load power', u: 'kW', v: def.p, min: 0.001, show: v => v.mode === 'p' },
+    { k: 'pf', l: 'Power factor', v: def.pf || 0.85, min: 0.2, max: 1, step: 0.01, show: v => isac(v) },
+    { k: 'eff', l: 'Efficiency of load (100 for heaters)', u: '%', v: 100, min: 10, max: 100, show: v => v.mode === 'p' }
+  ];
+  // design current (A) from either current or power
+  const loadI = v => {
+    if (v.mode === 'i') return v.i;
+    const pin = v.p * 1000 / (v.eff / 100);
+    return v.sys === 'dc' ? pin / v.v : v.sys === '1' ? pin / (v.v * v.pf) : pin / (S3 * v.v * v.pf);
+  };
+  const pfOf = v => (v.sys === 'dc' ? 1 : v.pf);
+  const sysName = v => ({ '3': '3-phase', '1': 'single-phase', dc: 'DC' }[v.sys]);
   const ct = (tmax, tref, tamb) => Math.sqrt((tmax - tamb) / (tmax - tref));
 
   ETO.page({
@@ -818,48 +840,41 @@ footer .disc{flex-basis:100%}
         }
       },
       {
-        id: 'vd', icon: '📉', title: 'Voltage drop', desc: 'Running voltage drop for a cable run (resistance + reactance).',
-        formula: 'Vd = k × I × L × (R·cosφ + X·sinφ) / n    k = √3 (3-ph) or 2 (1-ph)',
-        inputs: [
-          { k: 'sys', l: 'System', opts: SYS, v: '3' },
-          { k: 'v', l: 'Nominal voltage', u: 'V', v: 440, min: 1 },
-          { k: 'i', l: 'Load current', u: 'A', v: 120, min: 0 },
+        id: 'vd', icon: '📉', title: 'Voltage drop', desc: 'Running voltage drop for an AC or DC cable run. Enter the load as current or as power.',
+        formula: 'AC: Vd = k × I × L × (R·cosφ + X·sinφ) / n  (k = √3 or 2)     DC: Vd = 2 × I × L × R / n\nI = P / (√3·V·PF·η) | P / (V·PF·η) | P / (V·η) when power is given',
+        inputs: loadInputs({ i: 120, p: 80 }).concat([
           { k: 'l', l: 'Cable length (one way)', u: 'm', v: 150, min: 0 },
           { k: 's', l: 'Conductor size', u: 'mm²', v: 50, min: 0.5 },
           { k: 'mat', l: 'Conductor', opts: MAT.opts, v: 'Cu' },
           { k: 't', l: 'Conductor temperature', u: '°C', v: 70, hint: 'Use max operating temp for worst case' },
-          { k: 'x', l: 'Reactance X', u: 'mΩ/m', v: 0.08, min: 0, hint: '≈0.08 mΩ/m for 3-core / 0.1 for single cores' },
-          { k: 'pf', l: 'Power factor', v: 0.85, min: 0.2, max: 1, step: 0.01 },
+          { k: 'x', l: 'Reactance X', u: 'mΩ/m', v: 0.08, min: 0, hint: '≈0.08 mΩ/m for 3-core / 0.1 for single cores', show: v => isac(v) },
           { k: 'n', l: 'Parallel cables', v: 1, min: 1, step: 1 },
-          { k: 'lim', l: 'Allowed drop', u: '%', v: 5, min: 0.1, hint: 'Typical 5% power / 6% lighting (IEC 60092-201 total from switchboard)' }
-        ],
+          { k: 'lim', l: 'Allowed drop', u: '%', v: 5, min: 0.1, hint: 'AC power typ. 5% / lighting 6% (IEC 60092-201); DC control 2–3%' }
+        ]),
         run: v => {
-          const d = vdrop(v.sys, v.i, v.l, v.s, v.mat, v.t, v.x, v.pf, v.n), pc = d.v / v.v * 100, st = pc <= v.lim ? 'ok' : pc <= v.lim * 1.2 ? 'warn' : 'bad';
-          return { results: [R('Voltage drop', d.v, 'V', 2, st, true), R('Voltage drop', pc, '%', 2, st), R('Voltage at load', v.v - d.v, 'V', 1), R('R (at temp)', d.r, 'mΩ/m', 4), R('mV/A/m', d.v * 1000 / (v.i * v.l || 1), 'mV/A/m', 3)],
-            verdict: { s: st, t: pc <= v.lim ? `Within the ${v.lim}% limit.` : `Exceeds the ${v.lim}% limit – increase cable size or shorten run.` } };
+          const I = loadI(v), d = vdrop(v.sys, I, v.l, v.s, v.mat, v.t, v.x, pfOf(v), v.n), pc = d.v / v.v * 100, st = pc <= v.lim ? 'ok' : pc <= v.lim * 1.2 ? 'warn' : 'bad';
+          return { results: [R('Voltage drop', d.v, 'V', 2, st, true), R('Voltage drop', pc, '%', 2, st), R('Design current', I, 'A', 2), R('Voltage at load', v.v - d.v, 'V', 1), R('R (at temp)', d.r, 'mΩ/m', 4), R('mV/A/m', d.v * 1000 / (I * v.l || 1), 'mV/A/m', 3)],
+            verdict: { s: st, t: pc <= v.lim ? `Within the ${v.lim}% limit (${sysName(v)}).` : `Exceeds the ${v.lim}% limit – increase cable size or shorten run.` } };
         }
       },
       {
-        id: 'size', icon: '📏', title: 'Cable size by voltage drop', desc: 'Minimum conductor size that meets the allowed voltage drop.',
-        formula: 'R_max = (Vd_allow/(k·I·L) − X·sinφ) / cosφ     S_min = ρ(T) / R_max',
-        inputs: [
-          { k: 'sys', l: 'System', opts: SYS, v: '3' },
-          { k: 'v', l: 'Nominal voltage', u: 'V', v: 440, min: 1 },
-          { k: 'i', l: 'Load current', u: 'A', v: 120, min: 0.01 },
+        id: 'size', icon: '📏', title: 'Cable size by voltage drop', desc: 'Minimum conductor size for the allowed voltage drop – AC or DC, with the load entered as current or as power.',
+        formula: 'AC: R_max = (Vd_allow/(k·I·L) − X·sinφ) / cosφ     DC: R_max = Vd_allow / (2·I·L)\nS_min = ρ(T) / R_max',
+        inputs: loadInputs({ i: 120, p: 80 }).concat([
           { k: 'l', l: 'Length (one way)', u: 'm', v: 150, min: 0.1 },
           { k: 'lim', l: 'Allowed drop', u: '%', v: 5, min: 0.1 },
           { k: 'mat', l: 'Conductor', opts: MAT.opts, v: 'Cu' },
           { k: 't', l: 'Conductor temperature', u: '°C', v: 70 },
-          { k: 'x', l: 'Reactance X', u: 'mΩ/m', v: 0.08, min: 0 },
-          { k: 'pf', l: 'Power factor', v: 0.85, min: 0.2, max: 1, step: 0.01 }
-        ],
+          { k: 'x', l: 'Reactance X', u: 'mΩ/m', v: 0.08, min: 0, show: v => isac(v) },
+          { k: 'par', l: 'Parallel cables', v: 1, min: 1, step: 1 }
+        ]),
         run: v => {
-          const k = v.sys === '3' ? S3 : 2, zmax = v.v * v.lim / 100 / (k * v.i * v.l), sinp = Math.sin(Math.acos(v.pf));
-          const rmax = (zmax - v.x / 1000 * sinp) / v.pf;
-          if (rmax <= 0) return { results: [], verdict: { s: 'bad', t: 'Reactance alone exceeds the allowed drop – use parallel cables or a higher voltage.' } };
+          const I = loadI(v), k = v.sys === '3' ? S3 : 2, pf = pfOf(v), zmax = v.v * v.lim / 100 / (k * (I / v.par) * v.l), sinp = Math.sin(Math.acos(pf)), x = v.sys === 'dc' ? 0 : v.x;
+          const rmax = (zmax - x / 1000 * sinp) / pf;
+          if (rmax <= 0) return { results: [R('Design current', I, 'A', 2)], verdict: { s: 'bad', t: 'Reactance alone exceeds the allowed drop – use parallel cables or a higher voltage.' } };
           const smin = rho(v.mat, v.t) / rmax, sel = std(STD_SIZES, smin);
-          return { results: [R('Minimum area', smin, 'mm²', 1, null, true), R('Next standard size', sel, 'mm²', 1, 'ok', true), R('Max mV/A/m', zmax * 1000, 'mV/A/m', 3), R('Max R', rmax * 1000, 'mΩ/m', 4)],
-            notes: ['Then confirm ampacity (derated) and short-circuit withstand. Over 300 mm² consider parallel cables.'] };
+          return { results: [R('Design current', I, 'A', 2, null, true), R('Minimum area (per cable)', smin, 'mm²', 1), R('Next standard size', sel, 'mm²', 1, 'ok', true), R('Max mV/A/m', zmax * 1000, 'mV/A/m', 3), R('Max R', rmax * 1000, 'mΩ/m', 4)],
+            notes: ['Then confirm ampacity (derated) and short-circuit withstand. Over 300 mm² consider parallel cables.', v.sys === 'dc' ? 'DC: both conductors (+ and −) are included in the drop. On 24 V systems keep drop ≤ 2–3%.' : 'Power input is converted with the PF and efficiency above.'] };
         }
       },
       {
@@ -929,23 +944,20 @@ footer .disc{flex-basis:100%}
         }
       },
       {
-        id: 'len', icon: '↔️', title: 'Cable length effect', desc: 'Maximum cable length for an allowed voltage drop and how the drop grows with length.',
-        formula: 'L_max = Vd_allow / (k × I × (R·cosφ + X·sinφ))',
-        inputs: [
-          { k: 'sys', l: 'System', opts: SYS, v: '3' },
-          { k: 'v', l: 'Nominal voltage', u: 'V', v: 440, min: 1 },
-          { k: 'i', l: 'Load current', u: 'A', v: 80, min: 0.01 },
+        id: 'len', icon: '↔️', title: 'Cable length effect', desc: 'Maximum cable length for an allowed voltage drop (AC or DC) and how the drop grows with length.',
+        formula: 'L_max = Vd_allow / (k × I × (R·cosφ + X·sinφ))     DC: L_max = Vd_allow / (2·I·R)',
+        inputs: loadInputs({ i: 80, p: 50 }).concat([
           { k: 's', l: 'Conductor size', u: 'mm²', v: 25, min: 0.5 },
           { k: 'mat', l: 'Conductor', opts: MAT.opts, v: 'Cu' },
           { k: 't', l: 'Conductor temperature', u: '°C', v: 70 },
-          { k: 'x', l: 'Reactance X', u: 'mΩ/m', v: 0.08, min: 0 },
-          { k: 'pf', l: 'Power factor', v: 0.85, min: 0.2, max: 1, step: 0.01 },
+          { k: 'x', l: 'Reactance X', u: 'mΩ/m', v: 0.08, min: 0, show: v => isac(v) },
           { k: 'lim', l: 'Allowed drop', u: '%', v: 5, min: 0.1 }
-        ],
+        ]),
         run: v => {
-          const one = vdrop(v.sys, v.i, 1, v.s, v.mat, v.t, v.x, v.pf, 1).v, lmax = v.v * v.lim / 100 / one;
-          const rows = [0.25, 0.5, 0.75, 1, 1.25, 1.5].map(f => { const l = lmax * f, pc = one * l / v.v * 100; return [Math.round(l) + ' m', pc, pc <= v.lim ? '✅ OK' : '⛔ Too long']; });
-          return { results: [R('Maximum length', lmax, 'm', 0, null, true), R('Drop per 100 m', one * 100 / v.v * 100, '%', 2)], tables: [{ title: 'Drop vs length', head: ['Length', 'Drop %', 'Result'], rows, states: [0.25, 0.5, 0.75, 1, 1.25, 1.5].map(f => f <= 1 ? 'ok' : 'bad') }] };
+          const I = loadI(v), one = vdrop(v.sys, I, 1, v.s, v.mat, v.t, v.x, pfOf(v), 1).v, lmax = v.v * v.lim / 100 / one;
+          const fs = [0.25, 0.5, 0.75, 1, 1.25, 1.5];
+          const rows = fs.map(f => { const l = lmax * f, pc = one * l / v.v * 100; return [Math.round(l) + ' m', pc, pc <= v.lim * 1.0001 ? '✅ OK' : '⛔ Too long']; });
+          return { results: [R('Maximum length', lmax, 'm', 0, null, true), R('Design current', I, 'A', 2), R('Drop per 100 m', one * 100 / v.v * 100, '%', 2)], tables: [{ title: 'Drop vs length', head: ['Length', 'Drop %', 'Result'], rows, states: fs.map(f => (f <= 1 ? 'ok' : 'bad')) }] };
         }
       }
     ]

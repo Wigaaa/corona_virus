@@ -53,6 +53,7 @@
   };
   // voltage drop (V) for a cable: k = sqrt3 (3-ph) or 2 (1-ph); R,X in ohm/m
   const vdrop = (sys, I, L, size, mat, T, Xmohm, pf, par) => {
+    if (sys === 'dc') { pf = 1; Xmohm = 0; }
     const k = sys === '3' ? S3 : 2;
     const r = rho(mat, T) / size; // ohm/m
     const x = Xmohm / 1000;       // ohm/m
