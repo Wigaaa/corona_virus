@@ -135,6 +135,9 @@ footer .disc{flex-basis:100%}
 .tag{background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);border-radius:99px;padding:3px 12px;font-size:13px;font-weight:600}
 @media (max-width:760px){.ab-cols{grid-template-columns:1fr}.ab-hero{padding:22px 16px}.ab-hero h1{font-size:22px}.ab-av{width:72px;height:72px;font-size:26px}}
 
+.fld textarea{font:inherit;font-size:15px;color:var(--ink);background:var(--field);border:1.5px solid var(--line);border-radius:10px;padding:9px 10px;width:100%;resize:vertical;outline:0}
+.fld textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+
 :root{--accent:#2563eb}
 </style>
 </head>
@@ -144,7 +147,7 @@ footer .disc{flex-basis:100%}
 <section class="hero" style="background:linear-gradient(135deg,#1d4ed8,#7c3aed 55%,#db2777)">
   <div class="ico">⚡</div>
   <div><h1>ETO Toolkit – Electrical Calculators for a Jack-up Barge</h1>
-  <p>16 calculator pages · 100+ calculations · IEC / IEEE / IACS based · works offline in any browser, on phone or laptop. Inputs are remembered between visits.</p>
+  <p>22 calculator pages · 220+ calculations · 4 levels · IEC / IEEE / IACS based · works offline in any browser, on phone or laptop. Inputs are remembered between visits.</p>
   <div class="chips"><span class="chip">IEC 60092</span><span class="chip">IEC 60364</span><span class="chip">IEC 60909</span><span class="chip">IEC 60947</span><span class="chip">IEEE 43</span><span class="chip">IEEE 519</span><span class="chip">IACS UR E</span><span class="chip">SOLAS II-1</span></div></div>
 </section>
 <div class="wrap">
@@ -206,7 +209,7 @@ footer .disc{flex-basis:100%}
 
   <div class="card">
     <h2>⚡ About this toolkit</h2>
-    <p class="desc" style="margin:8px 0 0">ETO Toolkit is a free set of 130+ electrical calculators for marine ETOs – power, cables, motors, generators, protection, drives, harmonics, jacking, cranes, thrusters and power-plant analysis – built for daily work on a jack-up barge. It runs offline in any browser. Calculations follow commonly used IEC / IEEE / IACS practice and are <b>aids only</b>: always verify against the vessel's drawings, equipment nameplates, manufacturer data and class / flag rules. Feedback and suggestions are welcome by email or WhatsApp.</p>
+    <p class="desc" style="margin:8px 0 0">ETO Toolkit is a free set of 220+ calculators for marine ETOs – power, cables, motors, generators, protection, drives, harmonics, jacking, cranes, thrusters, power-plant analysis, plus unit converters, maths, geometry, circuit theory and mechanical / thermal formulas – built for daily work on a jack-up barge. It runs offline in any browser. Calculations follow commonly used IEC / IEEE / IACS practice and are <b>aids only</b>: always verify against the vessel's drawings, equipment nameplates, manufacturer data and class / flag rules. Feedback and suggestions are welcome by email or WhatsApp.</p>
   </div>
   <p style="text-align:center;color:var(--mut);font-size:13px">Developed by Wagdy Mohamed Abdel Aziz – Electrical Technical Officer, ZMI · © 2026 · Built with the help of Claude (Anthropic)</p>
 </div>
@@ -234,7 +237,13 @@ footer .disc{flex-basis:100%}
     { f: 'jacking.html', n: 'Jacking System', i: '🏗️', c: '#0284c7', lvl: 3, d: 'Jacking load, motor distribution, brakes, brake resistors, cooling, VFD & DG loading, backup power' },
     { f: 'crane.html', n: 'Cranes', i: '🏋️', c: '#a16207', lvl: 3, d: 'Hoist power, hydraulic power, starting, VFD loading, regeneration, generator impact' },
     { f: 'thruster.html', n: 'Thrusters', i: '🌀', c: '#1e40af', lvl: 3, d: 'Thruster at X %, VFD & transformer loading, acceleration, thrust, harmonics, cooling' },
-    { f: 'plant.html', n: 'Power Plant & Load Balance', i: '🏭', c: '#be123c', lvl: 3, d: 'Vessel load balance, PMS thresholds, critical loads, blackout recovery, emergency generator' }
+    { f: 'plant.html', n: 'Power Plant & Load Balance', i: '🏭', c: '#be123c', lvl: 3, d: 'Vessel load balance, PMS thresholds, critical loads, blackout recovery, emergency generator' },
+    { f: 'unitsmech.html', n: 'Unit Converter – Mechanical', i: '📏', c: '#0f766e', lvl: 4, d: 'Length, area, volume, mass, speed, force, pressure, torque, energy, power, flow, density, temperature, angle, inertia, viscosity' },
+    { f: 'unitselec.html', n: 'Unit Converter – Electrical & Marine', i: '🔁', c: '#9333ea', lvl: 4, d: 'SI prefixes, AWG / kcmil ↔ mm², dB, wave values (RMS / peak), Ah ↔ Wh, resistivity, flux, fuel volume ↔ mass, speed-time-distance' },
+    { f: 'mathbasic.html', n: 'Mathematics', i: '🧮', c: '#e11d48', lvl: 4, d: 'Percentages, ratio, interpolation, quadratic, simultaneous equations, triangles, trigonometry, complex numbers, statistics, number bases, logs' },
+    { f: 'geometry.html', n: 'Geometry & Tanks', i: '🔺', c: '#0891b2', lvl: 4, d: 'Areas, volumes, circle segments, horizontal / vertical tank partial volume, pipe volume & weight, slope, distance' },
+    { f: 'circuits.html', n: 'Circuit Theory Formulas', i: '〰️', c: '#d97706', lvl: 4, d: 'Ohm / power, series & parallel, dividers, RC / RL, RLC & resonance, star-delta, per-unit, line / phase, energy & cost' },
+    { f: 'mechthermal.html', n: 'Mechanical, Fluid & Thermal', i: '🔧', c: '#65a30d', lvl: 4, d: 'Power-torque-speed, gears, belts, shaft stress, sling load, pump power, pipe flow, heater sizing, expansion, fuel efficiency, ventilation' }
   ];
 
   const S3 = Math.sqrt(3);
@@ -249,9 +258,16 @@ footer .disc{flex-basis:100%}
     if (html != null) e.innerHTML = html;
     return e;
   };
+  const fmtAuto = v => {
+    if (v === 0) return '0';
+    const a = Math.abs(v);
+    if (a >= 1e9 || a < 1e-4) return v.toExponential(5).replace(/\.?0+e/, 'e').replace('e+', 'e');
+    return v.toLocaleString('en-US', { maximumSignificantDigits: 8 });
+  };
   const fmt = (v, d) => {
     if (typeof v === 'string') return v;
     if (v == null || !isFinite(v)) return '—';
+    if (d === 'auto') return fmtAuto(v);
     d = d == null ? 2 : d;
     const n = Number(v.toFixed(d));
     return (n === 0 ? 0 : n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -291,6 +307,23 @@ footer .disc{flex-basis:100%}
 
   const BUNDLE = !!window.ETO_BUNDLE, REG = {};
   const href = f => (BUNDLE ? '#' + f : f);
+
+  // generic unit-converter calculator. unit = [key, label, factorToBase] or [key, label, toBase(fn), fromBase(fn)]
+  function units(o) {
+    const U = o.units, opts = U.map(u => [u[0], u[1]]);
+    const toB = (x, u) => (typeof u[2] === 'function' ? u[2](x) : x * u[2]);
+    const fromB = (b, u) => (typeof u[2] === 'function' ? u[3](b) : b / u[2]);
+    return {
+      id: o.id, icon: o.icon, title: o.title, desc: o.desc || 'Enter a value, choose the unit and read every equivalent below.', formula: o.formula,
+      inputs: [{ k: 'x', l: 'Value', v: o.v == null ? 1 : o.v }, { k: 'from', l: 'From', opts, v: o.from || U[0][0] }, { k: 'to', l: 'Convert to (highlighted)', opts, v: o.to || U[1][0] }],
+      run: v => {
+        const uf = U.find(u => String(u[0]) === String(v.from)), ut = U.find(u => String(u[0]) === String(v.to)), b = toB(v.x, uf);
+        const results = [R(`${fmt(v.x, 'auto')} ${uf[1]} =`, fromB(b, ut), ut[1], 'auto', 'ok', true)];
+        U.forEach(u => { if (u !== uf && u !== ut) results.push(R(u[1], fromB(b, u), '', 'auto')); });
+        return { results, notes: o.notes };
+      }
+    };
+  }
 
   function skeleton(cfg) {
     const me = PAGES.find(p => p.f === cfg.file) || {};
@@ -377,15 +410,20 @@ footer .disc{flex-basis:100%}
           let h = `<span>${esc(i.l)}</span>`;
           if (t === 'sel') {
             h += `<select>${i.opts.map(o => `<option value="${esc(o[0])}">${esc(o[1])}</option>`).join('')}</select>`;
+          } else if (t === 'text') {
+            h += '<div class="inp"><input type="text" autocomplete="off" spellcheck="false"></div>';
+          } else if (t === 'area') {
+            h += `<textarea rows="${i.rows || 5}" spellcheck="false"></textarea>`; f.style.gridColumn = '1/-1';
           } else {
             h += `<div class="inp"><input type="number" step="${i.step || 'any'}" inputmode="decimal">${i.u ? `<em>${esc(i.u)}</em>` : ''}</div>`;
           }
           if (i.hint) h += `<small>${esc(i.hint)}</small>`;
           f.innerHTML = h;
-          const inp = f.querySelector('input,select');
+          const inp = f.querySelector('input,select,textarea');
           inp.value = vals[i.k];
           inp.addEventListener('input', () => {
             if (t === 'sel') { const o = i.opts.find(o => String(o[0]) === inp.value); vals[i.k] = o ? o[0] : inp.value; }
+            else if (t === 'text' || t === 'area') vals[i.k] = inp.value;
             else vals[i.k] = inp.value === '' ? NaN : parseFloat(inp.value);
             recompute();
           });
@@ -546,7 +584,7 @@ footer .disc{flex-basis:100%}
   // theme restore
   try { const t = localStorage.getItem('eto:theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) { /* ignore */ }
 
-  window.ETO = { PAGES, S3, STD_SIZES, STD_BREAKERS, STD_FUSES, esc, fmt, R, lvl, std, rho, res, interp, vdrop, page, start };
+  window.ETO = { PAGES, S3, STD_SIZES, STD_BREAKERS, STD_FUSES, esc, fmt, R, lvl, std, rho, res, interp, vdrop, units, fmtAuto, page, start };
 })();
 
 </script>
@@ -2383,6 +2421,769 @@ footer .disc{flex-basis:100%}
 })();
 
 </script>
+<script>window.ETO_FILE='unitsmech.html';</script>
+<script>
+(function () {
+  const U = ETO.units;
+  const PI = Math.PI;
+  ETO.page({
+    title: 'Unit Converter – Mechanical & General', icon: '📏', accent: '#0f766e',
+    subtitle: 'Metric ↔ imperial ↔ marine units. Type a value, pick the unit – every equivalent is shown at once.',
+    refs: ['SI (BIPM)', 'NIST SP 811', 'ISO 80000'],
+    calcs: [
+      U({ id: 'len', icon: '📏', title: 'Length', v: 1, from: 'm', to: 'ft', units: [['mm', 'millimetre (mm)', 0.001], ['cm', 'centimetre (cm)', 0.01], ['m', 'metre (m)', 1], ['km', 'kilometre (km)', 1000], ['in', 'inch (in)', 0.0254], ['ft', 'foot (ft)', 0.3048], ['yd', 'yard (yd)', 0.9144], ['mi', 'statute mile', 1609.344], ['nm', 'nautical mile (nm)', 1852], ['fm', 'fathom', 1.8288], ['cable', 'cable (0.1 nm)', 185.2], ['mil', 'mil / thou (0.001 in)', 0.0000254], ['um', 'micron (µm)', 1e-6]] }),
+      U({ id: 'area', icon: '⬛', title: 'Area', v: 1, from: 'm2', to: 'ft2', units: [['mm2', 'mm²', 1e-6], ['cm2', 'cm²', 1e-4], ['m2', 'm²', 1], ['ha', 'hectare', 1e4], ['km2', 'km²', 1e6], ['in2', 'in²', 6.4516e-4], ['ft2', 'ft²', 0.09290304], ['yd2', 'yd²', 0.83612736], ['ac', 'acre', 4046.8564224], ['cmil', 'circular mil', 5.0670748e-10], ['kcmil', 'kcmil (MCM)', 5.0670748e-7]] }),
+      U({ id: 'vol', icon: '🧊', title: 'Volume', v: 1, from: 'm3', to: 'gal', units: [['ml', 'millilitre (cm³)', 1e-6], ['l', 'litre', 1e-3], ['m3', 'm³', 1], ['in3', 'in³', 1.6387064e-5], ['ft3', 'ft³', 0.028316846592], ['gal', 'US gallon', 3.785411784e-3], ['igal', 'Imperial gallon', 4.54609e-3], ['qt', 'US quart', 9.46352946e-4], ['bbl', 'Oil barrel (42 US gal)', 0.158987294928]] }),
+      U({ id: 'mass', icon: '⚖️', title: 'Mass', v: 1, from: 'kg', to: 'lb', units: [['g', 'gram', 0.001], ['kg', 'kilogram', 1], ['t', 'tonne (metric)', 1000], ['lb', 'pound (lb)', 0.45359237], ['oz', 'ounce (oz)', 0.028349523125], ['st', 'short ton (US)', 907.18474], ['lt', 'long ton (UK)', 1016.0469088], ['slug', 'slug', 14.593903]] }),
+      U({ id: 'time', icon: '⏱️', title: 'Time', v: 1, from: 'h', to: 's', units: [['ms', 'millisecond', 1e-3], ['s', 'second', 1], ['min', 'minute', 60], ['h', 'hour', 3600], ['d', 'day', 86400], ['wk', 'week', 604800], ['yr', 'year (365.25 d)', 31557600]] }),
+      U({ id: 'speed', icon: '🚢', title: 'Speed', v: 10, from: 'kn', to: 'kmh', units: [['ms', 'm/s', 1], ['kmh', 'km/h', 1 / 3.6], ['kn', 'knot (kn)', 1852 / 3600], ['mph', 'mph', 0.44704], ['fts', 'ft/s', 0.3048], ['mmin', 'm/min', 1 / 60], ['ftmin', 'ft/min', 0.00508]] }),
+      U({ id: 'acc', icon: '🚀', title: 'Acceleration', v: 1, from: 'g', to: 'ms2', units: [['ms2', 'm/s²', 1], ['g', 'g (standard gravity)', 9.80665], ['fts2', 'ft/s²', 0.3048], ['gal', 'Gal (cm/s²)', 0.01]] }),
+      U({ id: 'force', icon: '💪', title: 'Force / weight', v: 1, from: 'tf', to: 'kn', units: [['n', 'newton (N)', 1], ['kn', 'kilonewton (kN)', 1000], ['kgf', 'kilogram-force (kgf)', 9.80665], ['tf', 'tonne-force (tf)', 9806.65], ['lbf', 'pound-force (lbf)', 4.4482216152605], ['stf', 'short ton-force', 8896.443230521], ['dyn', 'dyne', 1e-5]] }),
+      U({ id: 'press', icon: '🌡️', title: 'Pressure', v: 1, from: 'bar', to: 'psi', units: [['pa', 'pascal (Pa)', 1], ['kpa', 'kPa', 1e3], ['mpa', 'MPa', 1e6], ['bar', 'bar', 1e5], ['mbar', 'mbar', 100], ['atm', 'atmosphere', 101325], ['psi', 'psi', 6894.757293168], ['kgcm2', 'kgf/cm²', 98066.5], ['mmhg', 'mmHg (torr)', 133.322387415], ['inhg', 'inHg', 3386.389], ['mh2o', 'm of water', 9806.65], ['fth2o', 'ft of water', 2989.0669], ['inh2o', 'in of water', 249.08891]], notes: ['Gauge vs absolute: these are differences only – add 1.013 bar for gauge → absolute.'] }),
+      U({ id: 'torque', icon: '🔩', title: 'Torque', v: 100, from: 'nm', to: 'lbft', units: [['nm', 'N·m', 1], ['knm', 'kN·m', 1000], ['kgfm', 'kgf·m', 9.80665], ['kgfcm', 'kgf·cm', 0.0980665], ['lbft', 'lbf·ft', 1.3558179483314], ['lbin', 'lbf·in', 0.1129848290276], ['ozin', 'ozf·in', 0.00706155]] }),
+      U({ id: 'energy', icon: '🔋', title: 'Energy / work / heat', v: 1, from: 'kwh', to: 'mj', units: [['j', 'joule (J)', 1], ['kj', 'kJ', 1e3], ['mj', 'MJ', 1e6], ['wh', 'Wh', 3600], ['kwh', 'kWh', 3.6e6], ['cal', 'calorie', 4.184], ['kcal', 'kcal', 4184], ['btu', 'BTU (IT)', 1055.05585262], ['ftlb', 'ft·lbf', 1.3558179483314], ['therm', 'therm (US)', 1.054804e8]] }),
+      U({ id: 'power', icon: '⚡', title: 'Power', v: 100, from: 'kw', to: 'hp', units: [['w', 'watt (W)', 1], ['kw', 'kilowatt (kW)', 1000], ['mw', 'megawatt (MW)', 1e6], ['hp', 'HP (mechanical)', 745.69987158], ['ps', 'PS / CV (metric hp)', 735.49875], ['btuh', 'BTU/h', 0.29307107], ['kcalh', 'kcal/h', 1.1622222], ['tr', 'ton of refrigeration', 3516.8528], ['ftlbs', 'ft·lbf/s', 1.3558179483314]] }),
+      U({ id: 'flow', icon: '💧', title: 'Volumetric flow', v: 100, from: 'm3h', to: 'gpm', units: [['m3s', 'm³/s', 1], ['m3h', 'm³/h', 1 / 3600], ['m3min', 'm³/min', 1 / 60], ['ls', 'L/s', 1e-3], ['lmin', 'L/min', 1 / 60000], ['gpm', 'US gal/min', 6.30901964e-5], ['igpm', 'Imp gal/min', 7.5768e-5], ['cfm', 'ft³/min (cfm)', 4.719474e-4], ['bpd', 'barrels/day', 0.158987294928 / 86400]] }),
+      U({ id: 'dens', icon: '🛢️', title: 'Density / specific gravity / API', v: 0.85, from: 'sg', to: 'kgm3', units: [['kgm3', 'kg/m³', 1], ['kgl', 'kg/L = g/cm³ = t/m³', 1000], ['lbft3', 'lb/ft³', 16.01846337], ['lbgal', 'lb/US gal', 119.826427], ['sg', 'Specific gravity (60/60 °F)', 999.016], ['api', '°API (oil)', a => 141.5 / (a + 131.5) * 999.016, b => 141.5 / (b / 999.016) - 131.5]], notes: ['°API = 141.5 / SG − 131.5. Marine gas oil ≈ 0.84–0.87 SG, HFO ≈ 0.95–1.01 SG.'] }),
+      U({ id: 'temp', icon: '🌡️', title: 'Temperature', v: 25, from: 'c', to: 'f', units: [['c', 'degrees Celsius (°C)', x => x, b => b], ['f', 'degrees Fahrenheit (°F)', x => (x - 32) / 1.8, b => b * 1.8 + 32], ['k', 'kelvin (K)', x => x - 273.15, b => b + 273.15], ['r', 'Rankine (°R)', x => (x - 491.67) / 1.8, b => b * 1.8 + 491.67]], notes: ['For temperature differences: 1 K = 1 °C = 1.8 °F.'] }),
+      U({ id: 'angle', icon: '📐', title: 'Angle', v: 180, from: 'deg', to: 'rad', units: [['deg', 'degree (°)', PI / 180], ['rad', 'radian', 1], ['grad', 'gradian', PI / 200], ['rev', 'revolution', 2 * PI], ['amin', 'arc-minute (′)', PI / 10800], ['asec', 'arc-second (″)', PI / 648000], ['mrad', 'milliradian', 1e-3]] }),
+      U({ id: 'rot', icon: '🌀', title: 'Rotational speed', v: 1780, from: 'rpm', to: 'rads', units: [['rpm', 'rpm', 1], ['rads', 'rad/s', 60 / (2 * PI)], ['revs', 'rev/s = Hz', 60], ['degs', 'degree/s', 1 / 6]] }),
+      U({ id: 'inert', icon: '🎡', title: 'Moment of inertia', v: 1, from: 'kgm2', to: 'lbft2', units: [['kgm2', 'kg·m² (J)', 1], ['kgcm2', 'kg·cm²', 1e-4], ['gcm2', 'g·cm²', 1e-7], ['lbft2', 'lb·ft²', 0.04214011], ['lbin2', 'lb·in²', 2.926397e-4], ['gd2', 'GD² / WR² (kgf·m²) = 4J', 0.25]], notes: ['GD² = 4 × J when both are in kg·m² units (many Japanese / European datasheets quote GD²).'] }),
+      U({ id: 'kvisc', icon: '🧴', title: 'Kinematic viscosity', v: 100, from: 'cst', to: 'm2s', units: [['cst', 'cSt = mm²/s', 1e-6], ['m2s', 'm²/s', 1], ['st', 'Stokes', 1e-4], ['ft2s', 'ft²/s', 0.09290304]], notes: ['Fuel / lube oils are specified in cSt at 40 °C or 50 °C (e.g. ISO VG 68 = 68 cSt @ 40 °C).'] }),
+      U({ id: 'dvisc', icon: '🧴', title: 'Dynamic viscosity', v: 1, from: 'cp', to: 'pas', units: [['pas', 'Pa·s', 1], ['cp', 'cP (mPa·s)', 1e-3], ['p', 'poise', 0.1], ['lbfts', 'lb/(ft·s)', 1.4881639]] }),
+      U({ id: 'sfoc', icon: '⛽', title: 'Specific fuel consumption (SFOC)', v: 200, from: 'gkwh', to: 'lbhph', units: [['gkwh', 'g/kWh', 1], ['gbhph', 'g/HP·h', 1.341022], ['gpsh', 'g/PS·h', 1.359621], ['lbhph', 'lb/HP·h', 608.2771]] })
+    ]
+  });
+})();
+
+</script>
+<script>window.ETO_FILE='unitselec.html';</script>
+<script>
+(function () {
+  const { R, units: U } = ETO;
+  const PI = Math.PI;
+  const awgD = n => 0.127 * Math.pow(92, (36 - n) / 39);              // mm
+  const awgA = n => PI / 4 * awgD(n) ** 2;                            // mm²
+  const awgName = n => (n >= 0 ? String(n) : (1 - n) + '/0');          // -3 → 4/0
+  ETO.page({
+    title: 'Unit Converter – Electrical & Marine', icon: '🔁', accent: '#9333ea',
+    subtitle: 'Electrical quantity conversions, AWG ↔ mm², waveform values, decibels and marine fuel / passage helpers.',
+    refs: ['ASTM B258 (AWG)', 'IEC 60228', 'IEC 60027', 'SI (BIPM)'],
+    calcs: [
+      U({ id: 'prefix', icon: '🔟', title: 'SI prefix converter', desc: 'Convert between prefixes: V ↔ kV ↔ mV, A ↔ mA, F ↔ µF, H ↔ mH, Hz ↔ kHz…', v: 4700, from: 'n', to: 'u', units: [['T', 'tera (T) ×10¹²', 1e12], ['G', 'giga (G) ×10⁹', 1e9], ['M', 'mega (M) ×10⁶', 1e6], ['k', 'kilo (k) ×10³', 1e3], ['n1', 'unit (×1)', 1], ['m', 'milli (m) ×10⁻³', 1e-3], ['u', 'micro (µ) ×10⁻⁶', 1e-6], ['n', 'nano (n) ×10⁻⁹', 1e-9], ['p', 'pico (p) ×10⁻¹²', 1e-12]], notes: ['Example: 4700 nF = 4.7 µF. Mind the case: M = mega, m = milli.'] }),
+      {
+        id: 'awg', icon: '🧵', title: 'AWG → mm² / diameter / resistance', desc: 'American Wire Gauge to metric. Use −1 for 2/0, −2 for 3/0, −3 for 4/0, 0 for 1/0 (“0” gauge is 1/0).',
+        formula: 'd(mm) = 0.127 × 92^((36 − n)/39)     A = π/4·d²     1 kcmil = 0.5067 mm²',
+        inputs: [{ k: 'n', l: 'AWG number (4/0 = −3 … 40)', v: 4, min: -3, max: 40, step: 1 }],
+        run: v => {
+          const d = awgD(v.n), a = awgA(v.n), rows = [18, 16, 14, 12, 10, 8, 6, 4, 3, 2, 1, 0, -1, -2, -3].map(n => [awgName(n), awgA(n), awgD(n), 0.01724 / awgA(n) * 1000]);
+          const std = ETO.STD_SIZES.reduce((p, c) => (Math.abs(c - a) < Math.abs(p - a) ? c : p));
+          return { results: [R('AWG ' + awgName(v.n) + ' area', a, 'mm²', 3, null, true), R('Diameter', d, 'mm', 3), R('Copper resistance @20 °C (theoretical)', 0.01724 / a * 1000, 'Ω/km', 3), R('kcmil equivalent', a / 0.5067075, 'kcmil', 1), R('Nearest metric size', std, 'mm²', 1)],
+            tables: [{ title: 'Common AWG sizes', head: ['AWG', 'Area mm²', 'Diameter mm', 'R Ω/km'], rows }], notes: ['Resistance uses solid-copper resistivity; stranded conductors are slightly higher (see Cable page for IEC 60228 values).'] };
+        }
+      },
+      {
+        id: 'mm2awg', icon: '🧶', title: 'mm² → AWG / kcmil', desc: 'Find the equivalent AWG for a metric cable size.',
+        formula: 'd = √(4A/π)     n = 36 − 39·ln(d/0.127)/ln(92)',
+        inputs: [{ k: 'a', l: 'Cross-section', u: 'mm²', v: 35, min: 0.01 }],
+        run: v => {
+          const d = Math.sqrt(4 * v.a / PI), n = 36 - 39 * Math.log(d / 0.127) / Math.log(92), nn = Math.round(n);
+          return { results: [R('Exact AWG', n, '', 2, null, true), R('Nearest AWG', nn >= -3 ? 'AWG ' + awgName(Math.max(nn, -3)) : 'use kcmil', ''), R('Area of that AWG', nn >= -3 ? awgA(Math.max(nn, -3)) : 'n/a', 'mm²', 2), R('kcmil (MCM)', v.a / 0.5067075, 'kcmil', 1), R('Diameter (solid)', d, 'mm', 2)],
+            notes: ['Above 4/0 AWG (107 mm²) cables are sized in kcmil: 250, 300, 350, 400, 500, 600, 750, 1000 kcmil.'] };
+        }
+      },
+      U({ id: 'kcmil', icon: '📎', title: 'kcmil / MCM ↔ mm²', v: 500, from: 'kcmil', to: 'mm2', units: [['mm2', 'mm²', 1], ['kcmil', 'kcmil (MCM)', 0.5067075], ['cmil', 'circular mil', 0.0005067075]] }),
+      {
+        id: 'wave', icon: '🌊', title: 'Waveform values (RMS / peak / average)', desc: 'Convert between peak, RMS, average and peak-to-peak for standard waveforms.',
+        formula: 'Sine: Vrms = Vpk/√2, Vavg = 2·Vpk/π, Vpp = 2·Vpk     Square: Vrms = Vpk     Triangle: Vrms = Vpk/√3',
+        inputs: [{ k: 'w', l: 'Waveform', opts: [['sine', 'Sine'], ['sq', 'Square'], ['tri', 'Triangle']], v: 'sine' }, { k: 'x', l: 'Value', v: 440, min: 0 }, { k: 'q', l: 'This value is the…', opts: [['rms', 'RMS'], ['pk', 'Peak'], ['pp', 'Peak-to-peak'], ['avg', 'Average (rectified)']], v: 'rms' }],
+        run: v => {
+          const f = { sine: [Math.SQRT1_2, 2 / PI], sq: [1, 1], tri: [1 / Math.sqrt(3), 0.5] }[v.w], pk = v.q === 'pk' ? v.x : v.q === 'pp' ? v.x / 2 : v.q === 'rms' ? v.x / f[0] : v.x / f[1];
+          return { results: [R('Peak', pk, '', 2, null, true), R('RMS', pk * f[0], '', 2), R('Average (rectified)', pk * f[1], '', 2), R('Peak-to-peak', 2 * pk, '', 2), R('Form factor (RMS/avg)', f[0] / f[1], '', 4), R('Crest factor (peak/RMS)', 1 / f[0], '', 4)],
+            notes: ['440 V RMS sine = 622 V peak = 1245 V peak-to-peak. Most meters (non “True-RMS”) are calibrated for sine waves only – wrong on VFD output.'] };
+        }
+      },
+      {
+        id: 'db', icon: '📶', title: 'Decibels (dB, dBm, Neper)', desc: 'Ratios, gains and signal levels.',
+        formula: 'dB = 10·log₁₀(P2/P1) = 20·log₁₀(V2/V1)     dBm = 10·log₁₀(P/1 mW)     1 Np = 8.686 dB',
+        inputs: [{ k: 'm', l: 'Convert', opts: [['pr', 'Power ratio → dB'], ['vr', 'Voltage / current ratio → dB'], ['dbp', 'dB → power ratio'], ['dbv', 'dB → voltage / current ratio'], ['mw', 'Power (mW) → dBm'], ['dbm', 'dBm → power (mW)'], ['np', 'Neper → dB'], ['dnp', 'dB → Neper']], v: 'vr' }, { k: 'x', l: 'Value', v: 2 }],
+        run: v => {
+          const lg = Math.log10; if ((v.m === 'pr' || v.m === 'vr' || v.m === 'mw') && v.x <= 0) throw new Error('Value must be positive');
+          const r = { pr: [10 * lg(v.x), 'dB'], vr: [20 * lg(v.x), 'dB'], dbp: [10 ** (v.x / 10), '×'], dbv: [10 ** (v.x / 20), '×'], mw: [10 * lg(v.x), 'dBm'], dbm: [10 ** (v.x / 10), 'mW'], np: [v.x * 8.685889638, 'dB'], dnp: [v.x / 8.685889638, 'Np'] }[v.m];
+          return { results: [R('Result', r[0], r[1], 'auto', null, true)], notes: ['+3 dB = ×2 power (×1.414 voltage); +6 dB = ×2 voltage; +10 dB = ×10 power; +20 dB = ×10 voltage.'] };
+        }
+      },
+      {
+        id: 'batt', icon: '🔋', title: 'Ah ↔ Wh ↔ kWh ↔ coulomb', desc: 'Battery capacity in energy and charge units.',
+        formula: 'Wh = Ah × V     1 Ah = 3600 C',
+        inputs: [{ k: 'g', l: 'Value given in', opts: [['ah', 'Ah'], ['wh', 'Wh'], ['kwh', 'kWh']], v: 'ah' }, { k: 'x', l: 'Value', v: 200, min: 0 }, { k: 'v', l: 'Battery voltage', u: 'V', v: 24, min: 0.1 }],
+        run: v => {
+          const ah = v.g === 'ah' ? v.x : v.g === 'wh' ? v.x / v.v : v.x * 1000 / v.v;
+          return { results: [R('Ah', ah, 'Ah', 2, null, true), R('Energy', ah * v.v, 'Wh', 1), R('Energy', ah * v.v / 1000, 'kWh', 3), R('Charge', ah * 3600, 'C', 0), R('mAh', ah * 1000, 'mAh', 0)] };
+        }
+      },
+      U({ id: 'resis', icon: '🧲', title: 'Resistivity', v: 0.01724, from: 'omm2m', to: 'uohmcm', units: [['omm2m', 'Ω·mm²/m', 1e-6], ['om', 'Ω·m', 1], ['uohmcm', 'µΩ·cm', 1e-8], ['ohmcm', 'Ω·cm', 0.01], ['cmilft', 'Ω·cmil/ft', 1.662426e-9]], notes: ['Copper 20 °C = 0.01724 Ω·mm²/m = 1.724 µΩ·cm = 10.37 Ω·cmil/ft; aluminium ≈ 0.0282.'] }),
+      U({ id: 'flux', icon: '🧭', title: 'Magnetic flux density', v: 1, from: 't', to: 'g', units: [['t', 'tesla (T)', 1], ['mt', 'mT', 1e-3], ['ut', 'µT', 1e-6], ['g', 'gauss (G)', 1e-4], ['kg', 'kilogauss', 0.1]] }),
+      U({ id: 'charge', icon: '🔌', title: 'Electric charge', v: 1, from: 'ah', to: 'c', units: [['c', 'coulomb (C)', 1], ['ah', 'ampere-hour (Ah)', 3600], ['mah', 'mAh', 3.6], ['kah', 'kAh', 3.6e6]] }),
+      U({ id: 'lux', icon: '💡', title: 'Illuminance', v: 100, from: 'lux', to: 'fc', units: [['lux', 'lux (lm/m²)', 1], ['fc', 'foot-candle (lm/ft²)', 10.76391042], ['phot', 'phot', 1e4]] }),
+      {
+        id: 'fuelvol', icon: '⛽', title: 'Fuel: mass ↔ volume', desc: 'Bunker / tank conversions using density (at tank or reference temperature).',
+        formula: 'V (m³) = m (t) / ρ (t/m³)',
+        inputs: [{ k: 'g', l: 'Value given in', opts: [['t', 'tonnes (metric)'], ['m3', 'm³'], ['l', 'litres'], ['kg', 'kg'], ['usgal', 'US gallons']], v: 't' }, { k: 'x', l: 'Value', v: 100, min: 0 }, { k: 'd', l: 'Density', u: 'kg/L', v: 0.85, min: 0.5, max: 1.2, step: 0.001, hint: 'MGO ≈ 0.85, HFO ≈ 0.95–0.99 (at 15 °C). Use the bunker delivery note.' }],
+        run: v => {
+          const t = v.g === 't' ? v.x : v.g === 'kg' ? v.x / 1000 : (v.g === 'm3' ? v.x : v.g === 'l' ? v.x / 1000 : v.x * 0.003785411784) * v.d;
+          return { results: [R('Mass', t, 'tonnes', 3, null, true), R('Volume', t / v.d, 'm³', 3), R('Volume', t / v.d * 1000, 'litres', 0), R('Volume', t / v.d * 264.172052, 'US gal', 0)], notes: ['Volume changes with temperature (~0.07% per °C for fuel oil): bunker quantities are normally agreed in mass or at 15 °C.'] };
+        }
+      },
+      {
+        id: 'sdt', icon: '🧭', title: 'Speed – time – distance (+ fuel)', desc: 'Passage planning: solve for any one of speed, time or distance, and the fuel needed.',
+        formula: 'distance (nm) = speed (kn) × time (h)',
+        inputs: [{ k: 's', l: 'Solve for', opts: [['d', 'Distance'], ['t', 'Time'], ['v', 'Speed']], v: 'd' }, { k: 'v', l: 'Speed', u: 'kn', v: 5, min: 0.01, show: v => v.s !== 'v' }, { k: 't', l: 'Time', u: 'h', v: 24, min: 0.01, show: v => v.s !== 't' }, { k: 'dist', l: 'Distance', u: 'nm', v: 120, min: 0.01, show: v => v.s !== 'd' }, { k: 'f', l: 'Fuel rate (optional)', u: 't/day', v: 20, min: 0 }],
+        run: v => {
+          const d = v.s === 'd' ? v.v * v.t : v.dist, t = v.s === 't' ? v.dist / v.v : v.t, sp = v.s === 'v' ? v.dist / v.t : v.v;
+          return { results: [R('Distance', d, 'nm', 1, null, v.s === 'd'), R('Distance', d * 1.852, 'km', 1), R('Time', t, 'h', 2, null, v.s === 't'), R('Time (d h min)', (() => { const tm = Math.round(t * 60); return `${Math.floor(tm / 1440)} d ${Math.floor((tm % 1440) / 60)} h ${tm % 60} min`; })(), ''), R('Speed', sp, 'kn', 2, null, v.s === 'v'), R('Fuel for passage', v.f / 24 * t, 'tonnes', 1)] };
+        }
+      }
+    ]
+  });
+})();
+
+</script>
+<script>window.ETO_FILE='mathbasic.html';</script>
+<script>
+(function () {
+  const { R, lvl, esc } = ETO;
+  const D = 180 / Math.PI, RAD = Math.PI / 180;
+  const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a; };
+  const cstr = (a, b, d) => `${ETO.fmt(a, d == null ? 4 : d)} ${b < 0 ? '−' : '+'} j${ETO.fmt(Math.abs(b), d == null ? 4 : d)}`;
+  const nums = s => String(s).split(/[\s,;]+/).filter(x => x !== '').map(Number);
+  ETO.page({
+    title: 'Mathematics', icon: '🧮', accent: '#e11d48',
+    subtitle: 'Everyday maths for engineers: percentages, ratios, equations, triangles, trigonometry, complex numbers, statistics and number bases.',
+    refs: ['Algebra', 'Trigonometry', 'Complex numbers', 'Statistics'],
+    calcs: [
+      {
+        id: 'pct', icon: '％', title: 'Percentages', desc: 'Six common percentage problems.',
+        formula: 'X% of Y = X·Y/100     change% = (Y − X)/X × 100',
+        inputs: [{ k: 'm', l: 'Problem', opts: [['of', 'X % of Y'], ['is', 'X is what % of Y'], ['chg', '% change from X to Y'], ['up', 'Increase Y by X %'], ['down', 'Decrease Y by X %'], ['rev', 'Original value before an X % increase gave Y']], v: 'of' }, { k: 'x', l: 'X', v: 15 }, { k: 'y', l: 'Y', v: 240 }],
+        run: v => {
+          if ((v.m === 'is' && v.y === 0) || (v.m === 'chg' && v.x === 0)) throw new Error('Division by zero – check X and Y');
+          const r = { of: [v.x * v.y / 100, ''], is: [v.x / v.y * 100, '%'], chg: [(v.y - v.x) / v.x * 100, '%'], up: [v.y * (1 + v.x / 100), ''], down: [v.y * (1 - v.x / 100), ''], rev: [v.y / (1 + v.x / 100), ''] }[v.m];
+          return { results: [R('Result', r[0], r[1], 'auto', null, true)] };
+        }
+      },
+      {
+        id: 'ratio', icon: '⚖️', title: 'Ratio & proportion (rule of three)', desc: 'If A is to B as C is to X, find X. Also simplifies the ratio A : B.',
+        formula: 'A / B = C / X   →   X = B × C / A',
+        inputs: [{ k: 'a', l: 'A', v: 3 }, { k: 'b', l: 'B', v: 12 }, { k: 'c', l: 'C', v: 25 }],
+        run: v => {
+          if (v.a === 0) throw new Error('A cannot be zero');
+          const ok = Number.isInteger(v.a) && Number.isInteger(v.b), g = ok ? gcd(v.a, v.b) : 1;
+          return { results: [R('X', v.b * v.c / v.a, '', 'auto', null, true), R('Ratio A : B (simplified)', ok && g ? `${v.a / g} : ${v.b / g}` : 'enter integers', ''), R('A / B', v.a / v.b, '', 6), R('Scale factor C / A', v.c / v.a, '', 6)] };
+        }
+      },
+      {
+        id: 'interp', icon: '📈', title: 'Linear interpolation', desc: 'Find y at a given x between two known points (extrapolates outside).',
+        formula: 'y = y1 + (x − x1)(y2 − y1)/(x2 − x1)',
+        inputs: [{ k: 'x1', l: 'x1', v: 40 }, { k: 'y1', l: 'y1', v: 0.9 }, { k: 'x2', l: 'x2', v: 50 }, { k: 'y2', l: 'y2', v: 0.82 }, { k: 'x', l: 'x (wanted)', v: 45 }],
+        run: v => {
+          if (v.x2 === v.x1) throw new Error('x1 and x2 must be different');
+          const out = v.x < Math.min(v.x1, v.x2) || v.x > Math.max(v.x1, v.x2), y = v.y1 + (v.x - v.x1) * (v.y2 - v.y1) / (v.x2 - v.x1);
+          return { results: [R('y', y, '', 'auto', out ? 'warn' : 'ok', true), R('Slope', (v.y2 - v.y1) / (v.x2 - v.x1), '', 'auto')], verdict: out ? { s: 'warn', t: 'x is outside the two points – this is extrapolation, treat with caution.' } : null, notes: ['Typical use: derating factors between table temperatures, cable ratings between sizes.'] };
+        }
+      },
+      {
+        id: 'quad', icon: 'x²', title: 'Quadratic equation', desc: 'Roots of ax² + bx + c = 0 (real or complex).',
+        formula: 'x = (−b ± √(b² − 4ac)) / 2a',
+        inputs: [{ k: 'a', l: 'a', v: 1 }, { k: 'b', l: 'b', v: -3 }, { k: 'c', l: 'c', v: 2 }],
+        run: v => {
+          if (v.a === 0) { if (v.b === 0) throw new Error('Not an equation (a = b = 0)'); return { results: [R('Linear root x', -v.c / v.b, '', 'auto', null, true)] }; }
+          const d = v.b * v.b - 4 * v.a * v.c, vx = -v.b / (2 * v.a);
+          const res = [R('Discriminant', d, '', 'auto', d < 0 ? 'warn' : 'ok')];
+          if (d >= 0) { const q = Math.sqrt(d); res.unshift(R('x₁', (-v.b + q) / (2 * v.a), '', 'auto', null, true), R('x₂', (-v.b - q) / (2 * v.a), '', 'auto', null, true)); }
+          else { const q = Math.sqrt(-d) / (2 * Math.abs(v.a)); res.unshift(R('x₁', cstr(vx, q), '', 0, null, true), R('x₂', cstr(vx, -q), '', 0, null, true)); }
+          res.push(R('Vertex x', vx, '', 'auto'), R('Vertex y', v.c - v.b * v.b / (4 * v.a), '', 'auto'), R('Sum of roots', -v.b / v.a, '', 'auto'), R('Product of roots', v.c / v.a, '', 'auto'));
+          return { results: res };
+        }
+      },
+      {
+        id: 'lin2', icon: '🔗', title: 'Two simultaneous equations', desc: 'Solve a₁x + b₁y = c₁ and a₂x + b₂y = c₂ (Cramer\'s rule).',
+        formula: 'x = (c₁b₂ − c₂b₁)/D     y = (a₁c₂ − a₂c₁)/D     D = a₁b₂ − a₂b₁',
+        inputs: [{ k: 'a1', l: 'a₁', v: 2 }, { k: 'b1', l: 'b₁', v: 3 }, { k: 'c1', l: 'c₁', v: 13 }, { k: 'a2', l: 'a₂', v: 1 }, { k: 'b2', l: 'b₂', v: -1 }, { k: 'c2', l: 'c₂', v: 1 }],
+        run: v => {
+          const D = v.a1 * v.b2 - v.a2 * v.b1;
+          if (Math.abs(D) < 1e-12) return { results: [R('Determinant', D, '', 'auto', 'bad')], verdict: { s: 'bad', t: 'D = 0: the lines are parallel (no solution) or identical (infinite solutions).' } };
+          const x = (v.c1 * v.b2 - v.c2 * v.b1) / D, y = (v.a1 * v.c2 - v.a2 * v.c1) / D;
+          return { results: [R('x', x, '', 'auto', null, true), R('y', y, '', 'auto', null, true), R('Determinant D', D, '', 'auto')] };
+        }
+      },
+      {
+        id: 'lin3', icon: '🧩', title: 'Three simultaneous equations', desc: 'Solve a 3×3 linear system (e.g. mesh / node equations) by Cramer\'s rule.',
+        formula: 'x = Dx/D, y = Dy/D, z = Dz/D',
+        inputs: [].concat(['1', '2', '3'].flatMap(r => ['x', 'y', 'z', 'k'].map((c, i) => ({ k: 'm' + r + i, l: `Eq ${r}: ${['x', 'y', 'z', '= const'][i]}`, v: [[2, 1, -1, 8], [-3, -1, 2, -11], [-2, 1, 2, -3]][r - 1][i] })))),
+        run: v => {
+          const m = [[v.m10, v.m11, v.m12], [v.m20, v.m21, v.m22], [v.m30, v.m31, v.m32]], k = [v.m13, v.m23, v.m33];
+          const det = a => a[0][0] * (a[1][1] * a[2][2] - a[1][2] * a[2][1]) - a[0][1] * (a[1][0] * a[2][2] - a[1][2] * a[2][0]) + a[0][2] * (a[1][0] * a[2][1] - a[1][1] * a[2][0]);
+          const D = det(m);
+          if (Math.abs(D) < 1e-12) return { results: [R('Determinant', D, '', 'auto', 'bad')], verdict: { s: 'bad', t: 'D = 0: no unique solution.' } };
+          const rep = c => m.map((r, i) => r.map((x, j) => (j === c ? k[i] : x)));
+          return { results: [R('x', det(rep(0)) / D, '', 'auto', null, true), R('y', det(rep(1)) / D, '', 'auto', null, true), R('z', det(rep(2)) / D, '', 'auto', null, true), R('Determinant D', D, '', 'auto')] };
+        }
+      },
+      {
+        id: 'rtri', icon: '📐', title: 'Right-angled triangle', desc: 'Solve a right triangle from any two known values (sides a, b opposite/adjacent to angle A, hypotenuse c).',
+        formula: 'c² = a² + b²     sin A = a/c     cos A = b/c     tan A = a/b',
+        inputs: [{ k: 'm', l: 'Known', opts: [['ab', 'Legs a and b'], ['ac', 'Leg a and hypotenuse c'], ['aA', 'Leg a and angle A'], ['bA', 'Leg b and angle A'], ['cA', 'Hypotenuse c and angle A']], v: 'ab' },
+          { k: 'a', l: 'Side a (opposite A)', v: 3, min: 0.0001, show: v => v.m !== 'bA' && v.m !== 'cA' }, { k: 'b', l: 'Side b (adjacent A)', v: 4, min: 0.0001, show: v => v.m === 'ab' || v.m === 'bA' }, { k: 'c', l: 'Hypotenuse c', v: 5, min: 0.0001, show: v => v.m === 'ac' || v.m === 'cA' }, { k: 'A', l: 'Angle A', u: '°', v: 30, min: 0.0001, max: 89.9999, show: v => /A$/.test(v.m) }],
+        run: v => {
+          let a, b, c, A;
+          if (v.m === 'ab') { a = v.a; b = v.b; c = Math.hypot(a, b); A = Math.atan2(a, b); }
+          else if (v.m === 'ac') { if (v.a >= v.c) throw new Error('Hypotenuse must be longer than the leg'); a = v.a; c = v.c; b = Math.sqrt(c * c - a * a); A = Math.asin(a / c); }
+          else { A = v.A * RAD; if (v.m === 'aA') { a = v.a; b = a / Math.tan(A); c = a / Math.sin(A); } else if (v.m === 'bA') { b = v.b; a = b * Math.tan(A); c = b / Math.cos(A); } else { c = v.c; a = c * Math.sin(A); b = c * Math.cos(A); } }
+          return { results: [R('a', a, '', 'auto', null, true), R('b', b, '', 'auto', null, true), R('c (hypotenuse)', c, '', 'auto', null, true), R('Angle A', A * D, '°', 4), R('Angle B', 90 - A * D, '°', 4), R('Area', a * b / 2, '', 'auto'), R('Perimeter', a + b + c, '', 'auto'), R('Height to hypotenuse', a * b / c, '', 'auto')] };
+        }
+      },
+      {
+        id: 'tri3', icon: '🔺', title: 'Any triangle (sine & cosine rule)', desc: 'Solve oblique triangles from three sides (SSS), two sides + included angle (SAS) or two angles + side (ASA).',
+        formula: 'c² = a² + b² − 2ab·cos C     a/sin A = b/sin B = c/sin C     Area = ½ab·sin C',
+        inputs: [{ k: 'm', l: 'Known', opts: [['sss', 'Three sides (SSS)'], ['sas', 'Sides a, b and included angle C (SAS)'], ['asa', 'Angles A, B and side c (ASA)']], v: 'sss' },
+          { k: 'a', l: 'Side a', v: 7, min: 0.0001, show: v => v.m !== 'asa' }, { k: 'b', l: 'Side b', v: 8, min: 0.0001, show: v => v.m !== 'asa' }, { k: 'c', l: 'Side c', v: 9, min: 0.0001, show: v => v.m !== 'sas' },
+          { k: 'A', l: 'Angle A', u: '°', v: 40, min: 0.001, max: 179, show: v => v.m === 'asa' }, { k: 'B', l: 'Angle B', u: '°', v: 60, min: 0.001, max: 179, show: v => v.m === 'asa' }, { k: 'C', l: 'Angle C', u: '°', v: 60, min: 0.001, max: 179, show: v => v.m === 'sas' }],
+        run: v => {
+          let a, b, c, A, B, C;
+          if (v.m === 'sss') { a = v.a; b = v.b; c = v.c; if (a + b <= c || a + c <= b || b + c <= a) throw new Error('Not a triangle (each side must be shorter than the sum of the others)'); A = Math.acos((b * b + c * c - a * a) / (2 * b * c)); B = Math.acos((a * a + c * c - b * b) / (2 * a * c)); C = Math.PI - A - B; }
+          else if (v.m === 'sas') { a = v.a; b = v.b; C = v.C * RAD; c = Math.sqrt(a * a + b * b - 2 * a * b * Math.cos(C)); A = Math.acos((b * b + c * c - a * a) / (2 * b * c)); B = Math.PI - A - C; }
+          else { A = v.A * RAD; B = v.B * RAD; if (A + B >= Math.PI) throw new Error('A + B must be below 180°'); C = Math.PI - A - B; c = v.c; a = c * Math.sin(A) / Math.sin(C); b = c * Math.sin(B) / Math.sin(C); }
+          return { results: [R('a', a, '', 'auto', null, true), R('b', b, '', 'auto', null, true), R('c', c, '', 'auto', null, true), R('Angle A', A * D, '°', 3), R('Angle B', B * D, '°', 3), R('Angle C', C * D, '°', 3), R('Area', a * b * Math.sin(C) / 2, '', 'auto'), R('Perimeter', a + b + c, '', 'auto')] };
+        }
+      },
+      {
+        id: 'trig', icon: '〰️', title: 'Trigonometric functions', desc: 'sin, cos, tan and reciprocals for an angle, plus inverse functions.',
+        formula: 'tan θ = sin θ / cos θ     sin²θ + cos²θ = 1',
+        inputs: [{ k: 'x', l: 'Angle', v: 30 }, { k: 'u', l: 'Unit', opts: [['deg', 'degrees'], ['rad', 'radians']], v: 'deg' }, { k: 'r', l: 'Ratio for inverse functions (−1…1)', v: 0.5, min: -1, max: 1, step: 0.01 }],
+        run: v => {
+          const t = v.u === 'deg' ? v.x * RAD : v.x, s = Math.sin(t), c = Math.cos(t), z = x => (Math.abs(x) < 1e-12 ? 'undefined' : x), cl = x => (Math.abs(x) < 1e-12 ? 0 : x);
+          return { results: [R('sin', cl(s), '', 6, null, true), R('cos', cl(c), '', 6, null, true), R('tan', Math.abs(c) < 1e-12 ? 'undefined' : s / c, '', 6, null, true), R('cot', Math.abs(s) < 1e-12 ? 'undefined' : c / s, '', 6), R('sec', Math.abs(c) < 1e-12 ? 'undefined' : 1 / c, '', 6), R('csc', Math.abs(s) < 1e-12 ? 'undefined' : 1 / s, '', 6), R('Angle in degrees', t * D, '°', 6), R('Angle in radians', t, 'rad', 6), R('asin(ratio)', Math.asin(v.r) * D, '°', 4), R('acos(ratio)', Math.acos(v.r) * D, '°', 4), R('atan(ratio)', Math.atan(v.r) * D, '°', 4)] };
+        }
+      },
+      {
+        id: 'cplx', icon: '🧮', title: 'Complex numbers (j-operator)', desc: 'Add, subtract, multiply or divide two complex numbers; results in rectangular and polar form.',
+        formula: 'Z = a + jb = |Z|∠θ     |Z| = √(a² + b²)     θ = atan2(b, a)     (a+jb)(c+jd) = (ac − bd) + j(ad + bc)',
+        inputs: [{ k: 'a', l: 'Z₁ real (a)', v: 3 }, { k: 'b', l: 'Z₁ imaginary (b)', v: 4 }, { k: 'op', l: 'Operation', opts: [['+', 'Z₁ + Z₂'], ['-', 'Z₁ − Z₂'], ['*', 'Z₁ × Z₂'], ['/', 'Z₁ ÷ Z₂']], v: '*' }, { k: 'c', l: 'Z₂ real (c)', v: 1 }, { k: 'd', l: 'Z₂ imaginary (d)', v: -2 }],
+        run: v => {
+          let re, im; const den = v.c * v.c + v.d * v.d;
+          if (v.op === '+') { re = v.a + v.c; im = v.b + v.d; } else if (v.op === '-') { re = v.a - v.c; im = v.b - v.d; } else if (v.op === '*') { re = v.a * v.c - v.b * v.d; im = v.a * v.d + v.b * v.c; }
+          else { if (den === 0) throw new Error('Cannot divide by zero'); re = (v.a * v.c + v.b * v.d) / den; im = (v.b * v.c - v.a * v.d) / den; }
+          return { results: [R('Result (rectangular)', cstr(re, im), '', 0, null, true), R('Magnitude', Math.hypot(re, im), '', 'auto'), R('Angle', Math.atan2(im, re) * D, '°', 4), R('|Z₁|∠', `${ETO.fmt(Math.hypot(v.a, v.b), 4)} ∠ ${ETO.fmt(Math.atan2(v.b, v.a) * D, 3)}°`, ''), R('|Z₂|∠', `${ETO.fmt(Math.hypot(v.c, v.d), 4)} ∠ ${ETO.fmt(Math.atan2(v.d, v.c) * D, 3)}°`, '')] };
+        }
+      },
+      {
+        id: 'polar', icon: '🎯', title: 'Rectangular ↔ polar', desc: 'Convert a + jb to magnitude ∠ angle, or back.',
+        formula: 'r = √(x² + y²)    θ = atan2(y, x)    x = r·cosθ    y = r·sinθ',
+        inputs: [{ k: 'm', l: 'Convert', opts: [['rp', 'Rectangular → polar'], ['pr', 'Polar → rectangular']], v: 'rp' }, { k: 'x', l: 'x (real) / magnitude r', v: 3 }, { k: 'y', l: 'y (imaginary) / angle θ (degrees)', v: 4 }],
+        run: v => {
+          if (v.m === 'rp') return { results: [R('Magnitude r', Math.hypot(v.x, v.y), '', 'auto', null, true), R('Angle θ', Math.atan2(v.y, v.x) * D, '°', 4, null, true), R('Angle (0–360°)', (Math.atan2(v.y, v.x) * D + 360) % 360, '°', 4)] };
+          return { results: [R('x (real)', v.x * Math.cos(v.y * RAD), '', 'auto', null, true), R('y (imaginary)', v.x * Math.sin(v.y * RAD), '', 'auto', null, true)] };
+        }
+      },
+      {
+        id: 'phasor', icon: '🔄', title: 'Phasor / vector addition', desc: 'Add several phasors or vectors given as magnitude and angle (e.g. currents or voltages from different phases).',
+        formula: 'ΣX = Σ r·cosθ     ΣY = Σ r·sinθ     R = √(ΣX² + ΣY²)',
+        inputs: [{ k: 'tbl', t: 'table', l: 'Phasors (add negative magnitude or +180° to subtract)', v: [{ n: 'I1', r: 100, a: 0 }, { n: 'I2', r: 100, a: -120 }, { n: 'I3', r: 100, a: 120 }], cols: [{ k: 'n', l: 'Name', t: 'text', d: 'P' }, { k: 'r', l: 'Magnitude', t: 'num', d: 0 }, { k: 'a', l: 'Angle °', t: 'num', d: 0 }] }],
+        run: v => {
+          const X = v.tbl.reduce((s, p) => s + p.r * Math.cos(p.a * RAD), 0), Y = v.tbl.reduce((s, p) => s + p.r * Math.sin(p.a * RAD), 0), r = Math.hypot(X, Y);
+          return { results: [R('Resultant magnitude', Math.abs(r) < 1e-9 ? 0 : r, '', 'auto', null, true), R('Resultant angle', Math.abs(r) < 1e-9 ? 0 : Math.atan2(Y, X) * D, '°', 3), R('Real part', Math.abs(X) < 1e-9 ? 0 : X, '', 'auto'), R('Imag part', Math.abs(Y) < 1e-9 ? 0 : Y, '', 'auto')], notes: ['The default is a balanced 3-phase set – the sum is zero (neutral current = 0). Change one magnitude to see the neutral current of an unbalanced load.'] };
+        }
+      },
+      {
+        id: 'stat', icon: '📊', title: 'Statistics', desc: 'Paste or type numbers separated by spaces, commas or new lines.',
+        formula: 'mean = Σx/n     s = √(Σ(x − mean)²/(n − 1))     RMS = √(Σx²/n)',
+        inputs: [{ k: 'd', t: 'area', l: 'Data', v: '12.1, 11.8, 12.4, 12.0, 11.9, 12.3', rows: 4 }],
+        run: v => {
+          const a = nums(v.d); if (!a.length || a.some(x => !isFinite(x))) throw new Error('Enter numbers only, separated by spaces, commas or new lines');
+          const n = a.length, sum = a.reduce((p, c) => p + c, 0), mean = sum / n, ss = a.reduce((p, c) => p + (c - mean) ** 2, 0), sorted = [...a].sort((x, y) => x - y), med = n % 2 ? sorted[(n - 1) / 2] : (sorted[n / 2 - 1] + sorted[n / 2]) / 2;
+          return { results: [R('Count', n, '', 0), R('Sum', sum, '', 'auto'), R('Mean', mean, '', 'auto', null, true), R('Median', med, '', 'auto'), R('Minimum', sorted[0], '', 'auto'), R('Maximum', sorted[n - 1], '', 'auto'), R('Range', sorted[n - 1] - sorted[0], '', 'auto'), R('Std deviation (sample)', n > 1 ? Math.sqrt(ss / (n - 1)) : 'n/a', '', 'auto'), R('Std deviation (population)', Math.sqrt(ss / n), '', 'auto'), R('Variance (sample)', n > 1 ? ss / (n - 1) : 'n/a', '', 'auto'), R('RMS', Math.sqrt(a.reduce((p, c) => p + c * c, 0) / n), '', 'auto')] };
+        }
+      },
+      {
+        id: 'wavg', icon: '⚖️', title: 'Weighted average', desc: 'Average of values with different weights (e.g. average PF weighted by kW).',
+        formula: 'x̄ = Σ(w·x) / Σw',
+        inputs: [{ k: 'tbl', t: 'table', l: 'Values', v: [{ x: 0.85, w: 300 }, { x: 0.9, w: 120 }, { x: 0.8, w: 450 }], cols: [{ k: 'x', l: 'Value', t: 'num', d: 0 }, { k: 'w', l: 'Weight', t: 'num', d: 1 }] }],
+        run: v => { const sw = v.tbl.reduce((s, r) => s + r.w, 0); if (sw === 0) throw new Error('Sum of weights is zero'); return { results: [R('Weighted average', v.tbl.reduce((s, r) => s + r.w * r.x, 0) / sw, '', 'auto', null, true), R('Total weight', sw, '', 'auto'), R('Simple average', v.tbl.reduce((s, r) => s + r.x, 0) / v.tbl.length, '', 'auto')] }; }
+      },
+      {
+        id: 'tol', icon: '🎚️', title: 'Tolerance & error', desc: 'Tolerance band for a nominal value and percentage error of a measurement.',
+        formula: 'min/max = N × (1 ∓ tol%)     error% = (measured − reference)/reference × 100',
+        inputs: [{ k: 'n', l: 'Nominal value', v: 100 }, { k: 'tol', l: 'Tolerance', u: '±%', v: 5, min: 0 }, { k: 'm', l: 'Measured value', v: 104.2 }],
+        run: v => {
+          if (v.n === 0) throw new Error('Nominal value cannot be zero');
+          const lo = v.n * (1 - v.tol / 100), hi = v.n * (1 + v.tol / 100), e = (v.m - v.n) / v.n * 100, ok = v.m >= Math.min(lo, hi) && v.m <= Math.max(lo, hi);
+          return { results: [R('Minimum', lo, '', 'auto'), R('Maximum', hi, '', 'auto'), R('Measured error', e, '%', 3, ok ? 'ok' : 'bad', true), R('Within tolerance', ok ? 'YES' : 'NO', '', 0, ok ? 'ok' : 'bad')] };
+        }
+      },
+      {
+        id: 'base', icon: '💾', title: 'Number bases (binary / octal / decimal / hex)', desc: 'Convert whole numbers between bases – useful for PLC / alarm / Modbus addresses and bit patterns.',
+        formula: 'value = Σ digit × base^position',
+        inputs: [{ k: 's', t: 'text', l: 'Number', v: 'FF' }, { k: 'b', l: 'Number is in base', opts: [[2, 'Binary (2)'], [8, 'Octal (8)'], [10, 'Decimal (10)'], [16, 'Hexadecimal (16)']], v: 16 }],
+        run: v => {
+          const t = String(v.s).trim().replace(/^0x/i, '').replace(/[\s_]/g, '').toUpperCase(), ok = { 2: /^[01]+$/, 8: /^[0-7]+$/, 10: /^[0-9]+$/, 16: /^[0-9A-F]+$/ }[v.b];
+          if (!t || !ok.test(t)) throw new Error('Not a valid base-' + v.b + ' number');
+          const n = parseInt(t, v.b); if (n > Number.MAX_SAFE_INTEGER) throw new Error('Number too large (max 2⁵³ − 1)');
+          return { results: [R('Decimal', n.toString(10), '', 0, null, true), R('Binary', n.toString(2), '', 0), R('Octal', n.toString(8), '', 0), R('Hexadecimal', n.toString(16).toUpperCase(), '', 0, null, true), R('Bits needed', n === 0 ? 1 : Math.floor(Math.log2(n)) + 1, 'bit', 0)] };
+        }
+      },
+      {
+        id: 'logexp', icon: 'ℯ', title: 'Powers, roots & logarithms', desc: 'x², √x, xⁿ, ⁿ√x, logₐ(x), ln, eˣ, 10ˣ.',
+        formula: 'log_b x = ln x / ln b',
+        inputs: [{ k: 'x', l: 'x', v: 100 }, { k: 'n', l: 'n (power / root)', v: 3 }, { k: 'b', l: 'Log base b', v: 2, min: 0.0001 }],
+        run: v => {
+          const x = v.x, r = [R('x²', x * x, '', 'auto'), R('x³', x ** 3, '', 'auto'), R('xⁿ', x ** v.n, '', 'auto'), R('1/x', x === 0 ? 'undefined' : 1 / x, '', 'auto'), R('√x', x >= 0 ? Math.sqrt(x) : 'imaginary', '', 'auto', null, true), R('ⁿ√x', x >= 0 || v.n % 2 !== 0 ? Math.sign(x) * Math.abs(x) ** (1 / v.n) : 'imaginary', '', 'auto'), R('eˣ', Math.exp(x), '', 'auto'), R('10ˣ', 10 ** x, '', 'auto')];
+          if (x > 0) { r.push(R('log₁₀ x', Math.log10(x), '', 'auto', null, true), R('ln x', Math.log(x), '', 'auto'), R('log_b x', v.b === 1 ? 'undefined' : Math.log(x) / Math.log(v.b), '', 'auto'), R('log₂ x', Math.log2(x), '', 'auto')); }
+          return { results: r };
+        }
+      },
+      {
+        id: 'round', icon: '🔢', title: 'Rounding, significant figures & notation', desc: 'Round a number and show it in scientific / engineering notation.',
+        formula: 'Engineering notation: exponent is a multiple of 3',
+        inputs: [{ k: 'x', l: 'Number', v: 12345.6789 }, { k: 'dp', l: 'Decimal places', v: 2, min: 0, max: 15, step: 1 }, { k: 'sf', l: 'Significant figures', v: 4, min: 1, max: 15, step: 1 }],
+        run: v => {
+          const x = v.x; if (x === 0) return { results: [R('Result', 0, '', 0)] };
+          const e = Math.floor(Math.log10(Math.abs(x))), ee = Math.floor(e / 3) * 3;
+          return { results: [R('Rounded to decimals', x.toFixed(v.dp), '', 0, null, true), R('Rounded to significant figures', Number(x.toPrecision(v.sf)).toString(), '', 0, null, true), R('Scientific notation', `${(x / 10 ** e).toFixed(Math.max(0, v.sf - 1))} × 10^${e}`, '', 0), R('Engineering notation', `${Number((x / 10 ** ee).toPrecision(v.sf))} × 10^${ee}`, '', 0), R('Nearest integer', Math.round(x), '', 0), R('Floor / ceiling', `${Math.floor(x)} / ${Math.ceil(x)}`, '', 0)] };
+        }
+      },
+      {
+        id: 'series', icon: '🪜', title: 'Arithmetic & geometric series', desc: 'n-th term and sum.',
+        formula: 'AP: aₙ = a₁ + (n−1)d, Sₙ = n(a₁+aₙ)/2     GP: aₙ = a₁rⁿ⁻¹, Sₙ = a₁(1−rⁿ)/(1−r)',
+        inputs: [{ k: 't', l: 'Series', opts: [['ap', 'Arithmetic (common difference d)'], ['gp', 'Geometric (common ratio r)']], v: 'ap' }, { k: 'a', l: 'First term a₁', v: 2 }, { k: 'd', l: 'd or r', v: 3 }, { k: 'n', l: 'Number of terms n', v: 10, min: 1, step: 1 }],
+        run: v => {
+          if (v.t === 'ap') { const an = v.a + (v.n - 1) * v.d; return { results: [R('aₙ', an, '', 'auto', null, true), R('Sₙ', v.n * (v.a + an) / 2, '', 'auto', null, true)] }; }
+          const an = v.a * v.d ** (v.n - 1), sn = v.d === 1 ? v.a * v.n : v.a * (1 - v.d ** v.n) / (1 - v.d);
+          return { results: [R('aₙ', an, '', 'auto', null, true), R('Sₙ', sn, '', 'auto', null, true), R('Sum to infinity', Math.abs(v.d) < 1 ? v.a / (1 - v.d) : 'diverges', '', 'auto')] };
+        }
+      },
+      {
+        id: 'comb', icon: '🎲', title: 'Factorial, permutations & combinations', desc: 'n!, nPr and nCr.',
+        formula: 'nPr = n!/(n−r)!     nCr = n!/(r!(n−r)!)',
+        inputs: [{ k: 'n', l: 'n', v: 10, min: 0, max: 170, step: 1 }, { k: 'r', l: 'r', v: 3, min: 0, max: 170, step: 1 }],
+        run: v => {
+          if (!Number.isInteger(v.n) || !Number.isInteger(v.r) || v.r > v.n) throw new Error('n and r must be whole numbers with r ≤ n');
+          let p = 1; for (let i = 0; i < v.r; i++) p *= v.n - i; let f = 1; for (let i = 2; i <= v.n; i++) f *= i; let rf = 1; for (let i = 2; i <= v.r; i++) rf *= i;
+          return { results: [R('n!', f, '', 'auto'), R('nPr (ordered)', p, '', 'auto', null, true), R('nCr (unordered)', p / rf, '', 'auto', null, true)] };
+        }
+      },
+      {
+        id: 'gcd', icon: '➗', title: 'GCD, LCM & fractions', desc: 'Greatest common divisor, least common multiple and simplest fraction (e.g. gear tooth ratios).',
+        formula: 'LCM = |a·b| / GCD',
+        inputs: [{ k: 'a', l: 'a (integer)', v: 48, step: 1 }, { k: 'b', l: 'b (integer)', v: 180, step: 1 }],
+        run: v => {
+          if (!Number.isInteger(v.a) || !Number.isInteger(v.b) || (v.a === 0 && v.b === 0)) throw new Error('Enter whole numbers (not both zero)');
+          const g = gcd(v.a, v.b);
+          return { results: [R('GCD', g, '', 0, null, true), R('LCM', Math.abs(v.a * v.b) / g, '', 0), R('Fraction a/b simplified', v.b === 0 ? 'undefined' : `${v.a / g * Math.sign(v.b)} / ${Math.abs(v.b / g)}`, '', 0), R('Decimal a/b', v.b === 0 ? 'undefined' : v.a / v.b, '', 6)] };
+        }
+      }
+    ]
+  });
+})();
+
+</script>
+<script>window.ETO_FILE='geometry.html';</script>
+<script>
+(function () {
+  const { R, lvl } = ETO;
+  const PI = Math.PI, D = 180 / PI, RAD = PI / 180;
+  const sh = (...a) => v => a.includes(v.s);
+  // volume of liquid (m³) in a horizontal cylinder of radius r, length L, filled to height h
+  const hcyl = (r, L, h) => { h = Math.min(Math.max(h, 0), 2 * r); return L * (r * r * Math.acos((r - h) / r) - (r - h) * Math.sqrt(Math.max(0, 2 * r * h - h * h))); };
+  ETO.page({
+    title: 'Geometry & Tanks', icon: '🔺', accent: '#0891b2',
+    subtitle: 'Areas, volumes, circle segments, partly-filled tanks, pipes and distances.',
+    refs: ['Plane & solid geometry'],
+    calcs: [
+      {
+        id: 'area', icon: '⬛', title: 'Area & perimeter (2-D shapes)', desc: 'Pick a shape and enter its dimensions (any consistent unit).',
+        formula: 'Circle πr²   Rectangle w·h   Triangle ½b·h   Trapezoid ½(a+b)h   Ellipse πab   Ring π(R²−r²)',
+        inputs: [{ k: 's', l: 'Shape', opts: [['circle', 'Circle'], ['rect', 'Rectangle'], ['tri', 'Triangle (base, height)'], ['tri3', 'Triangle (three sides)'], ['trap', 'Trapezoid'], ['para', 'Parallelogram'], ['ell', 'Ellipse'], ['ring', 'Ring / annulus'], ['sect', 'Circular sector'], ['poly', 'Regular polygon']], v: 'circle' },
+          { k: 'r', l: 'Radius r (outer R for ring)', v: 5, min: 0.0001, show: sh('circle', 'ring', 'sect') }, { k: 'ri', l: 'Inner radius', v: 3, min: 0, show: sh('ring') }, { k: 'ang', l: 'Sector angle', u: '°', v: 60, min: 0.01, max: 360, show: sh('sect') },
+          { k: 'w', l: 'Width / base', v: 4, min: 0.0001, show: sh('rect', 'tri', 'para') }, { k: 'h', l: 'Height', v: 3, min: 0.0001, show: sh('rect', 'tri', 'trap', 'para') }, { k: 'sl', l: 'Slant side (parallelogram)', v: 3.5, min: 0.0001, show: sh('para') },
+          { k: 'a', l: 'Side a / parallel side a / semi-axis a', v: 6, min: 0.0001, show: sh('trap', 'tri3', 'ell') }, { k: 'b', l: 'Side b / parallel side b / semi-axis b', v: 4, min: 0.0001, show: sh('trap', 'tri3', 'ell') }, { k: 'c', l: 'Side c', v: 5, min: 0.0001, show: sh('tri3') }, { k: 'sd', l: 'Slant side (trapezoid legs sum)', v: 6, min: 0.0001, show: sh('trap') },
+          { k: 'n', l: 'Number of sides', v: 6, min: 3, step: 1, show: sh('poly') }, { k: 'len', l: 'Side length', v: 2, min: 0.0001, show: sh('poly') }],
+        run: v => {
+          let A, P, note = '';
+          switch (v.s) {
+            case 'circle': A = PI * v.r ** 2; P = 2 * PI * v.r; break;
+            case 'rect': A = v.w * v.h; P = 2 * (v.w + v.h); break;
+            case 'tri': A = v.w * v.h / 2; P = NaN; note = 'Perimeter needs all three sides.'; break;
+            case 'tri3': { if (v.a + v.b <= v.c || v.a + v.c <= v.b || v.b + v.c <= v.a) throw new Error('Not a triangle'); const s = (v.a + v.b + v.c) / 2; A = Math.sqrt(s * (s - v.a) * (s - v.b) * (s - v.c)); P = 2 * s; break; }
+            case 'trap': A = (v.a + v.b) * v.h / 2; P = v.a + v.b + v.sd; break;
+            case 'para': A = v.w * v.h; P = 2 * (v.w + v.sl); break;
+            case 'ell': A = PI * v.a * v.b; P = PI * (3 * (v.a + v.b) - Math.sqrt((3 * v.a + v.b) * (v.a + 3 * v.b))); note = 'Ellipse perimeter by Ramanujan\'s approximation.'; break;
+            case 'ring': if (v.ri >= v.r) throw new Error('Inner radius must be smaller'); A = PI * (v.r ** 2 - v.ri ** 2); P = 2 * PI * (v.r + v.ri); break;
+            case 'sect': A = PI * v.r ** 2 * v.ang / 360; P = 2 * v.r + 2 * PI * v.r * v.ang / 360; break;
+            default: A = v.n * v.len ** 2 / (4 * Math.tan(PI / v.n)); P = v.n * v.len;
+          }
+          const res = [R('Area', A, '', 'auto', null, true)]; if (isFinite(P)) res.push(R('Perimeter / circumference', P, '', 'auto'));
+          if (v.s === 'poly') res.push(R('Circumradius', v.len / (2 * Math.sin(PI / v.n)), '', 'auto'), R('Apothem', v.len / (2 * Math.tan(PI / v.n)), '', 'auto'));
+          return { results: res, notes: note ? [note] : [] };
+        }
+      },
+      {
+        id: 'vol', icon: '🧊', title: 'Volume & surface area (solids)', desc: 'Cylinder, cone, sphere, box, pipe wall and more. Results in the cube of your input unit; litres shown for metre inputs.',
+        formula: 'Cylinder πr²h   Cone ⅓πr²h   Sphere 4/3πr³   Frustum ⅓πh(r₁²+r₁r₂+r₂²)   Torus 2π²Rr²',
+        inputs: [{ k: 's', l: 'Solid', opts: [['cyl', 'Cylinder'], ['cone', 'Cone'], ['sph', 'Sphere'], ['hem', 'Hemisphere'], ['box', 'Rectangular box'], ['fru', 'Cone frustum'], ['pyr', 'Square pyramid'], ['tor', 'Torus'], ['pipe', 'Hollow cylinder (pipe)']], v: 'cyl' },
+          { k: 'r', l: 'Radius r (outer for pipe / small radius torus)', v: 1, min: 0.0001, show: sh('cyl', 'cone', 'sph', 'hem', 'pipe', 'tor') }, { k: 'ri', l: 'Inner radius (pipe) / large radius R (torus)', v: 0.9, min: 0.0001, show: sh('pipe', 'tor') }, { k: 'r2', l: 'Second radius r₂ (frustum)', v: 0.5, min: 0, show: sh('fru') }, { k: 'r1', l: 'First radius r₁ (frustum)', v: 1, min: 0.0001, show: sh('fru') },
+          { k: 'h', l: 'Height / length', v: 2, min: 0.0001, show: sh('cyl', 'cone', 'fru', 'pyr', 'pipe', 'box') }, { k: 'l', l: 'Length (box)', v: 3, min: 0.0001, show: sh('box') }, { k: 'w', l: 'Width (box)', v: 2, min: 0.0001, show: sh('box') }, { k: 'a', l: 'Base side (pyramid)', v: 2, min: 0.0001, show: sh('pyr') }],
+        run: v => {
+          let V, S;
+          switch (v.s) {
+            case 'cyl': V = PI * v.r ** 2 * v.h; S = 2 * PI * v.r * (v.r + v.h); break;
+            case 'cone': { const sl = Math.hypot(v.r, v.h); V = PI * v.r ** 2 * v.h / 3; S = PI * v.r * (v.r + sl); break; }
+            case 'sph': V = 4 / 3 * PI * v.r ** 3; S = 4 * PI * v.r ** 2; break;
+            case 'hem': V = 2 / 3 * PI * v.r ** 3; S = 3 * PI * v.r ** 2; break;
+            case 'box': V = v.l * v.w * v.h; S = 2 * (v.l * v.w + v.l * v.h + v.w * v.h); break;
+            case 'fru': { const sl = Math.hypot(v.r1 - v.r2, v.h); V = PI * v.h / 3 * (v.r1 ** 2 + v.r1 * v.r2 + v.r2 ** 2); S = PI * (v.r1 ** 2 + v.r2 ** 2 + (v.r1 + v.r2) * sl); break; }
+            case 'pyr': { const sl = Math.hypot(v.h, v.a / 2); V = v.a ** 2 * v.h / 3; S = v.a ** 2 + 2 * v.a * sl; break; }
+            case 'tor': V = 2 * PI * PI * v.ri * v.r ** 2; S = 4 * PI * PI * v.ri * v.r; break;
+            default: if (v.ri >= v.r) throw new Error('Inner radius must be smaller than outer radius'); V = PI * (v.r ** 2 - v.ri ** 2) * v.h; S = 2 * PI * (v.r + v.ri) * v.h + 2 * PI * (v.r ** 2 - v.ri ** 2);
+          }
+          return { results: [R('Volume', V, '', 'auto', null, true), R('Surface area', S, '', 'auto'), R('Volume if input in m → litres', V * 1000, 'L', 'auto')] };
+        }
+      },
+      {
+        id: 'circ', icon: '⭕', title: 'Circle quick converter', desc: 'Give any one of diameter, radius, circumference or area.',
+        formula: 'C = πD     A = πr² = πD²/4',
+        inputs: [{ k: 'g', l: 'Known', opts: [['d', 'Diameter'], ['r', 'Radius'], ['c', 'Circumference'], ['a', 'Area']], v: 'd' }, { k: 'x', l: 'Value', v: 100, min: 0.0001 }],
+        run: v => { const r = v.g === 'd' ? v.x / 2 : v.g === 'r' ? v.x : v.g === 'c' ? v.x / (2 * PI) : Math.sqrt(v.x / PI); return { results: [R('Diameter', 2 * r, '', 'auto', null, true), R('Radius', r, '', 'auto'), R('Circumference', 2 * PI * r, '', 'auto'), R('Area', PI * r * r, '', 'auto')] }; }
+      },
+      {
+        id: 'seg', icon: '🌙', title: 'Circle segment, chord & arc', desc: 'Chord length, arc length and segment area from the radius and one more value.',
+        formula: 'chord = 2r·sin(θ/2)    arc = rθ    segment area = r²(θ − sinθ)/2',
+        inputs: [{ k: 'r', l: 'Radius', v: 10, min: 0.0001 }, { k: 'by', l: 'Second value is', opts: [['ang', 'Central angle (°)'], ['ch', 'Chord length'], ['ht', 'Segment height (sagitta)']], v: 'ang' }, { k: 'x', l: 'Value', v: 60, min: 0.0001 }],
+        run: v => {
+          let th;
+          if (v.by === 'ang') { if (v.x > 360) throw new Error('Angle cannot exceed 360°'); th = v.x * RAD; } else if (v.by === 'ch') { if (v.x > 2 * v.r) throw new Error('Chord cannot exceed the diameter'); th = 2 * Math.asin(v.x / (2 * v.r)); } else { if (v.x > 2 * v.r) throw new Error('Height cannot exceed the diameter'); th = 2 * Math.acos((v.r - v.x) / v.r); }
+          const r = v.r;
+          return { results: [R('Central angle', th * D, '°', 3), R('Chord length', 2 * r * Math.sin(th / 2), '', 'auto', null, true), R('Arc length', r * th, '', 'auto'), R('Segment height', r * (1 - Math.cos(th / 2)), '', 'auto'), R('Segment area', r * r * (th - Math.sin(th)) / 2, '', 'auto', null, true), R('Sector area', r * r * th / 2, '', 'auto')] };
+        }
+      },
+      {
+        id: 'hcyl', icon: '🛢️', title: 'Horizontal cylindrical tank – partial volume', desc: 'Volume at a measured liquid level (sounding), or the level for a given fill percentage. Flat ends assumed.',
+        formula: 'V = L·[r²·acos((r−h)/r) − (r−h)·√(2rh − h²)]',
+        inputs: [{ k: 'm', l: 'Calculate', opts: [['v', 'Volume from liquid height'], ['h', 'Height from fill %']], v: 'v' }, { k: 'dia', l: 'Tank diameter', u: 'm', v: 2.4, min: 0.01 }, { k: 'len', l: 'Tank length', u: 'm', v: 6, min: 0.01 }, { k: 'h', l: 'Liquid height', u: 'm', v: 0.9, min: 0, show: v => v.m === 'v' }, { k: 'p', l: 'Fill', u: '%', v: 40, min: 0, max: 100, show: v => v.m === 'h' }],
+        run: v => {
+          const r = v.dia / 2, Vt = PI * r * r * v.len; let h;
+          if (v.m === 'v') { if (v.h > v.dia) throw new Error('Liquid height exceeds the tank diameter'); h = v.h; } else { const tgt = v.p / 100 * Vt; let lo = 0, hi = v.dia; for (let i = 0; i < 80; i++) { const mid = (lo + hi) / 2; if (hcyl(r, v.len, mid) < tgt) lo = mid; else hi = mid; } h = (lo + hi) / 2; }
+          const V = hcyl(r, v.len, h);
+          return { results: [R('Liquid volume', V, 'm³', 4, null, true), R('Liquid volume', V * 1000, 'litres', 1), R('Fill', V / Vt * 100, '%', 2), R('Liquid height', h, 'm', 4, null, v.m === 'h'), R('Total capacity', Vt, 'm³', 3)], notes: ['Dished / conical heads and trim or heel are ignored – use the vessel\'s tank calibration table for custody figures.'] };
+        }
+      },
+      {
+        id: 'vtank', icon: '🗄️', title: 'Vertical cylindrical & rectangular tank', desc: 'Contents and fill level of upright round tanks or box tanks.',
+        formula: 'Cylinder: V = π(D/2)²·h     Box: V = L·W·h',
+        inputs: [{ k: 't', l: 'Tank shape', opts: [['c', 'Vertical cylinder'], ['b', 'Rectangular box']], v: 'c' }, { k: 'dia', l: 'Diameter', u: 'm', v: 3, min: 0.01, show: v => v.t === 'c' }, { k: 'l', l: 'Length', u: 'm', v: 4, min: 0.01, show: v => v.t === 'b' }, { k: 'w', l: 'Width', u: 'm', v: 3, min: 0.01, show: v => v.t === 'b' }, { k: 'H', l: 'Tank height', u: 'm', v: 4, min: 0.01 }, { k: 'h', l: 'Liquid height', u: 'm', v: 2.5, min: 0 }, { k: 'd', l: 'Liquid density (for mass)', u: 'kg/L', v: 0.85, min: 0.1, step: 0.01 }],
+        run: v => {
+          if (v.h > v.H) throw new Error('Liquid height exceeds tank height');
+          const A = v.t === 'c' ? PI * (v.dia / 2) ** 2 : v.l * v.w, V = A * v.h, Vt = A * v.H;
+          return { results: [R('Contents', V, 'm³', 3, null, true), R('Contents', V * 1000, 'litres', 0), R('Contents mass', V * v.d, 'tonnes', 3), R('Fill', V / Vt * 100, '%', 1), R('Capacity per metre of height', A, 'm³/m', 3), R('Ullage (empty space)', Vt - V, 'm³', 3)] };
+        }
+      },
+      {
+        id: 'pipe', icon: '🪈', title: 'Pipe volume & weight', desc: 'Internal volume, steel weight and weight when full.',
+        formula: 'ID = OD − 2t     V = π/4·ID²·L     m_steel = π/4·(OD² − ID²)·L·ρ_steel',
+        inputs: [{ k: 'od', l: 'Outside diameter', u: 'mm', v: 114.3, min: 1 }, { k: 't', l: 'Wall thickness', u: 'mm', v: 6.02, min: 0.1 }, { k: 'l', l: 'Length', u: 'm', v: 6, min: 0.01 }, { k: 'rs', l: 'Steel density', u: 'kg/m³', v: 7850, min: 1000 }, { k: 'rf', l: 'Fluid density', u: 'kg/m³', v: 1000, min: 0 }],
+        run: v => {
+          const id = v.od - 2 * v.t; if (id <= 0) throw new Error('Wall thickness too large');
+          const ai = PI / 4 * (id / 1000) ** 2, as = PI / 4 * ((v.od / 1000) ** 2 - (id / 1000) ** 2), vol = ai * v.l, ms = as * v.l * v.rs;
+          return { results: [R('Inside diameter', id, 'mm', 2), R('Internal volume', vol * 1000, 'L', 1, null, true), R('Volume per metre', ai * 1000, 'L/m', 3), R('Steel weight', ms, 'kg', 1), R('Steel weight per metre', as * v.rs, 'kg/m', 2), R('Weight when full', ms + vol * v.rf, 'kg', 1)] };
+        }
+      },
+      {
+        id: 'slope', icon: '⛰️', title: 'Slope / gradient / gangway angle', desc: 'Rise and run to percent, degrees and ratio.',
+        formula: 'gradient % = rise/run × 100     angle = atan(rise/run)',
+        inputs: [{ k: 'rise', l: 'Rise', v: 1, min: 0 }, { k: 'run', l: 'Run (horizontal)', v: 12, min: 0.0001 }],
+        run: v => ({ results: [R('Gradient', v.rise / v.run * 100, '%', 2, null, true), R('Angle', Math.atan(v.rise / v.run) * D, '°', 2, null, true), R('Ratio 1 : n', v.rise === 0 ? 'flat' : '1 : ' + ETO.fmt(v.run / v.rise, 2), ''), R('Slope length', Math.hypot(v.rise, v.run), '', 'auto')] })
+      },
+      {
+        id: 'dist', icon: '📍', title: 'Distance between two points (2-D / 3-D)', desc: 'Straight-line distance, midpoint and bearing.',
+        formula: 'd = √((x₂−x₁)² + (y₂−y₁)² + (z₂−z₁)²)',
+        inputs: [{ k: 'x1', l: 'x₁', v: 0 }, { k: 'y1', l: 'y₁', v: 0 }, { k: 'z1', l: 'z₁', v: 0 }, { k: 'x2', l: 'x₂', v: 30 }, { k: 'y2', l: 'y₂', v: 40 }, { k: 'z2', l: 'z₂', v: 0 }],
+        run: v => {
+          const dx = v.x2 - v.x1, dy = v.y2 - v.y1, dz = v.z2 - v.z1;
+          return { results: [R('Distance', Math.sqrt(dx * dx + dy * dy + dz * dz), '', 'auto', null, true), R('Horizontal distance', Math.hypot(dx, dy), '', 'auto'), R('Bearing (from +y, clockwise)', (Math.atan2(dx, dy) * D + 360) % 360, '°', 2), R('Midpoint', `(${ETO.fmt((v.x1 + v.x2) / 2, 3)}, ${ETO.fmt((v.y1 + v.y2) / 2, 3)}, ${ETO.fmt((v.z1 + v.z2) / 2, 3)})`, '')] };
+        }
+      }
+    ]
+  });
+})();
+
+</script>
+<script>window.ETO_FILE='circuits.html';</script>
+<script>
+(function () {
+  const { R, lvl, S3, esc } = ETO;
+  const PI = Math.PI, D = 180 / PI;
+  const sh = (...a) => v => a.includes(v.m);
+  const COL = [['0', 'Black', 0, 1, null], ['1', 'Brown', 1, 10, 1], ['2', 'Red', 2, 100, 2], ['3', 'Orange', 3, 1e3, null], ['4', 'Yellow', 4, 1e4, null], ['5', 'Green', 5, 1e5, 0.5], ['6', 'Blue', 6, 1e6, 0.25], ['7', 'Violet', 7, 1e7, 0.1], ['8', 'Grey', 8, 1e8, 0.05], ['9', 'White', 9, 1e9, null], ['g', 'Gold', null, 0.1, 5], ['s', 'Silver', null, 0.01, 10]];
+  const dig = [['0', 'Black 0'], ['1', 'Brown 1'], ['2', 'Red 2'], ['3', 'Orange 3'], ['4', 'Yellow 4'], ['5', 'Green 5'], ['6', 'Blue 6'], ['7', 'Violet 7'], ['8', 'Grey 8'], ['9', 'White 9']];
+  const mul = COL.map(c => [c[0], c[1] + ' ×' + c[3]]);
+  const tolo = [['tbr', 'Brown ±1%'], ['tre', 'Red ±2%'], ['tgr', 'Green ±0.5%'], ['tbl', 'Blue ±0.25%'], ['tvi', 'Violet ±0.1%'], ['tgo', 'Gold ±5%'], ['tsi', 'Silver ±10%']];
+  const TOL = { tbr: 1, tre: 2, tgr: 0.5, tbl: 0.25, tvi: 0.1, tgo: 5, tsi: 10 };
+  const ohm = x => (x >= 1e6 ? ETO.fmtAuto(x / 1e6) + ' MΩ' : x >= 1e3 ? ETO.fmtAuto(x / 1e3) + ' kΩ' : ETO.fmtAuto(x) + ' Ω');
+  ETO.page({
+    title: 'Circuit Theory Formulas', icon: '〰️', accent: '#d97706',
+    subtitle: 'Ohm\'s law, series / parallel, dividers, time constants, RLC, star-delta, per-unit, line / phase and energy cost.',
+    refs: ['Ohm / Kirchhoff', 'IEC 60027', 'IEC 60909 (per-unit)'],
+    calcs: [
+      {
+        id: 'ohm', icon: '🎡', title: "Ohm's law & power wheel", desc: 'Give any two of V, I, R, P – get the other two.',
+        formula: 'V = I·R    P = V·I = I²R = V²/R',
+        inputs: [{ k: 'm', l: 'Known pair', opts: [['vi', 'Voltage + current'], ['vr', 'Voltage + resistance'], ['ir', 'Current + resistance'], ['vp', 'Voltage + power'], ['ip', 'Current + power'], ['rp', 'Resistance + power']], v: 'vi' },
+          { k: 'v', l: 'Voltage', u: 'V', v: 230, min: 0.000001, show: sh('vi', 'vr', 'vp') }, { k: 'i', l: 'Current', u: 'A', v: 10, min: 0.000001, show: sh('vi', 'ir', 'ip') }, { k: 'r', l: 'Resistance', u: 'Ω', v: 23, min: 0.000001, show: sh('vr', 'ir', 'rp') }, { k: 'p', l: 'Power', u: 'W', v: 2300, min: 0.000001, show: sh('vp', 'ip', 'rp') }],
+        run: v => {
+          let V, I, Rr, P;
+          switch (v.m) { case 'vi': V = v.v; I = v.i; Rr = V / I; P = V * I; break; case 'vr': V = v.v; Rr = v.r; I = V / Rr; P = V * V / Rr; break; case 'ir': I = v.i; Rr = v.r; V = I * Rr; P = I * I * Rr; break; case 'vp': V = v.v; P = v.p; I = P / V; Rr = V * V / P; break; case 'ip': I = v.i; P = v.p; V = P / I; Rr = P / (I * I); break; default: Rr = v.r; P = v.p; V = Math.sqrt(P * Rr); I = Math.sqrt(P / Rr); }
+          return { results: [R('Voltage', V, 'V', 'auto', null, true), R('Current', I, 'A', 'auto', null, true), R('Resistance', Rr, 'Ω', 'auto', null, true), R('Power', P, 'W', 'auto', null, true), R('Conductance', 1 / Rr, 'S', 'auto')] };
+        }
+      },
+      {
+        id: 'ser', icon: '🔗', title: 'Series & parallel combinations (R, L, C)', desc: 'Equivalent of several resistors, inductors or capacitors.',
+        formula: 'R, L: series ΣX, parallel 1/Σ(1/X)     C: series 1/Σ(1/C), parallel ΣC',
+        inputs: [{ k: 't', l: 'Component', opts: [['r', 'Resistors / inductors (same rule)'], ['c', 'Capacitors']], v: 'r' }, { k: 'tbl', t: 'table', l: 'Values (all in the same unit)', v: [{ x: 100 }, { x: 220 }, { x: 470 }], cols: [{ k: 'x', l: 'Value', t: 'num', d: 100 }] }],
+        run: v => {
+          const a = v.tbl.map(r => r.x); if (a.length < 1 || a.some(x => x <= 0)) throw new Error('All values must be greater than zero');
+          const sum = a.reduce((p, c) => p + c, 0), rec = 1 / a.reduce((p, c) => p + 1 / c, 0), isR = v.t === 'r';
+          return { results: [R('Series equivalent', isR ? sum : rec, '', 'auto', null, true), R('Parallel equivalent', isR ? rec : sum, '', 'auto', null, true), R('Number of parts', a.length, '', 0)], notes: ['Inductors assume no mutual coupling. Parallel R is always smaller than the smallest resistor; series C is always smaller than the smallest capacitor.'] };
+        }
+      },
+      {
+        id: 'div', icon: '➗', title: 'Voltage divider (with optional load)', desc: 'Output voltage of a two-resistor divider.',
+        formula: 'Vout = Vin·R2 / (R1 + R2)    with load: R2 → R2‖RL',
+        inputs: [{ k: 'vin', l: 'Input voltage', u: 'V', v: 24, min: 0 }, { k: 'r1', l: 'R1 (top)', u: 'Ω', v: 10000, min: 0.001 }, { k: 'r2', l: 'R2 (bottom)', u: 'Ω', v: 4700, min: 0.001 }, { k: 'rl', l: 'Load RL (0 = none)', u: 'Ω', v: 0, min: 0 }],
+        run: v => {
+          const r2e = v.rl > 0 ? v.r2 * v.rl / (v.r2 + v.rl) : v.r2, vo = v.vin * r2e / (v.r1 + r2e), vu = v.vin * v.r2 / (v.r1 + v.r2), i = v.vin / (v.r1 + r2e);
+          return { results: [R('Vout (loaded)', vo, 'V', 4, null, true), R('Vout (no load)', vu, 'V', 4), R('Loading error', vu ? (vo - vu) / vu * 100 : 0, '%', 2, vu && Math.abs((vo - vu) / vu) > 0.02 ? 'warn' : 'ok'), R('Divider current', i, 'A', 'auto'), R('Power in R1', i * i * v.r1, 'W', 'auto'), R('Total power', v.vin * i, 'W', 'auto')] };
+        }
+      },
+      {
+        id: 'rc', icon: '⏱️', title: 'RC / RL time constant', desc: 'Charging and decay of an RC or RL circuit.',
+        formula: 'τ = R·C (RC)  or  L/R (RL)     charge: v = V(1 − e^(−t/τ))     decay: v = V·e^(−t/τ)',
+        inputs: [{ k: 'm', l: 'Circuit', opts: [['rc', 'RC (capacitor)'], ['rl', 'RL (inductor)']], v: 'rc' }, { k: 'r', l: 'Resistance', u: 'Ω', v: 10000, min: 0.0001 }, { k: 'c', l: 'Capacitance', u: 'µF', v: 100, min: 0.0001, show: sh('rc') }, { k: 'l', l: 'Inductance', u: 'mH', v: 500, min: 0.0001, show: sh('rl') }, { k: 'vs', l: 'Source voltage / current', v: 24 }, { k: 't', l: 'Time t', u: 'ms', v: 1000, min: 0 }],
+        run: v => {
+          const tau = v.m === 'rc' ? v.r * v.c * 1e-6 : v.l * 1e-3 / v.r, t = v.t / 1000, up = 1 - Math.exp(-t / tau), dn = Math.exp(-t / tau);
+          return { results: [R('Time constant τ', tau * 1000, 'ms', 'auto', null, true), R('Charge level at t', up * 100, '%', 2), R('Charging value at t', v.vs * up, '', 'auto'), R('Decayed value at t', v.vs * dn, '', 'auto'), R('Time to 63.2 % (1τ)', tau * 1000, 'ms', 'auto'), R('Time to 95 % (3τ)', 3 * tau * 1000, 'ms', 'auto'), R('Time to 99.3 % (5τ)', 5 * tau * 1000, 'ms', 'auto')], notes: ['After 5τ a circuit is considered fully charged / decayed. Capacitor discharge for safe working: wait ≥ 5τ.'] };
+        }
+      },
+      {
+        id: 'rlc', icon: '🎶', title: 'Series RLC – reactance, impedance, resonance', desc: 'Impedance at a frequency, phase angle, resonance and Q-factor.',
+        formula: 'XL = 2πfL    XC = 1/(2πfC)    Z = √(R² + (XL − XC)²)    f₀ = 1/(2π√LC)    Q = (1/R)√(L/C)',
+        inputs: [{ k: 'f', l: 'Frequency', u: 'Hz', v: 60, min: 0.001 }, { k: 'r', l: 'Resistance', u: 'Ω', v: 10, min: 0.000001 }, { k: 'l', l: 'Inductance', u: 'mH', v: 100, min: 0.000001 }, { k: 'c', l: 'Capacitance', u: 'µF', v: 50, min: 0.000001 }, { k: 'v', l: 'Applied voltage', u: 'V', v: 230, min: 0 }],
+        run: v => {
+          const w = 2 * PI * v.f, L = v.l * 1e-3, C = v.c * 1e-6, XL = w * L, XC = 1 / (w * C), X = XL - XC, Z = Math.hypot(v.r, X), f0 = 1 / (2 * PI * Math.sqrt(L * C)), Q = Math.sqrt(L / C) / v.r;
+          return { results: [R('Inductive reactance XL', XL, 'Ω', 'auto'), R('Capacitive reactance XC', XC, 'Ω', 'auto'), R('Impedance Z', Z, 'Ω', 'auto', null, true), R('Phase angle', Math.atan2(X, v.r) * D, '°', 2), R('Power factor', v.r / Z, '', 4), R('Current', v.v / Z, 'A', 'auto'), R('Resonant frequency f₀', f0, 'Hz', 'auto', null, true), R('Q factor at resonance', Q, '', 3), R('Bandwidth f₀/Q', f0 / Q, 'Hz', 'auto')], verdict: { s: 'info', t: X > 0 ? 'Net inductive (current lags voltage).' : X < 0 ? 'Net capacitive (current leads voltage).' : 'At resonance – purely resistive.' } };
+        }
+      },
+      {
+        id: 'reactance', icon: '🌀', title: 'Reactance of an inductor or capacitor', desc: 'Reactance at a frequency and the frequency for a given reactance.',
+        formula: 'XL = 2πfL    XC = 1/(2πfC)',
+        inputs: [{ k: 'f', l: 'Frequency', u: 'Hz', v: 60, min: 0.001 }, { k: 'l', l: 'Inductance', u: 'mH', v: 10, min: 0.000001 }, { k: 'c', l: 'Capacitance', u: 'µF', v: 100, min: 0.000001 }],
+        run: v => ({ results: [R('XL', 2 * PI * v.f * v.l * 1e-3, 'Ω', 'auto', null, true), R('XC', 1 / (2 * PI * v.f * v.c * 1e-6), 'Ω', 'auto', null, true), R('Capacitor kVAR at 440 V (3-ph, Δ)', 3 * (2 * PI * v.f * v.c * 1e-6) * 440 ** 2 / 1000, 'kVAR', 'auto'), R('Angular frequency ω', 2 * PI * v.f, 'rad/s', 'auto')] })
+      },
+      {
+        id: 'ds', icon: '🔺', title: 'Star ↔ delta conversion', desc: 'Transform a three-terminal delta network to star (or reverse).',
+        formula: 'Δ→Y: R_A = R_AB·R_CA/Σ  etc., Σ = R_AB+R_BC+R_CA     Y→Δ: R_AB = (R_AR_B+R_BR_C+R_CR_A)/R_C',
+        inputs: [{ k: 'm', l: 'Convert', opts: [['dy', 'Delta → Star'], ['yd', 'Star → Delta']], v: 'dy' }, { k: 'x', l: 'R_AB (delta) / R_A (star)', u: 'Ω', v: 30, min: 0.000001 }, { k: 'y', l: 'R_BC (delta) / R_B (star)', u: 'Ω', v: 30, min: 0.000001 }, { k: 'z', l: 'R_CA (delta) / R_C (star)', u: 'Ω', v: 30, min: 0.000001 }],
+        run: v => {
+          if (v.m === 'dy') { const s = v.x + v.y + v.z; return { results: [R('R_A', v.x * v.z / s, 'Ω', 'auto', null, true), R('R_B', v.x * v.y / s, 'Ω', 'auto', null, true), R('R_C', v.y * v.z / s, 'Ω', 'auto', null, true)], notes: ['Equal delta resistors R → star resistors R/3.'] }; }
+          const s = v.x * v.y + v.y * v.z + v.z * v.x; return { results: [R('R_AB', s / v.z, 'Ω', 'auto', null, true), R('R_BC', s / v.x, 'Ω', 'auto', null, true), R('R_CA', s / v.y, 'Ω', 'auto', null, true)], notes: ['Equal star resistors R → delta resistors 3R.'] };
+        }
+      },
+      {
+        id: 'lp', icon: '🔱', title: 'Line / phase quantities (star & delta)', desc: 'Relationship between line and phase voltage / current for 3-phase connections.',
+        formula: 'Star: V_L = √3·V_ph, I_L = I_ph     Delta: V_L = V_ph, I_L = √3·I_ph     S = √3·V_L·I_L',
+        inputs: [{ k: 'c', l: 'Connection', opts: [['y', 'Star (Y)'], ['d', 'Delta (Δ)']], v: 'y' }, { k: 'vl', l: 'Line voltage', u: 'V', v: 440, min: 1 }, { k: 'il', l: 'Line current', u: 'A', v: 100, min: 0 }, { k: 'pf', l: 'Power factor', v: 0.85, min: 0.05, max: 1, step: 0.01 }],
+        run: v => {
+          const vph = v.c === 'y' ? v.vl / S3 : v.vl, iph = v.c === 'y' ? v.il : v.il / S3, s = S3 * v.vl * v.il / 1000;
+          return { results: [R('Phase voltage', vph, 'V', 2, null, true), R('Phase current', iph, 'A', 2, null, true), R('Apparent power', s, 'kVA', 2), R('Active power', s * v.pf, 'kW', 2), R('Reactive power', s * Math.sin(Math.acos(v.pf)), 'kVAR', 2), R('Power per phase', s / 3, 'kVA', 2)] };
+        }
+      },
+      {
+        id: 'pu', icon: '📏', title: 'Per-unit bases', desc: 'Base current and impedance for a system, and conversion of ohms ↔ per-unit.',
+        formula: 'I_base = S_base/(√3·V_base)    Z_base = V_base²/S_base    Z_pu = Z_Ω/Z_base',
+        inputs: [{ k: 's', l: 'Base power', u: 'kVA', v: 1000, min: 0.001 }, { k: 'v', l: 'Base voltage (line)', u: 'V', v: 440, min: 1 }, { k: 'z', l: 'Impedance (Ω)', u: 'Ω', v: 0.02, min: 0 }, { k: 'zp', l: 'Impedance (per-unit)', u: 'pu', v: 0.05, min: 0 }],
+        run: v => {
+          const ib = v.s * 1000 / (S3 * v.v), zb = v.v ** 2 / (v.s * 1000);
+          return { results: [R('Base current', ib, 'A', 'auto'), R('Base impedance', zb, 'Ω', 'auto', null, true), R('Z (Ω) in per-unit', v.z / zb, 'pu', 'auto'), R('Z (Ω) in per cent', v.z / zb * 100, '%', 'auto'), R('Z (pu) in ohms', v.zp * zb, 'Ω', 'auto', null, true)] };
+        }
+      },
+      {
+        id: 'pubase', icon: '🔄', title: 'Change of base (impedance %)', desc: 'Re-express a machine / transformer impedance on a different MVA and voltage base.',
+        formula: 'Z_new = Z_old × (S_new/S_old) × (V_old/V_new)²',
+        inputs: [{ k: 'z', l: 'Impedance on old base', u: '%', v: 6, min: 0 }, { k: 'so', l: 'Old base power', u: 'kVA', v: 1250, min: 0.001 }, { k: 'sn', l: 'New base power', u: 'kVA', v: 10000, min: 0.001 }, { k: 'vo', l: 'Old base voltage', u: 'V', v: 440, min: 1 }, { k: 'vn', l: 'New base voltage', u: 'V', v: 440, min: 1 }],
+        run: v => ({ results: [R('Impedance on new base', v.z * v.sn / v.so * (v.vo / v.vn) ** 2, '%', 'auto', null, true), R('In per-unit', v.z / 100 * v.sn / v.so * (v.vo / v.vn) ** 2, 'pu', 'auto')] })
+      },
+      {
+        id: 'energy', icon: '🧾', title: 'Energy, fuel & running cost', desc: 'Energy used by a load and the fuel / cost of generating it.',
+        formula: 'kWh = kW × hours     fuel (t) = kWh × SFOC / 10⁶',
+        inputs: [{ k: 'p', l: 'Average load', u: 'kW', v: 450, min: 0 }, { k: 'h', l: 'Hours per day', u: 'h', v: 24, min: 0, max: 24 }, { k: 'd', l: 'Days', v: 30, min: 0 }, { k: 'sf', l: 'Generator SFOC', u: 'g/kWh', v: 210, min: 1 }, { k: 'rho', l: 'Fuel density', u: 'kg/L', v: 0.85, min: 0.5, step: 0.01 }, { k: 'pr', l: 'Fuel price', u: 'per tonne', v: 650, min: 0 }],
+        run: v => {
+          const e = v.p * v.h * v.d, t = e * v.sf / 1e6;
+          return { results: [R('Energy', e, 'kWh', 0, null, true), R('Energy', e / 1000, 'MWh', 2), R('Fuel burnt', t, 'tonnes', 2), R('Fuel burnt', t * 1000 / v.rho, 'litres', 0), R('Fuel cost', t * v.pr, '', 0, null, true), R('Cost per kWh', v.sf / 1e6 * v.pr, '', 4)] };
+        }
+      },
+      {
+        id: 'stored', icon: '🔋', title: 'Stored energy (capacitor, inductor, flywheel)', desc: 'Energy stored in a capacitor, an inductor or a rotating mass.',
+        formula: 'E = ½CV²    E = ½LI²    E = ½Jω²',
+        inputs: [{ k: 'c', l: 'Capacitance', u: 'mF', v: 15, min: 0 }, { k: 'v', l: 'Voltage', u: 'V', v: 600, min: 0 }, { k: 'l', l: 'Inductance', u: 'H', v: 0.5, min: 0 }, { k: 'i', l: 'Current', u: 'A', v: 20, min: 0 }, { k: 'j', l: 'Moment of inertia', u: 'kg·m²', v: 50, min: 0 }, { k: 'n', l: 'Speed', u: 'rpm', v: 1780, min: 0 }],
+        run: v => ({ results: [R('Capacitor energy', 0.5 * v.c * 1e-3 * v.v ** 2 / 1000, 'kJ', 'auto', null, true), R('Capacitor charge Q', v.c * 1e-3 * v.v, 'C', 'auto'), R('Inductor energy', 0.5 * v.l * v.i ** 2, 'J', 'auto', null, true), R('Rotating mass energy', 0.5 * v.j * (2 * PI * v.n / 60) ** 2 / 1000, 'kJ', 'auto', null, true)], notes: ['A 15 mF DC link at 600 V stores 2.7 kJ – lethal. Always wait for the drive discharge time and verify with a meter.'] })
+      },
+      {
+        id: 'rcode', icon: '🎨', title: 'Resistor colour code', desc: 'Decode 4-band and 5-band resistors.',
+        formula: 'value = (digits) × multiplier ± tolerance',
+        inputs: [{ k: 'm', l: 'Bands', opts: [['4', '4 bands'], ['5', '5 bands']], v: '4' }, { k: 'a', l: 'Band 1', opts: dig, v: '4' }, { k: 'b', l: 'Band 2', opts: dig, v: '7' }, { k: 'c', l: 'Band 3 (digit)', opts: dig, v: '0', show: v => v.m === '5' }, { k: 'x', l: 'Multiplier', opts: mul, v: '2' }, { k: 't', l: 'Tolerance', opts: tolo, v: 'tgo' }],
+        run: v => {
+          const digits = v.m === '5' ? +v.a * 100 + +v.b * 10 + +v.c : +v.a * 10 + +v.b, mu = COL.find(c => c[0] === String(v.x))[3], tol = TOL[v.t], val = digits * mu;
+          return { results: [R('Resistance', ohm(val), '', 0, null, true), R('Tolerance', '±' + tol + ' %', ''), R('Minimum', ohm(val * (1 - tol / 100)), '', 0), R('Maximum', ohm(val * (1 + tol / 100)), '', 0)] };
+        }
+      }
+    ]
+  });
+})();
+
+</script>
+<script>window.ETO_FILE='mechthermal.html';</script>
+<script>
+(function () {
+  const { R, lvl, S3 } = ETO;
+  const PI = Math.PI, D = 180 / PI, G = 9.80665;
+  const MOTORS = [0.37, 0.55, 0.75, 1.1, 1.5, 2.2, 3, 4, 5.5, 7.5, 11, 15, 18.5, 22, 30, 37, 45, 55, 75, 90, 110, 132, 160, 200, 250, 315, 355, 400];
+  ETO.page({
+    title: 'Mechanical, Fluid & Thermal', icon: '🔧', accent: '#65a30d',
+    subtitle: 'Mechanical power and drives, rigging, pumps and pipe flow, heating, expansion, fuel efficiency and ventilation – the non-electrical half of an ETO\'s day.',
+    refs: ['ISO 80000', 'ISO 5167 / pipe flow', 'LOLER / rigging practice'],
+    calcs: [
+      {
+        id: 'pts', icon: '⚙️', title: 'Power – torque – speed', desc: 'Solve for any one of shaft power, torque or speed.',
+        formula: 'P (kW) = T (N·m) × N (rpm) / 9549',
+        inputs: [{ k: 's', l: 'Solve for', opts: [['p', 'Power'], ['t', 'Torque'], ['n', 'Speed']], v: 'p' }, { k: 'p', l: 'Power', u: 'kW', v: 90, min: 0.000001, show: v => v.s !== 'p' }, { k: 't', l: 'Torque', u: 'N·m', v: 484, min: 0.000001, show: v => v.s !== 't' }, { k: 'n', l: 'Speed', u: 'rpm', v: 1775, min: 0.000001, show: v => v.s !== 'n' }],
+        run: v => {
+          const p = v.s === 'p' ? v.t * v.n / 9549.3 : v.p, t = v.s === 't' ? 9549.3 * v.p / v.n : v.t, n = v.s === 'n' ? 9549.3 * v.p / v.t : v.n;
+          return { results: [R('Power', p, 'kW', 'auto', null, v.s === 'p'), R('Power', p / 0.74569987, 'HP', 'auto'), R('Torque', t, 'N·m', 'auto', null, v.s === 't'), R('Torque', t * 0.7375621, 'lbf·ft', 'auto'), R('Speed', n, 'rpm', 'auto', null, v.s === 'n'), R('Angular speed', 2 * PI * n / 60, 'rad/s', 'auto')] };
+        }
+      },
+      {
+        id: 'gear', icon: '🛞', title: 'Gear / pulley ratio', desc: 'Output speed and torque for one or two gear (or pulley) stages.',
+        formula: 'ratio = (Z₂/Z₁)(Z₄/Z₃)     n_out = n_in / ratio     T_out = T_in × ratio × η^stages',
+        inputs: [{ k: 'st', l: 'Stages', opts: [[1, '1 stage'], [2, '2 stages']], v: 1 }, { k: 'z1', l: 'Driver teeth / diameter Z₁', v: 20, min: 1 }, { k: 'z2', l: 'Driven teeth / diameter Z₂', v: 80, min: 1 }, { k: 'z3', l: 'Stage 2 driver Z₃', v: 18, min: 1, show: v => +v.st === 2 }, { k: 'z4', l: 'Stage 2 driven Z₄', v: 72, min: 1, show: v => +v.st === 2 }, { k: 'n', l: 'Input speed', u: 'rpm', v: 1780, min: 0.001 }, { k: 'p', l: 'Input power', u: 'kW', v: 30, min: 0.001 }, { k: 'e', l: 'Efficiency per stage', u: '%', v: 97, min: 50, max: 100 }],
+        run: v => {
+          const two = +v.st === 2, ratio = (v.z2 / v.z1) * (two ? v.z4 / v.z3 : 1), eta = (v.e / 100) ** (two ? 2 : 1), nout = v.n / ratio, tin = 9549.3 * v.p / v.n;
+          return { results: [R('Reduction ratio', ratio, ': 1', 4, null, true), R('Output speed', nout, 'rpm', 'auto', null, true), R('Output torque', tin * ratio * eta, 'N·m', 'auto'), R('Output power', v.p * eta, 'kW', 'auto'), R('Gearbox loss', v.p * (1 - eta), 'kW', 'auto'), R('Input torque', tin, 'N·m', 'auto')] };
+        }
+      },
+      {
+        id: 'belt', icon: '🔄', title: 'Belt drive', desc: 'Belt length, belt speed, driven speed and contact angle for two pulleys.',
+        formula: 'L = 2C + π(D+d)/2 + (D−d)²/(4C)     v = π·d·n / 60000     wrap = 180° − 2·asin((D−d)/(2C))',
+        inputs: [{ k: 'dd', l: 'Driver pulley diameter d', u: 'mm', v: 200, min: 1 }, { k: 'dl', l: 'Driven pulley diameter D', u: 'mm', v: 400, min: 1 }, { k: 'c', l: 'Centre distance C', u: 'mm', v: 800, min: 1 }, { k: 'n', l: 'Driver speed', u: 'rpm', v: 1480, min: 0.01 }, { k: 'sl', l: 'Slip', u: '%', v: 1.5, min: 0, max: 10 }],
+        run: v => {
+          const dmn = Math.min(v.dd, v.dl), dmx = Math.max(v.dd, v.dl); if (v.c <= (dmx - dmn) / 2) throw new Error('Centre distance too small for these pulleys');
+          const L = 2 * v.c + PI * (v.dd + v.dl) / 2 + (v.dl - v.dd) ** 2 / (4 * v.c), wrap = 180 - 2 * Math.asin((dmx - dmn) / (2 * v.c)) * D;
+          return { results: [R('Belt length', L, 'mm', 1, null, true), R('Belt speed', PI * v.dd * v.n / 60000, 'm/s', 2), R('Driven speed', v.n * v.dd / v.dl * (1 - v.sl / 100), 'rpm', 1, null, true), R('Speed ratio', v.dl / v.dd, ': 1', 3), R('Wrap angle on small pulley', wrap, '°', 1, wrap < 120 ? 'warn' : 'ok')], verdict: wrap < 120 ? { s: 'warn', t: 'Wrap angle below 120° – risk of slip; increase centre distance or use a tensioner.' } : null };
+        }
+      },
+      {
+        id: 'shaft', icon: '🔩', title: 'Shaft torsion (stress & twist)', desc: 'Shear stress and twist of a solid round shaft and required diameter.',
+        formula: 'τ = 16T/(πd³)     θ = T·L/(G·J)     J = πd⁴/32     d_req = ∛(16T/(π·τ_allow))',
+        inputs: [{ k: 't', l: 'Torque', u: 'N·m', v: 1200, min: 0 }, { k: 'd', l: 'Shaft diameter', u: 'mm', v: 60, min: 1 }, { k: 'l', l: 'Length', u: 'mm', v: 800, min: 1 }, { k: 'g', l: 'Shear modulus G', u: 'GPa', v: 80, min: 1, hint: 'Steel ≈ 80, aluminium ≈ 26' }, { k: 'ta', l: 'Allowable shear stress', u: 'MPa', v: 40, min: 1, hint: 'Typical working value 30–50 MPa for mild steel with keyway' }],
+        run: v => {
+          const T = v.t * 1000, tau = 16 * T / (PI * v.d ** 3), J = PI * v.d ** 4 / 32, th = T * v.l / (v.g * 1000 * J), dreq = Math.cbrt(16 * T / (PI * v.ta)), st = lvl(tau / v.ta, 0.8, 1);
+          return { results: [R('Shear stress', tau, 'MPa', 2, st, true), R('Utilisation', tau / v.ta * 100, '%', 0, st), R('Twist angle', th * D, '°', 3), R('Required diameter', dreq, 'mm', 1), R('Polar moment J', J / 1e4, 'cm⁴', 1)], verdict: { s: st, t: st === 'bad' ? 'Shaft over-stressed for the allowable stress.' : 'Within the allowable stress.' } };
+        }
+      },
+      {
+        id: 'sling', icon: '🏗️', title: 'Sling / lifting tension', desc: 'Leg tension and the required working load limit (WLL) for multi-leg slings.',
+        formula: 'T_leg = W·g / (n_eff · cosθ)     θ = angle of each leg from vertical',
+        inputs: [{ k: 'w', l: 'Load mass', u: 'kg', v: 2000, min: 1 }, { k: 'n', l: 'Number of legs', opts: [[1, '1'], [2, '2'], [3, '3'], [4, '4 (3 assumed to carry)']], v: 2 }, { k: 'a', l: 'Leg angle from vertical', u: '°', v: 45, min: 0, max: 89 }, { k: 'sf', l: 'Dynamic / safety factor', v: 1, min: 1, step: 0.05 }],
+        run: v => {
+          const ne = Math.min(+v.n, 3), f = 1 / Math.cos(v.a * PI / 180), T = v.w * G * v.sf / ne * f, st = v.a <= 45 ? 'ok' : v.a <= 60 ? 'warn' : 'bad';
+          return { results: [R('Tension per leg', T / 1000, 'kN', 2, st, true), R('Required leg WLL', T / G, 'kg', 0, null, true), R('Angle factor 1/cosθ', f, '', 3, st), R('Legs assumed carrying', ne, '', 0)], verdict: { s: st, t: v.a <= 45 ? 'Leg angle acceptable.' : v.a <= 60 ? 'Leg angle above 45° – check sling rating chart.' : 'Leg angle above 60° from vertical (120° included) – not permitted by most rigging rules.' }, notes: ['Check against the sling\'s marked WLL at that angle, the shackle / hook / pad-eye ratings, and the lifting plan. Use the rigger\'s certified chart for the final decision.'] };
+        }
+      },
+      {
+        id: 'pump', icon: '💧', title: 'Pump power', desc: 'Hydraulic, shaft and motor power for a pump duty.',
+        formula: 'P_hyd = ρ·g·Q·H / 3.6×10⁶ (kW)     P_shaft = P_hyd/η_pump     P_motor = P_shaft/η_motor',
+        inputs: [{ k: 'q', l: 'Flow', u: 'm³/h', v: 300, min: 0.001 }, { k: 'h', l: 'Total head', u: 'm', v: 40, min: 0.001 }, { k: 'rho', l: 'Fluid density', u: 'kg/m³', v: 1025, min: 1 }, { k: 'ep', l: 'Pump efficiency', u: '%', v: 72, min: 10, max: 95 }, { k: 'em', l: 'Motor efficiency', u: '%', v: 93, min: 10, max: 100 }, { k: 'mg', l: 'Motor margin', v: 1.1, min: 1, step: 0.01 }],
+        run: v => {
+          const ph = v.rho * 9.80665 * v.q * v.h / 3.6e6, ps = ph / (v.ep / 100), pm = ps / (v.em / 100), need = ps * v.mg, std = MOTORS.find(m => m >= need) || '> 400';
+          return { results: [R('Hydraulic power', ph, 'kW', 2), R('Pump shaft power', ps, 'kW', 2, null, true), R('Motor electrical input', pm, 'kW', 2), R('Standard motor ≥ shaft × margin', std, 'kW', 1, 'ok', true), R('Pressure rise', v.rho * 9.80665 * v.h / 1e5, 'bar', 2)] };
+        }
+      },
+      {
+        id: 'head', icon: '📊', title: 'Pressure ↔ head of liquid', desc: 'Convert pressure to metres of any liquid and back (static head, tank level gauges, pump curves).',
+        formula: 'h = p / (ρ·g)     p = ρ·g·h',
+        inputs: [{ k: 'm', l: 'Convert', opts: [['ph', 'Pressure → head'], ['hp', 'Head → pressure']], v: 'ph' }, { k: 'x', l: 'Value (bar or m)', v: 4, min: 0 }, { k: 'rho', l: 'Liquid density', u: 'kg/m³', v: 1025, min: 1 }],
+        run: v => {
+          const h = v.m === 'ph' ? v.x * 1e5 / (v.rho * 9.80665) : v.x, p = v.m === 'hp' ? v.rho * 9.80665 * v.x / 1e5 : v.x;
+          return { results: [R('Head', h, 'm', 'auto', null, true), R('Pressure', p, 'bar', 'auto', null, true), R('Pressure', p * 100, 'kPa', 'auto'), R('Pressure', p * 14.5037738, 'psi', 'auto')], notes: ['1 bar ≈ 10.2 m of fresh water ≈ 9.9 m of seawater ≈ 11.9 m of marine gas oil.'] };
+        }
+      },
+      {
+        id: 'pipe', icon: '🪈', title: 'Pipe flow velocity & Reynolds number', desc: 'Velocity for a flow in a pipe, flow regime and the pipe size for a target velocity.',
+        formula: 'v = Q / A     A = π/4·D²     Re = ρ·v·D/μ     D = √(4Q/(π·v))',
+        inputs: [{ k: 'q', l: 'Flow', u: 'm³/h', v: 100, min: 0.0001 }, { k: 'id', l: 'Pipe inside diameter', u: 'mm', v: 100, min: 1 }, { k: 'rho', l: 'Density', u: 'kg/m³', v: 1025, min: 1 }, { k: 'mu', l: 'Dynamic viscosity', u: 'cP', v: 1.1, min: 0.01 }, { k: 'vt', l: 'Target velocity (for sizing)', u: 'm/s', v: 2, min: 0.01, hint: 'Suction 1–1.5, discharge 2–3, fuel 1–2 m/s (typical)' }],
+        run: v => {
+          const A = PI / 4 * (v.id / 1000) ** 2, vel = v.q / 3600 / A, Re = v.rho * vel * (v.id / 1000) / (v.mu / 1000), dreq = Math.sqrt(4 * v.q / 3600 / (PI * v.vt)) * 1000;
+          return { results: [R('Velocity', vel, 'm/s', 3, vel > 3.5 ? 'warn' : 'ok', true), R('Reynolds number', Re, '', 0), R('Flow regime', Re < 2300 ? 'Laminar' : Re < 4000 ? 'Transitional' : 'Turbulent', ''), R('Flow area', A * 1e4, 'cm²', 2), R('ID for target velocity', dreq, 'mm', 1, null, true)] };
+        }
+      },
+      {
+        id: 'heat', icon: '🔥', title: 'Heat energy & heater sizing', desc: 'Energy to heat a mass, and the heater power needed for a given time.',
+        formula: 'Q = m·c·ΔT     P_heater = Q / (t·η)',
+        inputs: [{ k: 'c', l: 'Material (specific heat)', opts: [[4.186, 'Fresh water 4.186 kJ/kg·K'], [3.99, 'Seawater 3.99'], [2.0, 'Fuel / lube oil ≈ 2.0'], [0.49, 'Steel 0.49'], [0.385, 'Copper 0.385'], [0.90, 'Aluminium 0.90'], [1.005, 'Air 1.005']], v: 4.186 }, { k: 'm', l: 'Mass', u: 'kg', v: 500, min: 0.001 }, { k: 't1', l: 'Start temperature', u: '°C', v: 20 }, { k: 't2', l: 'Final temperature', u: '°C', v: 60 }, { k: 'h', l: 'Heating time', u: 'h', v: 2, min: 0.01 }, { k: 'e', l: 'Heater efficiency (insulation losses)', u: '%', v: 90, min: 10, max: 100 }],
+        run: v => {
+          const Q = v.m * v.c * (v.t2 - v.t1), kWh = Q / 3600, p = kWh / v.h / (v.e / 100);
+          return { results: [R('Energy required', Q, 'kJ', 0), R('Energy required', kWh, 'kWh', 2), R('Heater power needed', p, 'kW', 2, null, true), R('Current @ 440 V 3-ph', p * 1000 / (S3 * 440), 'A', 1), R('Current @ 230 V 1-ph', p * 1000 / 230, 'A', 1)], notes: ['Add the heat lost through uninsulated tanks and pipes in cold weather – oil tank heaters are usually sized with ≥ 25 % margin.'] };
+        }
+      },
+      {
+        id: 'expl', icon: '📏', title: 'Thermal expansion of solids', desc: 'Length change of pipes, busbars, cable trays and rails.',
+        formula: 'ΔL = α · L · ΔT',
+        inputs: [{ k: 'a', l: 'Material (α ×10⁻⁶ /K)', opts: [[12, 'Steel 12'], [17, 'Copper 17'], [23, 'Aluminium 23'], [18, 'Stainless 18'], [70, 'PVC 70'], [9, 'Glass 9']], v: 12 }, { k: 'l', l: 'Length', u: 'm', v: 30, min: 0 }, { k: 'dt', l: 'Temperature change', u: 'K', v: 50 }],
+        run: v => ({ results: [R('Length change', v.a * 1e-6 * v.l * v.dt * 1000, 'mm', 3, null, true), R('Percent change', v.a * 1e-6 * v.dt * 100, '%', 4)], notes: ['Allow expansion loops / sliding supports for long straight pipe and cable-tray runs on open deck.'] })
+      },
+      {
+        id: 'expv', icon: '🧪', title: 'Thermal expansion of liquids', desc: 'Volume change of fuel, oil or water in a tank for a temperature rise.',
+        formula: 'ΔV = β · V · ΔT',
+        inputs: [{ k: 'b', l: 'Liquid (β per K)', opts: [[0.00085, 'Marine gas oil 0.00085'], [0.00070, 'Heavy fuel oil 0.00070'], [0.00072, 'Lube oil 0.00072'], [0.00021, 'Fresh water 0.00021 (at 20 °C)'], [0.00026, 'Seawater 0.00026']], v: 0.00085 }, { k: 'v', l: 'Volume', u: 'm³', v: 60, min: 0 }, { k: 'dt', l: 'Temperature rise', u: 'K', v: 15 }],
+        run: v => ({ results: [R('Volume change', v.b * v.v * v.dt, 'm³', 4, null, true), R('Volume change', v.b * v.v * v.dt * 1000, 'litres', 0), R('New volume', v.v * (1 + v.b * v.dt), 'm³', 3), R('Percent', v.b * v.dt * 100, '%', 2)], notes: ['Do not fill tanks above ~95–98 % – overflow risk when fuel warms up.'] })
+      },
+      {
+        id: 'fuel', icon: '⛽', title: 'Engine efficiency from SFOC', desc: 'Thermal efficiency, fuel power and rejected heat from specific fuel consumption.',
+        formula: 'η = 3600 / (SFOC[g/kWh]/1000 × LHV[MJ/kg] × 1000) = 3.6 / (SFOC/1000 × LHV)',
+        inputs: [{ k: 'sf', l: 'SFOC', u: 'g/kWh', v: 200, min: 50 }, { k: 'lhv', l: 'Fuel lower heating value', opts: [[42.7, 'Marine gas oil 42.7 MJ/kg'], [40.5, 'Heavy fuel oil 40.5 MJ/kg'], [42.0, 'Diesel 42.0 MJ/kg']], v: 42.7 }, { k: 'p', l: 'Engine output', u: 'kW', v: 1000, min: 0 }],
+        run: v => {
+          const eta = 3.6 / (v.sf / 1000 * v.lhv), pf = v.p / eta;
+          return { results: [R('Thermal efficiency', eta * 100, '%', 1, null, true), R('Fuel energy input', pf, 'kW', 0), R('Heat rejected (exhaust + cooling)', pf - v.p, 'kW', 0), R('Fuel flow', v.p * v.sf / 1000, 'kg/h', 1)] };
+        }
+      },
+      {
+        id: 'vent', icon: '🌬️', title: 'Ventilation / cooling air', desc: 'Air flow to remove machinery heat from a room, and air changes per hour.',
+        formula: 'V̇ = Q / (ρ·cp·ΔT)    ACH = V̇ × 3600 / room volume',
+        inputs: [{ k: 'q', l: 'Heat to remove', u: 'kW', v: 80, min: 0 }, { k: 'dt', l: 'Allowed air temperature rise', u: 'K', v: 12, min: 1 }, { k: 'rv', l: 'Room volume', u: 'm³', v: 240, min: 1 }, { k: 'rho', l: 'Air density', u: 'kg/m³', v: 1.15, min: 0.5, step: 0.01, hint: 'Warm air ≈ 1.1–1.2' }],
+        run: v => {
+          const f = v.q / (v.rho * 1.005 * v.dt);
+          return { results: [R('Air flow', f, 'm³/s', 2, null, true), R('Air flow', f * 3600, 'm³/h', 0), R('Air changes per hour', f * 3600 / v.rv, 'ACH', 1), R('Air flow', f * 2118.88, 'cfm', 0)], notes: ['Machinery spaces with engines also need combustion air (typically 6–8 kg per kWh of engine output) in addition to cooling air.'] };
+        }
+      },
+      {
+        id: 'ke', icon: '🏃', title: 'Kinetic & potential energy', desc: 'Energy of a moving or raised mass; useful for brake and crane duty checks.',
+        formula: 'KE = ½mv²    PE = m·g·h    p = m·v',
+        inputs: [{ k: 'm', l: 'Mass', u: 'kg', v: 5000, min: 0 }, { k: 'v', l: 'Speed', u: 'm/s', v: 1.5, min: 0 }, { k: 'h', l: 'Height', u: 'm', v: 12, min: 0 }],
+        run: v => ({ results: [R('Kinetic energy', 0.5 * v.m * v.v ** 2 / 1000, 'kJ', 'auto', null, true), R('Potential energy', v.m * G * v.h / 1000, 'kJ', 'auto', null, true), R('Potential energy', v.m * G * v.h / 3.6e6, 'kWh', 'auto'), R('Momentum', v.m * v.v, 'kg·m/s', 'auto'), R('Weight force', v.m * G / 1000, 'kN', 'auto')] })
+      }
+    ]
+  });
+})();
+
+</script>
 <script>
 (function(){
   document.querySelectorAll('.theme-btn').forEach(function(b){b.onclick=function(){var r=document.documentElement;var d=getComputedStyle(r).getPropertyValue('--bg').trim()==='#0b1220';r.setAttribute('data-theme',d?'light':'dark');try{localStorage.setItem('eto:theme',d?'light':'dark')}catch(e){}};});
@@ -2396,11 +3197,11 @@ footer .disc{flex-basis:100%}
 </script>
 <script>
 (function(){
-  const L={1:['Level 1 – Daily ETO calculations','Everyday sizing, loading and checking'],2:['Level 2 – Professional troubleshooting','Protection, drives, harmonics, insulation, lighting'],3:['Level 3 – Jack-up specialist','Jacking, cranes, thrusters, power-plant analysis']};
+  const L={1:['Level 1 – Daily ETO calculations','Everyday sizing, loading and checking'],2:['Level 2 – Professional troubleshooting','Protection, drives, harmonics, insulation, lighting'],3:['Level 3 – Jack-up specialist','Jacking, cranes, thrusters, power-plant analysis'],4:['Level 4 – Mathematics & engineering conversions','Unit converters, maths, geometry, circuit theory, mechanical & thermal']};
   const root=document.getElementById('lists');
   function draw(q){
     q=(q||'').toLowerCase();root.innerHTML='';
-    [1,2,3].forEach(l=>{
+    [1,2,3,4].forEach(l=>{
       const ps=ETO.PAGES.filter(p=>p.lvl===l&&(!q||(p.n+' '+p.d).toLowerCase().includes(q)));
       if(!ps.length)return;
       root.insertAdjacentHTML('beforeend',`<div class="lvl"><h2>${L[l][0]}</h2><span>${L[l][1]}</span></div><div class="cards">`+

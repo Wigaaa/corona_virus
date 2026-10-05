@@ -18,7 +18,13 @@
     { f: 'jacking.html', n: 'Jacking System', i: '🏗️', c: '#0284c7', lvl: 3, d: 'Jacking load, motor distribution, brakes, brake resistors, cooling, VFD & DG loading, backup power' },
     { f: 'crane.html', n: 'Cranes', i: '🏋️', c: '#a16207', lvl: 3, d: 'Hoist power, hydraulic power, starting, VFD loading, regeneration, generator impact' },
     { f: 'thruster.html', n: 'Thrusters', i: '🌀', c: '#1e40af', lvl: 3, d: 'Thruster at X %, VFD & transformer loading, acceleration, thrust, harmonics, cooling' },
-    { f: 'plant.html', n: 'Power Plant & Load Balance', i: '🏭', c: '#be123c', lvl: 3, d: 'Vessel load balance, PMS thresholds, critical loads, blackout recovery, emergency generator' }
+    { f: 'plant.html', n: 'Power Plant & Load Balance', i: '🏭', c: '#be123c', lvl: 3, d: 'Vessel load balance, PMS thresholds, critical loads, blackout recovery, emergency generator' },
+    { f: 'unitsmech.html', n: 'Unit Converter – Mechanical', i: '📏', c: '#0f766e', lvl: 4, d: 'Length, area, volume, mass, speed, force, pressure, torque, energy, power, flow, density, temperature, angle, inertia, viscosity' },
+    { f: 'unitselec.html', n: 'Unit Converter – Electrical & Marine', i: '🔁', c: '#9333ea', lvl: 4, d: 'SI prefixes, AWG / kcmil ↔ mm², dB, wave values (RMS / peak), Ah ↔ Wh, resistivity, flux, fuel volume ↔ mass, speed-time-distance' },
+    { f: 'mathbasic.html', n: 'Mathematics', i: '🧮', c: '#e11d48', lvl: 4, d: 'Percentages, ratio, interpolation, quadratic, simultaneous equations, triangles, trigonometry, complex numbers, statistics, number bases, logs' },
+    { f: 'geometry.html', n: 'Geometry & Tanks', i: '🔺', c: '#0891b2', lvl: 4, d: 'Areas, volumes, circle segments, horizontal / vertical tank partial volume, pipe volume & weight, slope, distance' },
+    { f: 'circuits.html', n: 'Circuit Theory Formulas', i: '〰️', c: '#d97706', lvl: 4, d: 'Ohm / power, series & parallel, dividers, RC / RL, RLC & resonance, star-delta, per-unit, line / phase, energy & cost' },
+    { f: 'mechthermal.html', n: 'Mechanical, Fluid & Thermal', i: '🔧', c: '#65a30d', lvl: 4, d: 'Power-torque-speed, gears, belts, shaft stress, sling load, pump power, pipe flow, heater sizing, expansion, fuel efficiency, ventilation' }
   ];
 
   const S3 = Math.sqrt(3);
@@ -33,9 +39,16 @@
     if (html != null) e.innerHTML = html;
     return e;
   };
+  const fmtAuto = v => {
+    if (v === 0) return '0';
+    const a = Math.abs(v);
+    if (a >= 1e9 || a < 1e-4) return v.toExponential(5).replace(/\.?0+e/, 'e').replace('e+', 'e');
+    return v.toLocaleString('en-US', { maximumSignificantDigits: 8 });
+  };
   const fmt = (v, d) => {
     if (typeof v === 'string') return v;
     if (v == null || !isFinite(v)) return '—';
+    if (d === 'auto') return fmtAuto(v);
     d = d == null ? 2 : d;
     const n = Number(v.toFixed(d));
     return (n === 0 ? 0 : n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -75,6 +88,23 @@
 
   const BUNDLE = !!window.ETO_BUNDLE, REG = {};
   const href = f => (BUNDLE ? '#' + f : f);
+
+  // generic unit-converter calculator. unit = [key, label, factorToBase] or [key, label, toBase(fn), fromBase(fn)]
+  function units(o) {
+    const U = o.units, opts = U.map(u => [u[0], u[1]]);
+    const toB = (x, u) => (typeof u[2] === 'function' ? u[2](x) : x * u[2]);
+    const fromB = (b, u) => (typeof u[2] === 'function' ? u[3](b) : b / u[2]);
+    return {
+      id: o.id, icon: o.icon, title: o.title, desc: o.desc || 'Enter a value, choose the unit and read every equivalent below.', formula: o.formula,
+      inputs: [{ k: 'x', l: 'Value', v: o.v == null ? 1 : o.v }, { k: 'from', l: 'From', opts, v: o.from || U[0][0] }, { k: 'to', l: 'Convert to (highlighted)', opts, v: o.to || U[1][0] }],
+      run: v => {
+        const uf = U.find(u => String(u[0]) === String(v.from)), ut = U.find(u => String(u[0]) === String(v.to)), b = toB(v.x, uf);
+        const results = [R(`${fmt(v.x, 'auto')} ${uf[1]} =`, fromB(b, ut), ut[1], 'auto', 'ok', true)];
+        U.forEach(u => { if (u !== uf && u !== ut) results.push(R(u[1], fromB(b, u), '', 'auto')); });
+        return { results, notes: o.notes };
+      }
+    };
+  }
 
   function skeleton(cfg) {
     const me = PAGES.find(p => p.f === cfg.file) || {};
@@ -161,15 +191,20 @@
           let h = `<span>${esc(i.l)}</span>`;
           if (t === 'sel') {
             h += `<select>${i.opts.map(o => `<option value="${esc(o[0])}">${esc(o[1])}</option>`).join('')}</select>`;
+          } else if (t === 'text') {
+            h += '<div class="inp"><input type="text" autocomplete="off" spellcheck="false"></div>';
+          } else if (t === 'area') {
+            h += `<textarea rows="${i.rows || 5}" spellcheck="false"></textarea>`; f.style.gridColumn = '1/-1';
           } else {
             h += `<div class="inp"><input type="number" step="${i.step || 'any'}" inputmode="decimal">${i.u ? `<em>${esc(i.u)}</em>` : ''}</div>`;
           }
           if (i.hint) h += `<small>${esc(i.hint)}</small>`;
           f.innerHTML = h;
-          const inp = f.querySelector('input,select');
+          const inp = f.querySelector('input,select,textarea');
           inp.value = vals[i.k];
           inp.addEventListener('input', () => {
             if (t === 'sel') { const o = i.opts.find(o => String(o[0]) === inp.value); vals[i.k] = o ? o[0] : inp.value; }
+            else if (t === 'text' || t === 'area') vals[i.k] = inp.value;
             else vals[i.k] = inp.value === '' ? NaN : parseFloat(inp.value);
             recompute();
           });
@@ -330,5 +365,5 @@
   // theme restore
   try { const t = localStorage.getItem('eto:theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) { /* ignore */ }
 
-  window.ETO = { PAGES, S3, STD_SIZES, STD_BREAKERS, STD_FUSES, esc, fmt, R, lvl, std, rho, res, interp, vdrop, page, start };
+  window.ETO = { PAGES, S3, STD_SIZES, STD_BREAKERS, STD_FUSES, esc, fmt, R, lvl, std, rho, res, interp, vdrop, units, fmtAuto, page, start };
 })();
