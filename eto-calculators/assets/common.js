@@ -25,12 +25,9 @@
     { f: 'geometry.html', n: 'Geometry & Tanks', i: '🔺', c: '#0891b2', lvl: 4, d: 'Areas, volumes, circle segments, horizontal / vertical tank partial volume, pipe volume & weight, slope, distance' },
     { f: 'circuits.html', n: 'Circuit Theory Formulas', i: '〰️', c: '#d97706', lvl: 4, d: 'Ohm / power, series & parallel, dividers, RC / RL, RLC & resonance, star-delta, per-unit, line / phase, energy & cost' },
     { f: 'mechthermal.html', n: 'Mechanical, Fluid & Thermal', i: '🔧', c: '#65a30d', lvl: 4, d: 'Power-torque-speed, gears, belts, shaft stress, sling load, pump power, pipe flow, heater sizing, expansion, fuel efficiency, ventilation' },
-    { f: 'troubleshoot.html', n: 'Troubleshooting Assistant', i: '🩺', c: '#dc2626', lvl: 5, d: 'Equipment → symptom → likely causes → ordered checks → measurements → corrective action, for motors, generators, VFDs, UPS, switchboards, batteries, earth faults' },
+    { f: 'troubleshoot.html', n: 'Troubleshooting Assistant', i: '🩺', c: '#dc2626', lvl: 5, d: 'Equipment → symptom → likely causes → ordered checks → measurements → corrective action for motors, generators, VFDs, UPS, switchboards, batteries, earth faults – plus maker-independent drive fault families' },
     { f: 'testing.html', n: 'Testing & Commissioning', i: '🔬', c: '#0369a1', lvl: 5, d: 'Winding resistance balance, 3-phase IR, earth electrode, loop / PFC, RCD timing, TTR ratio, breaker contact resistance, battery internal resistance, symmetrical components' },
-    { f: 'records.html', n: 'Test Records & Reports', i: '🧾', c: '#7c3aed', lvl: 5, d: 'Printable motor / generator / transformer / battery / IR test records, breakdown & daily reports, handover, toolbox talk – with vessel profile' },
-    { f: 'maintenance.html', n: 'Maintenance & Condition Monitoring', i: '🛠️', c: '#16a34a', lvl: 5, d: 'Interactive PM checklists, recommended intervals, trend analysis with chart and projected limit date' },
-    { f: 'faultlog.html', n: 'Fault Log & Knowledge Base', i: '🗂️', c: '#475569', lvl: 5, d: 'Your own searchable fault-code / failure database, generic VFD & controller fault families, alarm response guide' },
-    { f: 'spares.html', n: 'Spares & Requisitions', i: '📦', c: '#ca8a04', lvl: 5, d: 'Critical spares stock with reorder & criticality, professional requisition text generator, lead-time risk' },
+    { f: 'maintenance.html', n: 'Preventive Maintenance Guide', i: '🛠️', c: '#16a34a', lvl: 5, d: 'Recommended PM steps & intervals for motors, generators, switchboards, VFDs, UPS, batteries, emergency generator, transformers, lighting, cables & deck equipment' },
     { f: 'signals.html', n: 'Signals & Loops', i: '📶', c: '#0d9488', lvl: 6, d: '4–20 mA ↔ % ↔ engineering units, NAMUR NE43 status, 0–10 V / 1–5 V, PLC raw counts, loop power budget & max cable length, shunt resistor, HART' },
     { f: 'tempsensors.html', n: 'Temperature Sensors', i: '🌡️', c: '#e11d48', lvl: 6, d: 'Pt100 / Pt1000 (IEC 60751) Ω ↔ °C, RTD 2/3/4-wire lead error, thermocouple type K & J mV ↔ °C with cold-junction compensation, PTC thermistor check' },
     { f: 'process.html', n: 'Process Measurement', i: '🧭', c: '#2563eb', lvl: 6, d: 'DP flow (√ extraction), hydrostatic & DP level ranging (wet / dry leg), pressure units & gauge/abs, transmitter range & turndown, accuracy budget' },
@@ -122,16 +119,9 @@
     };
   }
 
-  // vessel / ETO profile (edited on the Test Records page) used in report headers
-  function profile() {
-    let p = {};
-    try { p = JSON.parse(localStorage.getItem('eto:records.html:profile') || '{}') || {}; } catch (e) { /* ignore */ }
-    return Object.assign({ vessel: '', vtype: '', imo: '', company: '', eto: '', rank: 'Electrical Technical Officer' }, p);
-  }
+  // printable report header
   function reportHead(title, rows) {
-    const p = profile();
-    const base = [['Vessel', p.vessel], ['Vessel type', p.vtype], ['IMO / ID', p.imo], ['Company', p.company], ['Prepared by', [p.eto, p.rank].filter(Boolean).join(' – ')]].filter(x => x[1]);
-    const all = base.concat(rows || []).filter(x => x[1] !== '' && x[1] != null);
+    const all = (rows || []).filter(x => x[1] !== '' && x[1] != null);
     return `<div class="rep-head"><div class="rep-title">${esc(title)}</div><table class="rep-meta">${all.map(x => `<tr><th>${esc(x[0])}</th><td>${esc(x[1])}</td></tr>`).join('')}</table></div>`;
   }
   // minimal SVG line / scatter chart. series: [{name, color, pts:[[x,y]...], dash}]; opts: {logx, logy, xl, yl, xmin, xmax, ymin, ymax, hlines:[{y,label,color}]}
@@ -431,5 +421,5 @@
   // theme restore
   try { const t = localStorage.getItem('eto:theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) { /* ignore */ }
 
-  window.ETO = { PAGES, S3, STD_SIZES, STD_BREAKERS, STD_FUSES, esc, fmt, R, lvl, std, rho, res, interp, vdrop, units, fmtAuto, profile, reportHead, chart, page, start };
+  window.ETO = { PAGES, S3, STD_SIZES, STD_BREAKERS, STD_FUSES, esc, fmt, R, lvl, std, rho, res, interp, vdrop, units, fmtAuto, reportHead, chart, page, start };
 })();

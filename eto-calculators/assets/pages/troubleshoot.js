@@ -178,6 +178,20 @@
       }
     }
   };
+  const FAM = [
+    ['Overcurrent (OC, F0001-type, "IOC")', 'Output current exceeded the hardware / software limit', 'Short ramps, jammed load, brake not released, motor or cable earth/short, wrong motor data, IGBT/current sensor fault', 'Megger motor + cable (drive disconnected); check brake & mechanics; check ramps & motor data'],
+    ['DC over-voltage (OV)', 'DC link above trip level', 'Regeneration (decel, lowering), braking chopper/resistor failed, supply over-voltage', 'Lengthen decel, check resistor Ω & chopper, check supply voltage'],
+    ['DC under-voltage / supply loss (UV)', 'DC link below trip level', 'Supply dip, blown input fuse, phase loss, pre-charge fault', 'Measure 3 input phases, fuses, event log of dips'],
+    ['Earth / ground fault (GF, EF)', 'Sum of output currents ≠ 0', 'Motor cable or winding insulation, moisture, long cable leakage', 'Megger cable & motor separately; check terminal box'],
+    ['Over-temperature (OT, heat-sink)', 'Heat-sink / module too hot', 'Fan failed, filters blocked, cooling water, ambient high, overload', 'Check fans, filters, water flow & temperature, load'],
+    ['Motor overload (I²t, OL)', 'Motor thermal model exceeded', 'Overload, wrong motor parameters, self-cooled motor at low speed', 'Compare current with FLC; check parameters'],
+    ['Phase loss (output)', 'Motor phase open', 'Loose terminal, output contactor, cable, motor winding open', 'Check output terminals & contactor, winding resistance'],
+    ['Communication / fieldbus timeout', 'No telegram from controller', 'Cable, termination, address, PLC stopped, EMC', 'LEDs, termination, address, screen earthing'],
+    ['Encoder / feedback fault', 'Speed signal lost / implausible', 'Cable, supply, coupling, PPR parameter', 'Encoder supply, signal, coupling'],
+    ['Safe torque off (STO) active', 'Safety input open', 'E-stop chain, safety relay, wiring', 'Check STO inputs & safety circuit – never bridge'],
+    ['Power module / desaturation / short circuit', 'IGBT protection operated', 'Output short, failed IGBT, gate driver', 'Megger output; if healthy → module replacement by service'],
+    ['Pre-charge / DC charge fault', 'DC link failed to charge in time', 'Pre-charge resistor/contactor, input supply', 'Measure DC rise on power-up, check pre-charge circuit']
+  ];
   const list = arr => '<ol class="steps">' + arr.map(x => `<li>${esc(x)}</li>`).join('') + '</ol>';
   const calcs = Object.keys(KB).map(id => {
     const e = KB[id];
@@ -197,6 +211,12 @@
         return { head: '<span></span>', verdict: { s: 'warn', t: '🦺 ' + esc(e.s) }, html: h, notes: ['Generic guidance – always follow the equipment manual, the vessel\'s safety management system and permit-to-work.'] };
       }
     };
+  });
+  calcs.push({
+    id: 'fam', icon: '📟', title: 'Drive fault families (maker-independent)', noActions: true,
+    desc: 'Almost every drive maker uses the same fault families under different codes. Find the family from the fault text in the drive manual, then use these causes and first checks.',
+    inputs: [],
+    run: () => ({ head: '<span></span>', verdict: { s: 'warn', t: '🦺 VFD DC link stays charged after isolation – wait the time on the drive label and measure DC+ / DC− < 50 V before working.' }, html: `<table class="rt"><thead><tr><th>Fault family</th><th>Meaning</th><th>Common causes</th><th>First checks</th></tr></thead><tbody>${FAM.map(r => `<tr><td><b>${esc(r[0])}</b></td>${r.slice(1).map(x => `<td><span class="kb">${esc(x)}</span></td>`).join('')}</tr>`).join('')}</tbody></table>` })
   });
   ETO.page({
     title: 'Troubleshooting Assistant', icon: '🩺', accent: '#dc2626',

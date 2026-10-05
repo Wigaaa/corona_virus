@@ -1,69 +1,117 @@
 (function () {
-  const { R, lvl, esc, fmt } = ETO;
-  const ST = [['ok', '✅ OK'], ['def', '⛔ Defect'], ['obs', '⚠️ Observation'], ['na', 'N/A'], ['nd', '⏳ Not done']];
-  const mk = (items) => items.map(([item, iv]) => ({ item, iv, st: 'nd', rem: '' }));
-  const LISTS = {
-    motor: ['⚙️', 'Motor & starter PM', [['Visual: frame, fan cover, cooling fins clean', 'M'], ['Terminal box: gasket, glands, no moisture / burning', '6M'], ['Running current all phases vs FLC / previous', 'M'], ['Vibration & noise; bearing temperature', 'M'], ['Bearing lubrication (grease qty / interval per plate)', 'per plate'], ['Insulation resistance (and PI for > 100 kW)', '6M–12M'], ['Anti-condensation heater works (motor stopped)', '3M'], ['Starter: contactor contacts, OL relay setting = FLC, terminals torque', '12M'], ['Thermal-image starter & terminals under load', '12M'], ['Coupling / alignment / foundation bolts', '12M']]],
-    gen: ['🛢️', 'Generator (alternator) PM', [['Alternator air intake / filters clean', 'M'], ['Space heater operation (standby)', 'M'], ['Bearing temperature / noise, vibration', 'M'], ['AVR & terminal box: connections, no overheating', '6M'], ['Rotating diodes & varistor visual / test', '12M'], ['Stator IR + PI, exciter IR', '12M'], ['Load test & voltage regulation check', '12M'], ['Protection relay test (reverse power, OC, UV, OV, UF)', '12M–30M (class)'], ['Load sharing & synchroniser check', '6M'], ['Breaker service & ductor test', '30M or per maker']]],
-    vfd: ['🎛️', 'VFD inspection', [['Cooling fans run; air filters clean / replaced', '3M'], ['Heat-sink and cabinet clean, no dust build-up', '6M'], ['Cooling water flow / leak check (liquid cooled)', 'M'], ['Fault & warning history reviewed and logged', 'M'], ['DC-link voltage & ripple normal', '6M'], ['Power terminals torque / thermal image', '12M'], ['Parameters backed up (file + date)', '12M & after any change'], ['Cooling fan replacement hours (typ. 30–50 k h)', 'per hours'], ['DC capacitor reforming (spare drives in store)', '12M'], ['Motor cable IR (drive disconnected!)', '12M']]],
-    ups: ['🔋', 'UPS inspection', [['Alarm / event log reviewed', 'M'], ['Load % and autonomy displayed', 'M'], ['Fans running, filters clean', '3M'], ['Room temperature 20–25 °C', 'W'], ['Battery block voltages on float', '3M'], ['Battery internal resistance / conductance', '6M'], ['Battery discharge (autonomy) test', '12M'], ['Bypass transfer test', '12M'], ['Terminal torque / thermal image', '12M'], ['Battery age vs design life', '12M']]],
-    swbd: ['🔌', 'Switchboard / ACB inspection', [['Visual: no overheating, smell, discoloration', 'M'], ['Indications, meters, lamps working', 'M'], ['Insulation monitor / earth lamps reading', 'D'], ['Thermal-image busbars & breakers under load', '12M'], ['Busbar joints torque check (de-energised)', '30M–60M'], ['ACB: mechanism lubrication, contacts, arc chutes', 'per maker'], ['Trip unit secondary injection test', '30M'], ['UV / shunt coil and spring-charge operation', '12M'], ['Mechanical & electrical interlocks (bus-tie, shore)', '12M'], ['Clean & vacuum, check door seals / heaters', '12M']]],
-    batt: ['🔋', 'Battery & charger inspection', [['Charger float / boost voltage & current', 'W'], ['Cell / block voltages', 'M'], ['Electrolyte level & SG (vented cells)', 'M'], ['Terminals clean, tight, greased', '3M'], ['Battery room / locker ventilation working', 'M'], ['Temperature of cells and room', 'M'], ['DC earth-fault meter reading', 'D'], ['Capacity (discharge) test', '12M']]],
-    egen: ['🆘', 'Emergency generator test', [['Fuel level, lube oil, coolant checked', 'W'], ['Start batteries / air: voltage, pressure', 'W'], ['Auto start on simulated blackout (≤ 45 s on load, SOLAS)', 'W–M'], ['Second start source available', 'W'], ['Run on load (connect to ESB) – voltage, frequency', 'M'], ['Emergency lighting & essential loads energised', 'M'], ['Return to normal / back-synchronisation or changeover', 'M'], ['Space heater, louvers, room ventilation', 'M'], ['Protection & shutdowns (OS, LO pressure) test', '12M']]]
+  const { esc } = ETO;
+  // Recommended preventive-maintenance steps per system: [interval, task, how / what to look for]
+  // Intervals are typical marine practice – the vessel PMS, maker manuals and class requirements take precedence.
+  const PM = {
+    motor: ['⚙️', 'Motors & starters', 'Isolate, lock and prove dead before opening terminal boxes or starters.', [
+      ['Daily / watch', 'Listen and feel during rounds', 'Unusual noise, vibration, smell of burning, hot frame; running current on panel ammeter as normal.'],
+      ['Monthly', 'Running current – all three phases', 'Compare with nameplate FLC and previous readings; imbalance should stay below ≈ 10 %.'],
+      ['Monthly', 'Cooling path', 'Fan cover, fins and air inlets clean and unobstructed; external fan intact.'],
+      ['Monthly', 'Bearing condition', 'Temperature by touch / IR thermometer (typically < 80–90 °C), noise, vibration trend if measured.'],
+      ['3-monthly', 'Anti-condensation heater', 'Heater energised when motor is stopped; check heater current or warm frame.'],
+      ['Per lubrication plate', 'Bearing greasing', 'Correct grease type and quantity; open grease relief, run motor to purge excess. Do not over-grease.'],
+      ['6-monthly', 'Terminal box', 'Gasket, glands and cable entry sealed; no moisture, tracking or discolouration; terminals tight.'],
+      ['6–12-monthly', 'Insulation resistance', 'Megger winding to earth (500 V for ≤ 690 V motors), correct to 40 °C, compare with history; PI for motors > 100 kW.'],
+      ['12-monthly', 'Starter / contactor', 'Contacts (wear, pitting), coil, arc chutes; overload relay set to nameplate FLC; terminal torque.'],
+      ['12-monthly', 'Thermography under load', 'Starter, cable lugs and terminal box; investigate hot spots > 10 K above similar parts.'],
+      ['12-monthly', 'Mechanical', 'Coupling, alignment and foundation bolts; soft foot; belt tension where fitted.'],
+      ['Major overhaul', 'Workshop overhaul', 'Clean, dry and varnish winding, replace bearings, balance rotor, test winding resistance & IR.']]],
+    gen: ['🛢️', 'Generators (alternator & AVR)', 'Lock out engine start AND generator breaker; beware of residual voltage from PMG / excitation.', [
+      ['Daily', 'Running checks', 'Voltage, frequency, kW / kVAR sharing, power factor, winding & bearing temperatures, alarms.'],
+      ['Weekly', 'Standby generator', 'Space heater on; no water, oil or dirt around air intake; breaker in correct position for auto start.'],
+      ['Monthly', 'Air intake / filters', 'Clean or replace alternator air filters; check for oil mist ingress from engine.'],
+      ['Monthly', 'Load sharing & PMS', 'kW sharing within limits on parallel running; load-dependent start/stop working.'],
+      ['3-monthly', 'Bearings', 'Noise, temperature, grease per plate (or oil level for sleeve bearings).'],
+      ['6-monthly', 'AVR & terminal box', 'Connections tight, no overheating, sensing fuses intact; AVR settings recorded.'],
+      ['12-monthly', 'Insulation tests', 'Stator IR + PI, exciter and rotor IR (disconnect AVR and diodes first); compare with history.'],
+      ['12-monthly', 'Rotating diodes & varistor', 'Visual and diode test (forward / reverse); replace as a set if one has failed.'],
+      ['12-monthly', 'Load test', 'Run at high load; check voltage regulation, frequency, temperatures and current balance.'],
+      ['Class survey cycle (often 30 months)', 'Protection relays', 'Secondary-injection test: reverse power, overcurrent, short-circuit, under/over-voltage, under-frequency, preferential trips.'],
+      ['Per maker / 30–60 months', 'Generator ACB', 'Service mechanism, contact resistance (ductor), trip unit test.']]],
+    swbd: ['🔌', 'Main & emergency switchboards (ACB / MCCB)', 'Busbar work only with the board dead or under a live-work permit with arc-flash PPE. Racked-out ACBs still hold charged springs.', [
+      ['Daily', 'Visual & indications', 'Meters, lamps, insulation monitor / earth lamps reading; no smell or noise from panels.'],
+      ['Monthly', 'Insulation monitor', 'Record reading; investigate any falling trend or alarm promptly.'],
+      ['Monthly', 'Panel heaters & ventilation', 'Heaters and fans working; doors and seals closed.'],
+      ['12-monthly', 'Thermography under load', 'Busbars, ACB / MCCB terminals and cable lugs at > 40 % load; compare similar components.'],
+      ['12-monthly', 'ACB functional test', 'Spring charging, UV release, shunt trip, close / open, mechanical & electrical interlocks (bus-tie, shore, generators).'],
+      ['12-monthly', 'Clean & inspect', 'Vacuum dust, check insulators and barriers, cable glands and earthing / bonding straps.'],
+      ['30 months (survey)', 'Trip unit test', 'Secondary injection of ACB / generator protection; preferential trip and load-shedding functional test.'],
+      ['30–60 months (dead)', 'Busbar joints', 'Re-torque joints to specified values, check for discolouration; contact resistance where specified.'],
+      ['Per maker', 'ACB service', 'Lubricate mechanism, inspect arc chutes and main contacts; service kit per operation count.']]],
+    vfd: ['🎛️', 'VFDs / drives', 'DC link stays charged after isolation – wait the label time and measure DC+ / DC− < 50 V.', [
+      ['Weekly', 'Status & alarms', 'Warning / fault history read and recorded; cabinet temperature normal.'],
+      ['Monthly', 'Cooling', 'Fans running; for liquid-cooled drives check coolant flow, temperature, pressure and leaks.'],
+      ['3-monthly', 'Air filters', 'Clean or replace cabinet filters (more often in dusty / engine-room areas).'],
+      ['6-monthly', 'Heat sink & cabinet', 'Clean dust from heat sink and boards with dry air / vacuum (ESD precautions).'],
+      ['6-monthly', 'DC link', 'DC voltage and ripple in normal range; no capacitor bulging or leakage.'],
+      ['12-monthly', 'Power connections', 'Terminal torque and thermography; cable glands and screen (EMC) terminations.'],
+      ['12-monthly', 'Parameter backup', 'Save parameters to file / keypad with date; also after every change.'],
+      ['12-monthly', 'Motor cable IR', 'Megger motor cable and motor with the DRIVE DISCONNECTED.'],
+      ['12-monthly (spares)', 'Capacitor reforming', 'Reform DC capacitors of spare drives / modules in store per maker procedure.'],
+      ['Per hours (≈ 30–50 k h)', 'Fan & capacitor replacement', 'Replace cooling fans and, per maker, DC capacitors before end of life.']]],
+    ups: ['🔋', 'UPS systems', 'UPS output stays live on battery – isolate input, output, bypass and battery; check for back-feed.', [
+      ['Weekly', 'Status', 'Mode (inverter / bypass), alarms, load %, displayed autonomy; room temperature 20–25 °C.'],
+      ['Monthly', 'Event log', 'Review and record events, transfers and battery tests.'],
+      ['3-monthly', 'Fans & filters', 'Fans running, filters clean.'],
+      ['3-monthly', 'Battery block voltages', 'Float voltage of each block; spread small (≈ ±0.05 V/cell).'],
+      ['6-monthly', 'Battery internal resistance', 'Measure each block; investigate > 25 % above baseline, replace > 50 %.'],
+      ['12-monthly', 'Autonomy (discharge) test', 'Controlled discharge on real or dummy load; compare runtime with design.'],
+      ['12-monthly', 'Bypass transfer test', 'Transfer to bypass and back per maker procedure.'],
+      ['12-monthly', 'Connections', 'Terminal torque and thermography of power and battery connections.'],
+      ['3–5 / 10 years', 'Battery replacement', 'Replace the battery string at design life or when capacity < 80 %.']]],
+    batt: ['🔋', 'Batteries & DC chargers (24 V / 110 V DC)', 'Batteries cannot be switched off – insulated tools, no rings / watches, eye protection, ventilate.', [
+      ['Daily', 'DC earth-fault meter', 'Both poles balanced to earth; investigate any earth fault.'],
+      ['Weekly', 'Charger', 'Float voltage and current normal; no alarms; boost not stuck on.'],
+      ['Monthly', 'Cell / block voltages', 'Within float range; no cell much higher or lower than the rest.'],
+      ['Monthly', 'Vented cells', 'Electrolyte level and specific gravity; top up with distilled water only.'],
+      ['Monthly', 'Ventilation', 'Battery room / locker fan or natural vents clear; no gas smell; temperature normal.'],
+      ['3-monthly', 'Terminals', 'Clean, tight, petroleum jelly applied; no corrosion or swelling.'],
+      ['12-monthly', 'Capacity test', 'Discharge test against rated capacity (e.g. emergency / GMDSS / UPS batteries).'],
+      ['12-monthly', 'Charger test', 'Current limit, boost / float changeover, alarms (low / high voltage, earth fault, charger fail).']]],
+    egen: ['🆘', 'Emergency generator & ESB', 'Ensure the test does not interrupt essential consumers unexpectedly; follow the SMS test procedure.', [
+      ['Weekly', 'Pre-start checks', 'Fuel level, lube oil, coolant, start battery voltage / air pressure; second start source available.'],
+      ['Weekly', 'Start & run', 'Start from local panel, check voltage and frequency, run off-load as per SMS.'],
+      ['Monthly', 'Automatic start on blackout', 'Simulate loss of main supply; EDG starts and connects to the ESB within 45 s (SOLAS II-1/44).'],
+      ['Monthly', 'On-load run', 'Run with emergency loads connected; check voltage, frequency, temperatures.'],
+      ['Monthly', 'Changeover', 'Return to normal supply / back-synchronisation; interlock between MSB feeder and EDG breaker.'],
+      ['Monthly', 'Room', 'Louvres, ventilation, heater, lighting and fuel tank quick-closing valve.'],
+      ['12-monthly', 'Shutdowns & alarms', 'Overspeed, low LO pressure, high temperature tested.'],
+      ['12-monthly', 'Generator insulation', 'Stator IR, AVR and terminal box check.']]],
+    trf: ['🧲', 'Transformers (dry type)', 'Isolate both primary and secondary (including any back-feed) before opening the enclosure.', [
+      ['Monthly', 'Temperature & noise', 'Winding temperature indicator / alarms; no unusual hum or smell.'],
+      ['3-monthly', 'Ventilation', 'Fans (if fitted) running; enclosure filters and grilles clean.'],
+      ['12-monthly', 'Thermography under load', 'Terminals, links and cable lugs.'],
+      ['12-monthly', 'Clean & inspect', 'Remove dust from coils and ducts, check for tracking, cracks, loose spacers.'],
+      ['12-monthly', 'Insulation resistance', 'HV–E, LV–E and HV–LV; compare with history.'],
+      ['12-monthly', 'Connections & taps', 'Terminal torque; tap links in the recorded position.'],
+      ['When suspect', 'Turns ratio & winding resistance', 'TTR within ±0.5 %; winding resistance balance within ≈ 2 %.']]],
+    light: ['💡', 'Lighting, emergency lighting & navigation lights', 'Isolate the lighting circuit before changing fittings; navigation lights must stay available when under way.', [
+      ['Daily / before departure', 'Navigation lights', 'All lamps lit, nav-light panel failure alarm tested, both supplies (main & emergency) available.'],
+      ['Weekly', 'Lighting rounds', 'Failed lamps in machinery spaces, escape routes and deck areas replaced.'],
+      ['Monthly', 'Emergency lighting', 'Function test from emergency source; escape-route and low-location lighting working.'],
+      ['3-monthly', 'Deck fittings', 'Gaskets, glass and glands of deck / exposed fittings; no water ingress.'],
+      ['12-monthly', 'Duration test', 'Battery-backed emergency fittings run for their rated duration.'],
+      ['12-monthly', 'Circuit IR', 'Insulation test of lighting circuits (disconnect electronic drivers).']]],
+    cable: ['🧵', 'Cables, junction boxes & deck equipment', 'Isolate circuits before opening junction boxes; follow Ex rules in hazardous areas.', [
+      ['Monthly', 'Deck walk-round', 'Cable damage, chafing, loose cable trays and clamps, missing gland seals.'],
+      ['3-monthly', 'Junction boxes on deck', 'Gaskets, lids and drain plugs; no water ingress or corrosion.'],
+      ['6-monthly', 'Deck equipment', 'Socket outlets, heaters, winch / windlass terminal boxes – seals and insulation.'],
+      ['12-monthly', 'Insulation of circuits', 'Megger deck and wet-area circuits; trend readings to find deterioration early.'],
+      ['12-monthly', 'Earthing & bonding', 'Bonding straps and earth connections of deck equipment and cable armour.'],
+      ['Per IEC 60079-17', 'Ex equipment', 'Visual / close / detailed inspection of Ex equipment in hazardous areas.']]]
   };
-  const calcs = Object.keys(LISTS).map(id => {
-    const [icon, title, items] = LISTS[id];
+  const calcs = Object.keys(PM).map(id => {
+    const [icon, title, safe, rows] = PM[id];
     return {
-      id, icon, title: title + ' checklist', report: true,
-      desc: 'Interactive checklist: set the status of each item and add remarks – summary and defect list update automatically. Add your own items with “＋ Add row”. Intervals are typical; follow the PMS / maker.',
-      inputs: [{ k: 'tag', t: 'text', l: 'Equipment / tag', v: '' }, { k: 'date', t: 'date', l: 'Date', v: '' }, { k: 'tbl', t: 'table', l: 'Checklist', v: mk(items), cols: [{ k: 'item', l: 'Item', t: 'text', d: '', w: 330 }, { k: 'iv', l: 'Interval', t: 'text', d: '', w: 90 }, { k: 'st', l: 'Status', t: 'sel', opts: ST, d: 'nd' }, { k: 'rem', l: 'Remark / reading', t: 'text', d: '', w: 180 }] }],
-      run: v => {
-        const c = k => v.tbl.filter(r => r.st === k).length, def = v.tbl.filter(r => r.st === 'def'), obs = v.tbl.filter(r => r.st === 'obs'), nd = c('nd'), tot = v.tbl.length;
-        const s = def.length ? 'bad' : nd || obs.length ? 'warn' : 'ok';
-        let h = ETO.reportHead(title + ' – checklist', [['Equipment', v.tag], ['Date', v.date]]);
-        h += `<table class="rt"><thead><tr><th>#</th><th>Item</th><th>Interval</th><th>Status</th><th>Remark</th></tr></thead><tbody>${v.tbl.map((r, i) => `<tr class="${r.st === 'def' ? 's-bad' : r.st === 'obs' ? 's-warn' : r.st === 'ok' ? 's-ok' : ''}"><td>${i + 1}</td><td><span class="kb">${esc(r.item)}</span></td><td>${esc(r.iv)}</td><td>${(ST.find(x => x[0] === r.st) || ['', ''])[1]}</td><td><span class="kb">${esc(r.rem)}</span></td></tr>`).join('')}</tbody></table>`;
-        if (def.length) h += `<h3>Defects to raise</h3><ol class="steps">${def.map(r => `<li>${esc(r.item)}${r.rem ? ' – ' + esc(r.rem) : ''}</li>`).join('')}</ol>`;
-        h += '<div class="sign"><div>Inspected by (ETO)</div><div>Chief Engineer</div></div>';
-        return { results: [R('Items', tot, '', 0), R('OK', c('ok'), '', 0, 'ok'), R('Defects', def.length, '', 0, def.length ? 'bad' : 'ok', true), R('Observations', obs.length, '', 0, obs.length ? 'warn' : 'ok'), R('Not done', nd, '', 0, nd ? 'warn' : 'ok'), R('Completion', tot ? (tot - nd) / tot * 100 : 0, '%', 0)], verdict: { s, t: def.length ? `${def.length} defect(s) – raise in PMS / defect list.` : nd ? `${nd} item(s) still open.` : 'Checklist complete.' }, html: h };
-      }
+      id, icon, title, noActions: true, inputs: [],
+      desc: 'Recommended preventive-maintenance steps with typical intervals. Follow the vessel PMS and maker manuals where they differ.',
+      run: () => ({ head: '<span></span>', verdict: { s: 'warn', t: '🦺 ' + esc(safe) }, html: `<table class="rt"><thead><tr><th>Interval</th><th>Task</th><th>How / what to look for</th></tr></thead><tbody>${rows.map(r => `<tr><td><b>${esc(r[0])}</b></td><td><span class="kb">${esc(r[1])}</span></td><td><span class="kb">${esc(r[2])}</span></td></tr>`).join('')}</tbody></table>` })
     };
   });
-  // trend analysis
-  const parse = s => String(s).split(/\n/).map(l => l.trim()).filter(Boolean).map(l => { const p = l.split(/[\s,;\t]+/); return [p[0], parseFloat(p[1])]; }).filter(p => p[0] && isFinite(p[1]));
-  calcs.push({
-    id: 'trend', icon: '📈', title: 'Condition trend & projection', report: true,
-    desc: 'Paste dated readings (one per line: <b>YYYY-MM-DD value</b>) – insulation, current, temperature, vibration, battery resistance… The tool fits a trend line, shows the rate of change and projects when the limit will be reached.',
-    formula: 'Least-squares fit y = a + b·t (log scale for insulation resistance)   projected date: y(t) = limit',
-    inputs: [{ k: 'what', t: 'text', l: 'Parameter / equipment', v: 'No.2 Bilge pump motor – IR @ 40 °C' }, { k: 'unit', t: 'text', l: 'Unit', v: 'MΩ' }, { k: 'dir', l: 'Deterioration means the value…', opts: [['down', 'Falls (insulation, PI, flow)'], ['up', 'Rises (current, temperature, vibration, resistance)']], v: 'down' }, { k: 'log', l: 'Fit type', opts: [['log', 'Exponential (best for IR)'], ['lin', 'Linear']], v: 'log' }, { k: 'lim', l: 'Alarm / minimum limit', v: 5 },
-      { k: 'd', t: 'area', l: 'Readings', v: '2024-01-15 950\n2024-07-10 720\n2025-01-12 610\n2025-07-08 420\n2026-01-20 300\n2026-07-15 210', rows: 6 }],
-    run: v => {
-      const pts = parse(v.d).map(([d, y]) => [Date.parse(d), y]).filter(p => isFinite(p[0])).sort((a, b) => a[0] - b[0]);
-      if (pts.length < 2) throw new Error('Enter at least two dated readings (YYYY-MM-DD value)');
-      const lg = v.log === 'log'; if (lg && pts.some(p => p[1] <= 0)) throw new Error('Exponential fit needs positive values');
-      const t0 = pts[0][0], DAY = 864e5, X = pts.map(p => (p[0] - t0) / DAY), Y = pts.map(p => (lg ? Math.log(p[1]) : p[1]));
-      const n = X.length, mx = X.reduce((a, b) => a + b) / n, my = Y.reduce((a, b) => a + b) / n, sxx = X.reduce((a, x) => a + (x - mx) ** 2, 0), b = sxx ? X.reduce((a, x, i) => a + (x - mx) * (Y[i] - my), 0) / sxx : 0, a = my - b * mx;
-      const f = x => (lg ? Math.exp(a + b * x) : a + b * x), last = pts[n - 1], perYear = lg ? (Math.exp(b * 365) - 1) * 100 : b * 365;
-      const worsening = v.dir === 'down' ? b < 0 : b > 0, limY = lg ? Math.log(v.lim) : v.lim, xl = b !== 0 ? (limY - a) / b : Infinity;
-      const xlast = (last[0] - t0) / DAY, days = xl - xlast, already = v.dir === 'down' ? last[1] <= v.lim : last[1] >= v.lim;
-      const st = already ? 'bad' : worsening && days < 365 ? 'bad' : worsening && days < 3 * 365 ? 'warn' : 'ok';
-      const when = isFinite(xl) && worsening && !already ? new Date(t0 + xl * DAY).toISOString().slice(0, 10) : '—';
-      const fit = []; const xmax = Math.max(xlast, worsening && isFinite(xl) && days > 0 && days < 5 * 365 ? xl : xlast); for (let i = 0; i <= 40; i++) { const x = xmax * i / 40; fit.push([x / 365.25, f(x)]); }
-      const chart = ETO.chart([{ name: 'Readings', color: '#2563eb', pts: pts.map(p => [(p[0] - t0) / DAY / 365.25, p[1]]), dots: true }, { name: 'Trend', color: '#7c3aed', pts: fit, dash: true }], { xl: 'Years since first reading', yl: v.unit, hlines: [{ y: v.lim, label: 'Limit ' + v.lim + ' ' + v.unit }], logy: lg, xfmt: x => fmt(x, 1) });
-      return { results: [R('Latest value', last[1], v.unit, 'auto', already ? 'bad' : null, true), R('Rate of change', perYear, lg ? '% / year' : v.unit + ' / year', 2, worsening ? 'warn' : 'ok'), R('Projected limit date', already ? 'LIMIT REACHED' : when, '', 0, st, true), R('Time to limit', already ? 0 : worsening && isFinite(days) ? days / 30.44 : '—', 'months', 1)],
-        verdict: { s: st, t: already ? 'Limit already reached – act now.' : !worsening ? 'No deteriorating trend.' : st === 'bad' ? 'Limit expected within 12 months – plan corrective maintenance.' : st === 'warn' ? 'Deteriorating – limit expected within 3 years; increase monitoring.' : 'Slow deterioration.' },
-        html: ETO.reportHead('Condition trend – ' + v.what, [['Readings', n], ['Fit', lg ? 'exponential' : 'linear']]) + chart };
-    }
+  ETO.page({
+    title: 'Preventive Maintenance Guide', icon: '🛠️', accent: '#16a34a',
+    subtitle: 'Recommended preventive-maintenance steps for each electrical system, with typical intervals and what to look for.',
+    refs: ['Typical marine practice', 'Vessel PMS & maker manuals govern'],
+    calcs
   });
-  calcs.push({
-    id: 'intervals', icon: '🗓️', title: 'Typical maintenance intervals (reference)', inputs: [], run: () => ({ results: [] }), desc: 'Indicative intervals used on many vessels – the vessel PMS, maker manuals and class requirements take precedence.',
-    html: `<table><tr><th>Equipment</th><th>Task</th><th>Typical interval</th></tr>
-<tr><td>Motors</td><td>IR test, terminal box, heater</td><td>6–12 months</td></tr><tr><td>Motors</td><td>Bearing greasing</td><td>Per lubrication plate (hours)</td></tr>
-<tr><td>Generators</td><td>IR / PI, diode test, AVR check</td><td>12 months</td></tr><tr><td>Generators</td><td>Protection relay test</td><td>Class survey cycle (often 30 months)</td></tr>
-<tr><td>Main switchboard</td><td>Thermography under load</td><td>12 months</td></tr><tr><td>Main switchboard</td><td>Busbar torque, ACB service</td><td>30–60 months / maker</td></tr>
-<tr><td>VFDs</td><td>Fans & filters</td><td>3–6 months</td></tr><tr><td>VFDs</td><td>Fan replacement / capacitor check</td><td>4–7 years / hours</td></tr>
-<tr><td>UPS / batteries</td><td>Block voltages, resistance</td><td>3–6 months</td></tr><tr><td>UPS / batteries</td><td>Autonomy test</td><td>12 months</td></tr>
-<tr><td>Emergency generator</td><td>Start & run test</td><td>Weekly start, monthly on-load (per SMS / flag)</td></tr><tr><td>Emergency lighting</td><td>Function / duration test</td><td>Monthly / 12 months</td></tr>
-<tr><td>Navigation lights</td><td>Lamp / alarm panel test</td><td>Before departure / daily</td></tr><tr><td>Fire detection</td><td>Detector function test (rotation)</td><td>Per SMS (often all detectors within 12 months)</td></tr></table>`
-  });
-  ETO.page({ title: 'Maintenance & Condition Monitoring', icon: '🛠️', accent: '#16a34a', subtitle: 'Interactive PM checklists that print as records, and trend analysis that predicts when equipment will reach its limit.', refs: ['Planned maintenance', 'Condition monitoring', 'Printable'], calcs });
 })();

@@ -155,7 +155,6 @@ TT('Communications & Networks', 'modbus', { m: 'ref', ref: '40108' }, 'Protocol 
 TT('Communications & Networks', 'serial', { b: 9600, d: 8, p: 1, s: 1 }, 'Character time', 1.145833, 1e-5);
 TT('Communications & Networks', 'fibre', {}, 'Remaining margin', 8.05, 1e-9);
 TT('Communications & Networks', 'poe', {}, 'Worst-case PSE demand', 273.2, 1e-9);
-TT('Spares & Requisitions', 'risk', {}, 'Recommended spares on board', 1);
 TT('Short-circuit & Protection', 'idmt', { c: 'si', is: 1000, tms: 0.2, i: 6000 }, 'Operating time', 0.7674385, 1e-6);
 TT('Short-circuit & Protection', 'ct', {}, 'Actual burden', 15.0584, 1e-4);
 TT('Short-circuit & Protection', 'coord', {}, 'Downstream trip time at fault', 0.03, 1e-9);
