@@ -39,7 +39,7 @@
     { f: 'hazardous.html', n: 'Ex / Hazardous Area', i: '💥', c: '#ea580c', lvl: 7, d: 'Zone → EPL → protection concepts, gas group & T-class selector, Ex marking decoder, intrinsic-safety entity check, inspection checklist' },
     { f: 'safety.html', n: 'Electrical Safety & Isolation', i: '🦺', c: '#b91c1c', lvl: 7, d: 'LOTO & HV isolation checklists, prove-test-prove, capacitor discharge time, touch voltage, permit checklist' },
     { f: 'marine.html', n: 'Marine Systems & Shore Power', i: '⚓', c: '#1e40af', lvl: 7, d: 'Shore connection compatibility & sizing, COLREG navigation lights, GMDSS reserve battery, starting batteries, battery room hydrogen ventilation' },
-    { f: 'network.html', n: 'Communications & Networks', i: '🌐', c: '#4f46e5', lvl: 7, d: 'IPv4 subnet, fibre optic power budget, Modbus addressing, serial timing, NMEA 0183 checksum, CAN bus length, PoE budget' }
+    { f: 'network.html', n: 'Communications & Networks', i: '🌐', c: '#4f46e5', lvl: 7, d: 'IPv4 subnet, fibre optic power budget, Modbus addressing, serial timing, NMEA 0183 & AIS decoder, CAN bus length, PoE budget' }
   ];
 
   const S3 = Math.sqrt(3);
