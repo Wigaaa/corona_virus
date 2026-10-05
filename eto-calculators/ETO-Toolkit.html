@@ -812,6 +812,8 @@ footer .disc{flex-basis:100%}
   };
   const pfOf = v => (v.sys === 'dc' ? 1 : v.pf);
   const sysName = v => ({ '3': '3-phase', '1': 'single-phase', dc: 'DC' }[v.sys]);
+  // Indicative current ratings, Cu, 3 loaded conductors, cable on tray in air (IEC 60364-5-52 method E, 30 °C ambient)
+  const AMP = { 90: [26, 36, 49, 63, 86, 115, 149, 185, 225, 289, 352, 410, 473, 542, 641, 741, 868, 998, 1151], 70: [22, 30, 40, 51, 70, 94, 119, 148, 180, 232, 282, 328, 379, 434, 514, 593, 694, 799, 920] };
   const ct = (tmax, tref, tamb) => Math.sqrt((tmax - tamb) / (tmax - tref));
 
   ETO.page({
@@ -858,23 +860,34 @@ footer .disc{flex-basis:100%}
         }
       },
       {
-        id: 'size', icon: '📏', title: 'Cable size by voltage drop', desc: 'Minimum conductor size for the allowed voltage drop – AC or DC, with the load entered as current or as power.',
-        formula: 'AC: R_max = (Vd_allow/(k·I·L) − X·sinφ) / cosφ     DC: R_max = Vd_allow / (2·I·L)\nS_min = ρ(T) / R_max',
+        id: 'size', icon: '📏', title: 'Cable size (current capacity + voltage drop)', desc: 'Minimum conductor size from BOTH the current-carrying capacity (derated) and the allowed voltage drop – the larger one governs. AC or DC; load as current or power.',
+        formula: 'Ampacity: I/n ≤ It × Ct × Cg      Voltage drop: S ≥ ρ(T) / R_max with R_max = (Vd_allow/(k·I·L) − X·sinφ)/cosφ   (DC: Vd_allow/(2·I·L))\nSize = larger of the two (next standard size)',
         inputs: loadInputs({ i: 120, p: 80 }).concat([
           { k: 'l', l: 'Length (one way)', u: 'm', v: 150, min: 0.1 },
           { k: 'lim', l: 'Allowed drop', u: '%', v: 5, min: 0.1 },
           { k: 'mat', l: 'Conductor', opts: MAT.opts, v: 'Cu' },
-          { k: 't', l: 'Conductor temperature', u: '°C', v: 70 },
+          { k: 'ins', l: 'Insulation (max conductor temp)', opts: [[90, 'XLPE / EPR 90 °C'], [70, 'PVC 70 °C']], v: 90 },
+          { k: 'tamb', l: 'Ambient temperature', u: '°C', v: 45, hint: 'Table ratings are for 30 °C; corrected automatically' },
+          { k: 'g', l: 'Grouping (circuits bunched)', opts: GRP.map(x => [x[1], x[2] + ' → ' + x[1]]), v: 1 },
+          { k: 't', l: 'Conductor temperature for drop', u: '°C', v: 70 },
           { k: 'x', l: 'Reactance X', u: 'mΩ/m', v: 0.08, min: 0, show: v => isac(v) },
           { k: 'par', l: 'Parallel cables', v: 1, min: 1, step: 1 }
         ]),
         run: v => {
-          const I = loadI(v), k = v.sys === '3' ? S3 : 2, pf = pfOf(v), zmax = v.v * v.lim / 100 / (k * (I / v.par) * v.l), sinp = Math.sin(Math.acos(pf)), x = v.sys === 'dc' ? 0 : v.x;
-          const rmax = (zmax - x / 1000 * sinp) / pf;
-          if (rmax <= 0) return { results: [R('Design current', I, 'A', 2)], verdict: { s: 'bad', t: 'Reactance alone exceeds the allowed drop – use parallel cables or a higher voltage.' } };
-          const smin = rho(v.mat, v.t) / rmax, sel = std(STD_SIZES, smin);
-          return { results: [R('Design current', I, 'A', 2, null, true), R('Minimum area (per cable)', smin, 'mm²', 1), R('Next standard size', sel, 'mm²', 1, 'ok', true), R('Max mV/A/m', zmax * 1000, 'mV/A/m', 3), R('Max R', rmax * 1000, 'mΩ/m', 4)],
-            notes: ['Then confirm ampacity (derated) and short-circuit withstand. Over 300 mm² consider parallel cables.', v.sys === 'dc' ? 'DC: both conductors (+ and −) are included in the drop. On 24 V systems keep drop ≤ 2–3%.' : 'Power input is converted with the PF and efficiency above.'] };
+          if (v.tamb >= v.ins) throw new Error('Ambient must be below conductor temperature');
+          const I = loadI(v), Ic = I / v.par, k = v.sys === '3' ? S3 : 2, pf = pfOf(v), x = v.sys === 'dc' ? 0 : v.x;
+          // current capacity
+          const der = ct(v.ins, 30, v.tamb) * v.g, need = Ic / der, al = v.mat === 'Al' ? 0.78 : 1;
+          const ia = STD_SIZES.findIndex((sz, i) => AMP[v.ins][i] * al >= need), sA = ia < 0 ? null : STD_SIZES[ia];
+          // voltage drop
+          const zmax = v.v * v.lim / 100 / (k * Ic * v.l), sinp = Math.sin(Math.acos(pf)), rmax = (zmax - x / 1000 * sinp) / pf;
+          const sV = rmax > 0 ? std(STD_SIZES, rho(v.mat, v.t) / rmax) : null;
+          if (sA == null || sV == null) return { results: [R('Design current', I, 'A', 2)], verdict: { s: 'bad', t: 'No single standard cable satisfies this – use parallel cables or a higher voltage.' } };
+          const sel = Math.max(sA, sV), gov = sA > sV ? 'current capacity' : sV > sA ? 'voltage drop' : 'both equally';
+          const isel = STD_SIZES.indexOf(sel), rated = AMP[v.ins][isel] * al * der * v.par, dv = vdrop(v.sys, I, v.l, sel, v.mat, v.t, x, pf, v.par), pc = dv.v / v.v * 100;
+          return { results: [R('Recommended size', sel, 'mm²', 1, 'ok', true), R('Governed by', gov, ''), R('Design current', I, 'A', 2), R('Size for current capacity', sA, 'mm²', 1), R('Size for voltage drop', sV, 'mm²', 1), R('Derated capacity of selected', rated, 'A', 0, rated >= I ? 'ok' : 'bad'), R('Voltage drop with selected', pc, '%', 2, pc <= v.lim ? 'ok' : 'bad'), R('Derating factor (temp × group)', der, '', 3)],
+            verdict: { s: 'ok', t: `Use ${sel} mm² per phase${v.par > 1 ? ' × ' + v.par + ' parallel cables' : ''} – ${gov === 'both equally' ? 'both criteria give the same size' : 'governed by ' + gov}.` },
+            notes: ['Ampacity table is indicative (Cu, 3 loaded conductors, tray in air, IEC 60364-5-52 method E; Al ≈ 0.78×). Marine cables (IEC 60092-353/-354) have their own tables at 45 °C – confirm with the vessel cable schedule.', 'Also check short-circuit withstand (Cable page) and the breaker/overload protection.', v.sys === 'dc' ? 'DC: both conductors included in the drop; keep 24 V systems ≤ 2–3%.' : 'Power input is converted with PF and efficiency above.'] };
         }
       },
       {
