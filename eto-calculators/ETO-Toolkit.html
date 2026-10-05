@@ -178,7 +178,7 @@ footer .disc{flex-basis:100%}
 <section class="hero" style="background:linear-gradient(135deg,#1d4ed8,#7c3aed 55%,#db2777)">
   <div class="ico">⚡</div>
   <div><h1>ETO Toolkit – Marine Electrical Engineering &amp; Troubleshooting</h1>
-  <p>Calculate · Test · Diagnose · Maintain — 36 pages for ETOs on any vessel or offshore unit (OSV, DP, jack-up, drillship, tanker, passenger…). Works offline in any browser; your inputs stay on your device.</p>
+  <p>Calculate · Test · Diagnose · Maintain — 41 pages for ETOs on any vessel or offshore unit (OSV, DP, jack-up, drillship, tanker, passenger…). Works offline in any browser; your inputs stay on your device.</p>
   <div class="chips"><span class="chip">IEC 60092</span><span class="chip">IEC 60364</span><span class="chip">IEC 60909</span><span class="chip">IEC 60947</span><span class="chip">IEEE 43</span><span class="chip">IEEE 519</span><span class="chip">IACS UR E</span><span class="chip">SOLAS II-1</span><span class="chip">IEC 60079</span><span class="chip">COLREG</span></div></div>
 </section>
 <div class="wrap">
@@ -288,7 +288,12 @@ footer .disc{flex-basis:100%}
     { f: 'hazardous.html', n: 'Ex / Hazardous Area Guide', i: '💥', c: '#ea580c', lvl: 7, d: 'Knowledge guide: zones, gas groups & T-classes, EPL & ATEX categories, all Ex protection types, reading Ex markings, installation, intrinsic safety, inspection & maintenance, marine areas' },
     { f: 'safety.html', n: 'Electrical Safety & Isolation Guide', i: '🦺', c: '#b91c1c', lvl: 7, d: 'Knowledge guide for ETOs: electrical hazards, safe isolation, LOTO, prove-test-prove, HV safety, stored energy, PPE & live working, permit to work, emergency response' },
     { f: 'marine.html', n: 'Marine Systems & Shore Power', i: '⚓', c: '#1e40af', lvl: 7, d: 'Shore connection compatibility & sizing, emergency-generator starting battery, battery-room hydrogen ventilation, DC fault current' },
-    { f: 'network.html', n: 'Communications & Networks', i: '🌐', c: '#4f46e5', lvl: 7, d: 'IPv4 subnet, RS-485 / Modbus RTU timing, NMEA 0183 & AIS decoder, PoE budget' }
+    { f: 'network.html', n: 'Communications & Networks', i: '🌐', c: '#4f46e5', lvl: 7, d: 'IPv4 subnet, RS-485 / Modbus RTU timing, NMEA 0183 & AIS decoder, PoE budget' },
+    { f: 'instruments.html', n: 'ETO Instruments & How to Use Them', i: '🧰', c: '#0d9488', lvl: 8, d: 'Multimeter, megger, Ductor, earth leakage / RCD tester, phase rotation, PQ analyser, oscilloscope, loop & temperature calibrators, thermal camera, battery & cable testers, network tester, minimum kit' },
+    { f: 'metertricks.html', n: 'Multimeter & Clamp-Meter Tricks', i: '🔎', c: '#ca8a04', lvl: 8, d: 'Ghost voltages & LoZ, true-RMS vs average, measuring VFDs, testing diodes, IGBTs, contactor coils & capacitors, clamp tricks, common mistakes' },
+    { f: 'workshop.html', n: 'Workshop Tools for ETO', i: '🔧', c: '#64748b', lvl: 8, d: 'Hand tools, crimping & terminating, soldering bench, power tools, cable & gland tools, test bench, consumables, workshop organisation' },
+    { f: 'handover.html', n: 'Handover & Documentation Tips', i: '📝', c: '#7c3aed', lvl: 8, d: 'Good handover note, drawing mark-ups, electrical log, records, labelling & cable numbering, digital backups' },
+    { f: 'survey.html', n: 'Survey, Audit & Class Tips', i: '🧾', c: '#0f766e', lvl: 8, d: 'Survey types, what inspectors check, records to have ready, common findings, pre-survey checklist, survey day' },
   ];
 
   const S3 = Math.sqrt(3);
@@ -4807,6 +4812,604 @@ footer .disc{flex-basis:100%}
 })();
 
 </script>
+<script>window.ETO_FILE='instruments.html';</script>
+<script>
+(function () {
+  const { esc } = ETO;
+  const H = t => `<h3>${esc(t)}</h3>`;
+  const L = arr => `<ul class="steps">${arr.map(x => `<li>${x}</li>`).join('')}</ul>`;
+  const TB = (head, rows) => `<table class="rt"><thead><tr>${head.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map((c, i) => `<td>${i === 0 ? `<b>${esc(c)}</b>` : `<span class="kb">${esc(c)}</span>`}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  // instrument section: what it is for, how to use, safety, common mistakes
+  const I = (use, how, safety, mistakes) => `<p>${use}</p>` + H('How to use it') + L(how) + H('Safety') + L(safety) + H('Common mistakes') + L(mistakes);
+  const NOTE = '<p>Always follow the instrument maker’s manual and the vessel’s safety procedures. Use instruments with a valid calibration certificate.</p>';
+
+  const S = [
+    ['mm', '🔢', 'Multimeter & clamp meter', () =>
+      I('The everyday tool: voltage, current, resistance, continuity, diode test, frequency and capacitance. The clamp meter measures current without breaking the circuit. Choose <b>true-RMS</b>, <b>CAT III 1000 V / CAT IV 600 V</b>, with LoZ and low-pass-filter (VFD) modes.',
+        ['Check the meter on a known live source before and after the measurement (prove – test – prove).', 'Select the function first, then connect – black lead to COM first, remove it last.', 'Clamp only ONE conductor for load current; clamp all live conductors together for leakage current.', 'See the <b>Multimeter &amp; Clamp-Meter Tricks</b> page for ghost voltages, VFD outputs, diode, IGBT, coil and capacitor tests.'],
+        ['Use GS38-type probes (shrouded, max 4 mm exposed tip) and test leads with the same CAT rating as the meter.', 'Never measure voltage with a lead in the A / mA socket.'],
+        ['Using an average-reading meter on distorted waveforms.', 'Measuring resistance on a live circuit.', 'Trusting a meter with a low battery.']) + NOTE
+    ],
+    ['megger', '🧲', 'Insulation tester (megger)', () =>
+      I('Measures insulation resistance (MΩ / GΩ) of cables, motors, generators and switchboards using a DC test voltage. The single most important preventive test for an ETO – the <b>trend</b> over time tells more than one reading.',
+        ['Isolate, lock out, prove dead; discharge the circuit to earth.', '<b>Disconnect electronics</b>: VFDs, soft starters, AVRs, PLC cards, insulation monitors, surge arresters, capacitors and electronic meters.', 'Select the test voltage: 500 V DC for circuits up to 500 V (1000 V DC for 690 V), 250 V DC for 24–110 V control circuits; HV machines per IEEE 43 (2.5–5 kV).', 'Test each phase to earth and phase to phase; for motors and generators test at the terminals with the cable disconnected to find out which part is weak.', 'Read at 1 minute; for machines also at 10 minutes – <b>PI = R10 / R1</b> (≥ 2 good for class F insulation); DAR = R60 / R30 (≥ 1.25).', 'Record winding temperature – insulation resistance roughly halves for every 10 °C rise; correct to 40 °C before comparing.', 'Discharge the circuit after the test (the tester often does this automatically – wait for it).'],
+        ['Test voltage is dangerous – keep others away and cover exposed conductors.', 'Long cables and machines store charge – always discharge.', 'In hazardous areas use only with a gas-free / hot-work permit (the tester can spark).'],
+        ['Forgetting to disconnect a VFD or IMD – destroys electronics.', 'Comparing readings at different temperatures or humidity without correction.', 'Accepting “above 1 MΩ” when last year’s reading was 500 MΩ – the trend shows the problem.']) + NOTE
+    ],
+    ['ductor', '🔩', 'Low-resistance ohmmeter (Ductor)', () =>
+      I('Measures very low resistance (µΩ / mΩ) of breaker contacts, busbar joints, cable lugs, bonding connections and windings, using a high test current and four-wire (Kelvin) connection.',
+        ['Isolate and earth the equipment as per procedure; close the breaker under test.', 'Connect the <b>current leads</b> outside and the <b>potential leads</b> inside, as close as possible to the contact or joint.', 'Use a high current for contacts and joints (typ. 10–100 A, 100 A for breaker main contacts).', 'Take readings in both current directions and average them (cancels thermal EMF).', 'Compare with the maker’s value and between phases; a phase much higher than the others (typ. > 50 %) needs investigation.'],
+        ['On inductive loads (windings, transformers) wait until the reading is stable and let the instrument discharge the winding before disconnecting.'],
+        ['Potential leads placed outside the current leads (reads lead and clamp resistance).', 'Dirty or painted contact points.', 'Testing breaker contacts with a low current – it may not break through the contact film.']) + NOTE
+    ],
+    ['earthleak', '🌍', 'Earth leakage tester', () =>
+      `<p>Two jobs on board: (1) proving that <b>RCDs / ELCBs</b> trip correctly, and (2) <b>finding earth leakage</b> on circuits, especially on insulated (IT) ship systems where the first earth fault does not trip anything.</p>` +
+      H('RCD / ELCB testing') + L([
+        'RCDs are fitted on circuits with an earthed supply (TN subsystems fed through a transformer): accommodation sockets, galley, laundry, wet areas, workshop and portable tools. On a pure IT system an RCD cannot see the first earth fault.',
+        'Press the RCD <b>test button</b> monthly – proves the mechanism only.',
+        'With an RCD tester at the outlet: test at <b>½ × IΔn</b> – must NOT trip; at <b>1 × IΔn</b> – must trip (general type ≤ 300 ms); at <b>5 × IΔn</b> – must trip ≤ 40 ms.',
+        'Test both half-cycles (0° and 180°) and record the slowest time.',
+        'Warn users – the test switches off the circuit (computers, fridges).']) +
+      H('Finding leakage with a leakage clamp') + L([
+        'Clamp <b>all live conductors together</b> (L1, L2, L3 and N): the reading is the leakage current to earth. A healthy circuit reads near zero.',
+        'Use a leakage clamp with mA resolution and a magnetic shield – normal clamps cannot read a few mA accurately.',
+        'On an IT system with a low insulation alarm: the insulation monitor (IMD) shows the switchboard is low. Use an <b>earth-fault location system</b> (injection type) if fitted, or clamp each outgoing feeder to find the one carrying the injected / leakage current.',
+        'If no locator: with permission, switch off non-essential feeders one at a time and watch the IMD reading recover. Never isolate essential services without agreement from the bridge / engine room.',
+        'Also clamp the PE conductor of a piece of equipment – current on PE confirms leakage inside that equipment.']) +
+      H('Common mistakes') + L(['Clamping only one phase (shows load current, not leakage).', 'Testing RCDs without warning users.', 'Leaving a known earth fault on an IT system – a second fault on another phase becomes a short circuit.']) + NOTE
+    ],
+    ['rotation', '🔄', 'Phase rotation meter', () =>
+      I('Shows the phase sequence (L1-L2-L3 clockwise or anticlockwise) of a supply, and – with the non-contact or motor-rotation types – the rotation direction of a motor before it is connected.',
+        ['Connect L1, L2, L3 in the order of the labels; read the direction indicator.', 'Use before connecting <b>shore power</b>, after changing a feeder cable, after re-terminating a motor and on a new generator connection.', 'Motor rotation tester: with the motor de-energised and disconnected, connect to the motor terminals and turn the shaft by hand in the required direction – the tester shows which terminal should get L1, L2, L3.'],
+        ['Rated for the system voltage; use fused leads.', 'Verify the absence of voltage before using a motor rotation tester on a motor.'],
+        ['Checking only that voltage is present – a wrong sequence reverses every motor on shore power.', 'Not re-checking after a feeder repair.']) + NOTE
+    ],
+    ['pq', '📈', 'Power quality / harmonic analyser', () =>
+      I('Records voltage, current, power, power factor, harmonics (THD), unbalance, flicker, dips and swells over time. Used for harmonic problems from VFDs, unexplained trips, generator load sharing and before / after modifications.',
+        ['Set the nominal voltage, frequency (50 / 60 Hz) and the wiring configuration (3-wire / 4-wire).', 'Connect voltage leads first, then current clamps / flexible probes with the <b>arrow towards the load</b>; check that each clamp is on the matching phase (the analyser’s phasor diagram must look correct).', 'Record long enough to see normal and worst operation (e.g. thrusters at full load, jacking, crane lifting).', 'Compare THD-V with the class limit (often 8 % on ships – check your class rules) and individual harmonics with the limits.', 'Save the data and export a report.'],
+        ['Connect in CAT-rated conditions, with arc-flash PPE where required.', 'Flexible probes must not be placed on bare live conductors unless rated.'],
+        ['Clamp phases swapped – power and PF readings are wrong.', 'Recording only a few minutes at light load.']) + NOTE
+    ],
+    ['scope', '〰️', 'Oscilloscope', () =>
+      I('Shows signal shape over time: communication signals (RS-485, CAN), encoder and sensor pulses, PWM, ripple on DC supplies, noise and transients.',
+        ['Use <b>differential probes</b> or an <b>isolated-channel</b> handheld scope for anything connected to mains or drive circuits.', 'Set the probe ratio (×1 / ×10 / ×100) on the scope to match the probe.', 'Trigger on the signal edge; adjust time base to see a few cycles.', 'For RS-485: measure A-B differentially – a clean signal has sharp edges and > 1.5 V amplitude; ringing means a termination problem.', 'For DC supplies: AC coupling to see ripple and noise.'],
+        ['<b>Never connect the earth clip of a mains-powered bench scope to a live point</b> – the clip is connected to earth and causes a short circuit.', 'Use CAT-rated probes and scope for power measurements.'],
+        ['Wrong probe ratio setting.', 'Long earth lead picking up noise.']) + NOTE
+    ],
+    ['loopcal', '🎚️', 'Loop calibrator (mA)', () =>
+      I('Sources, measures and simulates 4–20 mA signals. Used to test transmitters, control-system inputs and outputs, positioners and the complete loop.',
+        ['<b>Measure</b> mode: in series with the loop to read the actual current.', '<b>Source</b> mode: replaces the transmitter and drives current into the input card – checks the PLC / IAS scaling and alarms (4 mA = 0 %, 12 mA = 50 %, 20 mA = 100 %).', '<b>Simulate</b> mode: acts as a 2-wire transmitter powered by the loop supply.', '<b>Loop power</b> (24 V): powers a transmitter on the bench for testing.', 'For HART, add a 250 Ω resistor in the loop if the loop has none.', 'Check alarm currents (NAMUR NE43: ≤ 3.6 mA / ≥ 21 mA) are handled correctly by the control system.'],
+        ['Inhibit alarms and trips in the control system before injecting signals – you may start or stop equipment.', 'Use an intrinsically safe calibrator in hazardous areas.'],
+        ['Breaking a loop without telling the control room (gives a fault / trip).', 'Testing only 4 and 20 mA – check mid-scale too.']) + NOTE
+    ],
+    ['tempcal', '🌡️', 'Temperature calibrator / RTD-thermocouple simulator', () =>
+      I('Simulates RTDs (Pt100, Pt1000) and thermocouples (K, J, T…) into the measuring equipment, or measures sensor signals. Dry-block calibrators heat the real sensor to a known temperature.',
+        ['<b>Simulate RTD</b>: disconnect the sensor, connect the calibrator in the same 2 / 3 / 4-wire configuration and set test temperatures; compare the display / IAS value.', '<b>Simulate thermocouple</b>: use the correct type and <b>thermocouple compensating cable / connector</b>; the calibrator handles cold-junction compensation.', '<b>Check the sensor</b>: measure Pt100 resistance (100 Ω at 0 °C, ≈ 138.5 Ω at 100 °C) or put it in a dry block at several temperatures.', 'Record as-found and as-left values.'],
+        ['Dry blocks are hot – let them cool before packing.', 'Inhibit alarms and trips before simulating.'],
+        ['Using copper wires instead of thermocouple wire (wrong reading).', 'Wrong RTD wiring configuration (lead resistance error).']) + NOTE
+    ],
+    ['thermal', '📷', 'Thermal (IR) camera', () =>
+      I('Finds hot spots on connections, breakers, busbars, motors, bearings and cables without contact – an excellent PM tool when used under load.',
+        ['Inspect with the equipment at least ≈ 40 % of normal load (higher is better).', 'Set emissivity: painted surfaces and insulation ≈ 0.9–0.95; <b>bare shiny metal reads far too low</b> – measure on the insulation, a lug or a piece of tape.', 'Compare similar components (phase to phase) under the same load. Typical NETA guidance: 1–3 °C difference = possible problem, 4–15 °C = probable problem, > 15 °C = major problem – repair as soon as possible.', 'Watch for reflections (sun, lamps, your own body heat).', 'Save image and visible photo; record load current at the time.'],
+        ['Opening switchboard doors exposes live parts – follow the arc-flash procedure and PPE, or use IR windows.'],
+        ['Inspecting at no load – nothing shows.', 'Trusting the temperature reading on bare copper.']) + NOTE
+    ],
+    ['battery', '🔋', 'Battery tester', () =>
+      I('Checks battery health by measuring voltage and internal resistance / conductance. Used for UPS, emergency, starting and GMDSS batteries.',
+        ['Measure each cell / block with the battery at rest and fully charged.', 'Compare internal resistance with the baseline (when new) and between blocks; an increase of more than ≈ 25–30 % (or the maker’s limit) indicates a weak block.', 'For flooded lead-acid: hydrometer – specific gravity ≈ 1.28 fully charged (check maker); all cells should be close to each other.', 'The definitive test is a <b>capacity (discharge) test</b> with a load bank – do it per the maintenance plan.', 'Record per block to build a trend.'],
+        ['Battery rooms: no sparks, ventilation running, face shield, gloves, eyewash available.', 'Insulated tools only – a battery short circuit can melt tools.'],
+        ['Judging a battery by float voltage only.', 'Comparing internal resistance at very different temperatures.']) + NOTE
+    ],
+    ['cablefault', '🧵', 'Cable fault locator', () =>
+      I('Locates breaks, short circuits and insulation faults along cables and traces cable routes.',
+        ['<b>TDR (time-domain reflectometer)</b>: sends a pulse and shows the distance to an open circuit (upward reflection) or short (downward). Set the cable’s velocity factor (from data or by testing a known length).', '<b>Insulation faults</b>: if the fault is high resistance, a TDR may not see it – use a bridge method (Murray loop with a healthy core) or, for HV cables, a surge generator (thumper) with acoustic pinpointing.', '<b>Cable tracer / tone generator</b>: identifies a cable and its route through trays and bulkheads.', 'Test from both ends and compare to confirm the location.'],
+        ['The cable must be isolated, proved dead and discharged.', 'Surge generators produce high voltage – only trained persons.'],
+        ['Wrong velocity factor (wrong distance).', 'Not allowing for extra cable length in loops and junction boxes.']) + NOTE
+    ],
+    ['nettest', '🌐', 'Network / serial tester', () =>
+      I('Checks Ethernet cables and serial links (RS-232 / RS-485 / NMEA) and reads the data on them.',
+        ['<b>Ethernet cable tester / verifier</b>: wire map (opens, shorts, crossed or split pairs), length, link speed, PoE presence.', '<b>Laptop + Wireshark</b> on a switch mirror port: see Modbus TCP, PROFINET, NMEA over UDP traffic and errors.', '<b>USB-RS485 / RS-232 adapter</b> with terminal or Modbus software: listen to a serial line or poll a device.', '<b>NMEA</b>: listen to the talker output and check sentences and checksums (see the NMEA decoder in this toolkit).', 'Check termination resistance on RS-485 / CAN with power off (≈ 60 Ω).'],
+        ['Connecting a laptop to ship networks must follow the vessel cyber-security procedure (scanned, authorised device).'],
+        ['Transmitting on a live bus and disturbing the master.', 'Swapping A / B on RS-485.']) + NOTE
+    ],
+    ['kit', '🎒', 'Minimum instrument kit on board', () =>
+      TB(['Instrument', 'Priority', 'Typical calibration', 'Main use'], [
+        ['True-RMS multimeter (CAT III 1000 V)', 'Essential (2 pcs)', 'Yearly', 'Daily measurements, fault finding'],
+        ['Clamp meter (AC/DC, true-RMS)', 'Essential', 'Yearly', 'Load and motor currents'],
+        ['Two-pole voltage tester (GS38)', 'Essential (2 pcs)', 'Check before use / yearly', 'Proving dead'],
+        ['Insulation tester 250 V – 1 kV (5 kV for HV)', 'Essential', 'Yearly', 'Cables, motors, generators'],
+        ['Leakage clamp (mA)', 'Essential', 'Yearly', 'Earth leakage, IT system earth faults'],
+        ['RCD tester / installation tester', 'Recommended', 'Yearly', 'RCD trip tests'],
+        ['Phase rotation meter', 'Essential', 'Function check', 'Shore power, feeders, motors'],
+        ['Loop calibrator (mA)', 'Essential', 'Yearly', '4–20 mA loops and instruments'],
+        ['Temperature calibrator (RTD / TC)', 'Recommended', 'Yearly', 'Temperature loops'],
+        ['Low-resistance ohmmeter', 'Recommended', 'Yearly', 'Breaker contacts, joints, bonding'],
+        ['Thermal camera', 'Recommended', 'Per maker', 'PM hot-spot surveys'],
+        ['Power quality analyser', 'Recommended (or via service)', 'Per maker', 'Harmonics, VFD problems'],
+        ['Handheld oscilloscope (isolated)', 'Recommended', 'Per maker', 'Signals, comms, drives'],
+        ['Battery tester / hydrometer', 'Recommended', 'Per maker', 'UPS and emergency batteries'],
+        ['Cable / network tester', 'Recommended', 'Function check', 'Ethernet, serial, cable faults']]) +
+      H('Tips') + L(['Keep a <b>calibration register</b> with serial numbers and due dates – surveyors and auditors ask for it.', 'Label each instrument with its calibration due date.', 'Carry spare test leads, fuses (correct HRC type) and batteries.', 'Store instruments dry and protected; remove batteries during long storage.', 'Verify a meter on a known source after any drop or overload.']) + NOTE
+    ]
+  ];
+  ETO.page({
+    title: 'ETO Instruments & How to Use Them', icon: '🧰', accent: '#0d9488',
+    subtitle: 'The test instruments an ETO should have on board – what each is for, how to use it step by step, safety and common mistakes.',
+    refs: ['IEC 61010 / 61557', 'IEEE 43', 'EN 50110'],
+    calcs: S.map(([id, icon, title, html]) => ({ id, icon, title, noActions: true, inputs: [], run: () => ({ head: '<span></span>', html: html() }) }))
+  });
+})();
+
+</script>
+<script>window.ETO_FILE='metertricks.html';</script>
+<script>
+(function () {
+  const { esc } = ETO;
+  const H = t => `<h3>${esc(t)}</h3>`;
+  const L = arr => `<ul class="steps">${arr.map(x => `<li>${x}</li>`).join('')}</ul>`;
+  const TB = (head, rows) => `<table class="rt"><thead><tr>${head.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map((c, i) => `<td>${i === 0 ? `<b>${esc(c)}</b>` : `<span class="kb">${esc(c)}</span>`}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  const NOTE = '<p>Values are typical. Always use the equipment maker’s data and procedures, and work only on isolated and proven-dead equipment unless live testing is authorised.</p>';
+
+  const S = [
+    ['ghost', '👻', 'Ghost voltages & LoZ', () =>
+      `<p>A digital multimeter has a very high input impedance (≈ 10 MΩ). On a cable that is <b>disconnected or switched off</b> but runs next to live cables, capacitive coupling can show a “ghost” voltage – often 20–200 V – even though the conductor cannot supply any real current.</p>` +
+      H('How to tell a ghost from a real voltage') + L([
+        'Switch the meter to <b>LoZ</b> (low impedance, ≈ 3 kΩ): the meter loads the conductor – a ghost voltage collapses to near zero, a real voltage stays.',
+        'Without LoZ: measure again with a small load (e.g. a two-pole voltage tester with load, or a test lamp) – the ghost disappears.',
+        'Typical places: long control cables in trays, unused cores, switched-off lighting circuits, cables next to VFD output cables.']) +
+      H('When NOT to use LoZ') + L([
+        'On sensitive electronic or control circuits – the low impedance draws current and can operate relays, PLC inputs or trip an RCD (between L and PE).',
+        'On 4–20 mA, RS-485 or sensor signals – use the normal high-impedance V range.',
+        'LoZ ranges are for verifying presence / absence of mains voltage, not for precise measurements.']) +
+      H('Proving dead correctly') + L(['Use a two-pole voltage tester (GS38 probes) – prove it on a known live source, test the circuit (all phases to each other and to earth), prove the tester again.', 'A multimeter on a high-impedance range alone is not a reliable “dead” test because of ghost voltages – and a faulty setting may show nothing on a live circuit.']) + NOTE
+    ],
+    ['trms', '📐', 'True-RMS vs average-reading', () =>
+      `<p>Average-responding meters measure the average value and multiply by 1.11 – correct <b>only for a pure sine wave</b>. True-RMS meters calculate the real heating value of any waveform.</p>` +
+      TB(['Waveform', 'Average-reading meter', 'True-RMS meter'], [
+        ['Pure sine (resistive load, motor DOL)', 'Correct', 'Correct'],
+        ['Rectifier / SMPS current (computers, LED drivers, UPS input)', 'Reads up to ≈ 30–50 % LOW', 'Correct'],
+        ['VFD input current (6-pulse)', 'Reads low', 'Correct'],
+        ['VFD output voltage (PWM)', 'Wrong / unstable', 'Often wrong too – use VFD / low-pass mode'],
+        ['Square wave', '≈ 10 % high', 'Correct'],
+        ['DC + AC ripple', 'AC part only', 'Use AC+DC mode for total']]) +
+      H('Tips') + L([
+        'Crest factor (peak / RMS): sine = 1.41; rectifier current can be 2–3. The meter’s crest-factor rating must be high enough or it will clip and read low.',
+        'Neutral currents in 3-phase 4-wire systems with many single-phase electronic loads can exceed the phase current (triplen harmonics) – only a true-RMS clamp shows this.',
+        'If two meters disagree on the same current, the true-RMS one is right – and the waveform is distorted (check harmonics).']) + NOTE
+    ],
+    ['vfd', '⚙️', 'Measuring VFDs correctly', () =>
+      H('Input side') + L(['Measure all three line voltages; unbalance more than ≈ 2 % causes extra ripple and diode stress.', 'Input current is distorted – use a true-RMS clamp.']) +
+      H('DC bus') + L(['DC bus voltage ≈ <b>1.35 × V(line)</b> under load (≈ 1.41 × V at no load): 400 V → ≈ 540–565 V DC; 690 V → ≈ 930–975 V DC.', 'Measure at the DC bus terminals (+ / −) with a CAT III 1000 V meter.', 'Ripple: AC voltage on the DC bus – high ripple indicates a lost input phase or weak capacitors.']) +
+      H('Output side') + L([
+        'The output is PWM pulses at a high carrier frequency (2–16 kHz). Normal meters read high or jump.',
+        'Use the meter’s <b>VFD / low-pass-filter mode</b> – it shows the fundamental voltage and frequency, matching the drive display.',
+        'Compare U-V, V-W, W-U: they should be equal (± 1–2 %). A difference indicates an output module problem.',
+        'Output current is close to a sine – a true-RMS clamp reads well. Compare the three phases.',
+        'Measuring the output frequency without the low-pass filter can show the carrier frequency instead.']) +
+      H('Safety') + L(['After switching off, wait the time shown on the drive label (typically 5–15 minutes) and <b>measure the DC bus below 50 V</b> before touching anything.', 'A motor turning (e.g. a wind-milling fan or a thruster) can feed voltage back into the drive – stop and secure it.', 'Use arc-flash PPE on large drives.']) + NOTE
+    ],
+    ['diode', '➡️', 'Testing diodes & rectifier bridges', () =>
+      L(['Isolate, discharge and disconnect the component (or at least the circuit) before testing.',
+        'Select <b>diode test</b> mode: the meter shows the forward voltage drop.',
+        '<b>Forward</b> (red on anode, black on cathode): silicon ≈ 0.4–0.7 V; power diodes ≈ 0.3–0.5 V; Schottky ≈ 0.15–0.45 V.',
+        '<b>Reverse</b> (swap leads): OL (open).',
+        'Both directions ≈ 0 V = shorted. Both directions OL = open.']) +
+      H('Three-phase rectifier bridge (6 diodes)') + TB(['Red lead', 'Black lead', 'Expected'], [
+        ['L1 / L2 / L3 (each)', 'DC +', '≈ 0.3–0.5 V'],
+        ['DC +', 'L1 / L2 / L3 (each)', 'OL'],
+        ['DC −', 'L1 / L2 / L3 (each)', '≈ 0.3–0.5 V'],
+        ['L1 / L2 / L3 (each)', 'DC −', 'OL']]) +
+      L(['All six “forward” readings should be nearly equal – one different reading points to a damaged diode.', 'Large DC bus capacitors may give a rising reading at first (charging) – wait for it to settle.']) + NOTE
+    ],
+    ['igbt', '🔲', 'Testing IGBTs / drive power modules', () =>
+      `<p>A meter test finds <b>shorted or open</b> IGBTs and freewheeling diodes – the most common failures. It cannot prove the IGBT switches correctly under load.</p>` +
+      H('Preparation') + L(['Isolate the drive, wait the discharge time and measure DC bus < 50 V.', 'Disconnect the motor cables (U, V, W) and the input cables.', 'Diode test mode.']) +
+      H('Output stage test (each phase U, V, W)') + TB(['Red lead', 'Black lead', 'Expected (diode of the IGBT)'], [
+        ['U / V / W', 'DC +', '≈ 0.3–0.5 V (upper freewheeling diode)'],
+        ['DC +', 'U / V / W', 'OL'],
+        ['DC −', 'U / V / W', '≈ 0.3–0.5 V (lower freewheeling diode)'],
+        ['U / V / W', 'DC −', 'OL']]) +
+      L(['≈ 0 V in both directions = shorted IGBT / module – do not power up.', 'All phases should read nearly equal.', '<b>Gate–emitter</b> (on a removed module): should be very high resistance / OL. A low resistance means a damaged gate.', 'Check the <b>brake chopper</b> IGBT and brake resistor the same way (resistor value against the drive nameplate).', 'After replacing a module: check gate drivers and the cause (motor cable insulation, overload, cooling) before starting.']) + NOTE
+    ],
+    ['coil', '🧲', 'Testing contactor & relay coils', () =>
+      L(['Isolate and disconnect at least one coil wire (to avoid parallel paths).',
+        'Measure coil resistance and compare with the data sheet or an identical coil.',
+        '<b>OL</b> = open coil (burnt). <b>Much lower than normal</b> = shorted turns (often burnt smell or discoloured).',
+        'AC coils have a low DC resistance (tens to hundreds of Ω) because their current is limited by inductance – do not reject them for a “low” reading; compare with a good coil.',
+        'DC coils with an electronic economiser module cannot be measured simply – check per maker.',
+        'Insulation test coil to frame (500 V DC) on large contactors.']) +
+      H('If the coil is good but the contactor does not pull in') + L(['Measure the voltage <b>at the coil terminals</b> while the command is ON: should be within ≈ 85–110 % of rated.', 'Low voltage at pull-in: weak control transformer, long cable, loose terminal, failed contact in the control circuit.', 'Check AC / DC and voltage rating of the coil against the circuit – a 110 V coil on 230 V burns quickly; a 230 V coil on 110 V chatters.', 'Humming / chatter on AC contactors: dirty pole faces or a broken shading ring.']) + NOTE
+    ],
+    ['cap', '🔋', 'Testing capacitors', () =>
+      H('Safety first') + L(['Capacitors keep charge after isolation. <b>Discharge through a suitable resistor</b> (never a screwdriver short) and measure 0 V before handling.', 'DC bus capacitors in drives can hold lethal voltage for minutes.']) +
+      H('Measurement') + L([
+        'Use the meter’s <b>capacitance</b> mode with the capacitor disconnected from the circuit.',
+        'Compare with the nameplate: motor-run capacitors typically ± 5 %; electrolytic capacitors -10 / +20 % or more.',
+        'A reading clearly below nameplate (e.g. > 10–20 % low) means the capacitor is ageing – replace.',
+        'Electrolytic capacitors: also look for bulging, leaking electrolyte, venting; an <b>ESR meter</b> shows internal resistance increasing with age.',
+        'Motor-start / run capacitors: a shorted capacitor reads ≈ 0 Ω on resistance range; open = no capacitance.']) +
+      H('Power-factor correction capacitors') + L(['Measure capacitance per phase and compare between phases.', 'With the bank in service, clamp the current of each step and compare with rated current.', 'Check the discharge resistors / reactors and the contactor (special capacitor-duty contactors).', 'Detuned reactors overheating = harmonic problem; consult the PQ analyser data.']) + NOTE
+    ],
+    ['clamp', '🗜️', 'Clamp-meter tricks', () =>
+      L([
+        '<b>One conductor only</b> for load current – clamping a whole cable (phase + neutral) shows almost zero.',
+        '<b>All live conductors together</b> (L1+L2+L3+N or L+N) – shows leakage / residual current. Use a leakage clamp for mA.',
+        '<b>Small currents</b>: wind the conductor N turns through the jaw and divide the reading by N.',
+        '<b>Inrush mode</b>: captures motor starting current (≈ 100 ms window) – compare with the expected 6–8 × FLC for DOL.',
+        '<b>DC clamps</b> (Hall effect): press “zero” with the jaw closed and away from conductors before measuring; turn the clamp around to check polarity.',
+        'Keep the conductor in the centre of the jaw and the jaw faces clean and fully closed.',
+        'Neutral current higher than phase current = triplen harmonics (electronic loads) – needs a true-RMS clamp.',
+        '3-phase motor: compare the three phase currents – unbalance more than ≈ 10 % with balanced voltage points to a winding or connection problem.',
+        '<b>Max / Min / Hold</b> records peaks while you watch the equipment.']) + NOTE
+    ],
+    ['mistakes', '⚠️', 'Common meter mistakes & safety', () =>
+      TB(['Mistake', 'Result', 'Prevention'], [
+        ['Lead left in A socket, then measuring voltage', 'Short circuit through the meter → arc flash', 'Leads back to V/Ω after current measurement; meters with HRC fuses and jack alert'],
+        ['Meter CAT rating too low for the location', 'Meter can explode on a transient', 'CAT III 1000 V / CAT IV 600 V for switchboards and distribution'],
+        ['Unshrouded long probe tips', 'Short circuit between terminals', 'GS38 probes (max 4 mm exposed tip), shrouded'],
+        ['Measuring resistance / continuity on a live circuit', 'Damaged meter, wrong reading', 'Prove dead first'],
+        ['Measuring resistance in circuit', 'Parallel paths give wrong value', 'Disconnect one end of the component'],
+        ['Low battery', 'Incorrect readings', 'Replace when the indicator shows'],
+        ['Not proving the tester', 'A faulty tester shows “dead” on a live circuit', 'Prove – test – prove'],
+        ['Average-reading meter on distorted waveform', 'Reads low', 'True-RMS meter'],
+        ['Auto-hold left on', 'Old reading shown', 'Check the display mode'],
+        ['Wrong range for mA loop (V instead of mA)', 'No reading / loop disturbed', 'Measure mA in series or use mA clamp']]) + NOTE
+    ]
+  ];
+  ETO.page({
+    title: 'Multimeter & Clamp-Meter Tricks', icon: '🔎', accent: '#ca8a04',
+    subtitle: 'Practical meter tricks for the ETO – ghost voltages and LoZ, true-RMS, measuring VFDs, testing diodes, IGBTs, coils and capacitors, clamp tricks and common mistakes.',
+    refs: ['IEC 61010', 'IEC 61243-3', 'HSE GS38'],
+    calcs: S.map(([id, icon, title, html]) => ({ id, icon, title, noActions: true, inputs: [], run: () => ({ head: '<span></span>', html: html() }) }))
+  });
+})();
+
+</script>
+<script>window.ETO_FILE='workshop.html';</script>
+<script>
+(function () {
+  const { esc } = ETO;
+  const H = t => `<h3>${esc(t)}</h3>`;
+  const L = arr => `<ul class="steps">${arr.map(x => `<li>${x}</li>`).join('')}</ul>`;
+  const TB = (head, rows) => `<table class="rt"><thead><tr>${head.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map((c, i) => `<td>${i === 0 ? `<b>${esc(c)}</b>` : `<span class="kb">${esc(c)}</span>`}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  const NOTE = '<p>Adapt the list to the vessel type, voltage levels and equipment makers on board. Tools used in hazardous areas need a permit or Ex-suitable design.</p>';
+
+  const S = [
+    ['hand', '🪛', 'Hand tools', () =>
+      TB(['Tool', 'Notes'], [
+        ['Insulated screwdriver set (1000 V, IEC 60900 / VDE)', 'Slotted, Phillips, Pozidriv, Torx; slim shafts for terminals'],
+        ['Terminal screwdrivers 0.4 × 2.5 / 0.6 × 3.5 mm', 'For spring-cage and small terminals'],
+        ['Insulated pliers, side cutters, long-nose pliers', '1000 V rated; one set kept only for electrical work'],
+        ['Automatic wire stripper', '0.2–6 mm²; plus a coax / data stripper'],
+        ['Insulated cable knife', 'Hook blade for sheath removal'],
+        ['Insulated socket & spanner set', 'Metric (and imperial if needed); ratchet'],
+        ['Torque screwdriver & torque wrench', 'Terminal and busbar torques from the maker – loose connections cause most hot spots'],
+        ['Allen keys & Torx keys', 'Ball-end and T-handle'],
+        ['Inspection mirror, magnet pick-up, telescopic grabber', 'For panels and tight spaces'],
+        ['Head torch & hand lamp', 'Ex-certified for hazardous areas'],
+        ['Tool lanyards & tool bag', 'Dropped-object prevention when working at height']]) +
+      H('Tips') + L(['Check insulated tools before use: no cracks or cuts in the insulation – remove damaged tools.', 'Keep a separate small kit in a pouch for quick jobs around the vessel.']) + NOTE
+    ],
+    ['crimp', '🔗', 'Crimping, stripping & terminating', () =>
+      TB(['Tool', 'Use'], [
+        ['Ratchet crimper for insulated lugs', 'Red (0.5–1.5 mm²), blue (1.5–2.5 mm²), yellow (4–6 mm²) colour-coded dies'],
+        ['Ferrule crimper (square / hexagonal)', '0.25–10 mm² (and 16–50 mm² for larger terminals)'],
+        ['Hydraulic crimper with hexagonal dies', 'Non-insulated lugs 10–300 mm²; dies matching the lug maker and size'],
+        ['Ratchet cable cutter', 'Clean cut on large cables up to ≈ 300 mm²'],
+        ['Heat gun & heat-shrink assortment', 'Insulation, sealing, identification sleeves'],
+        ['Connector tools', 'RJ45 crimper, M12 field-attachable tools, D-sub pin crimper, punch-down tool, coax tools'],
+        ['Pin extraction tools', 'For multi-pin connectors (Harting, D-sub, Deutsch)']]) +
+      H('Good crimping practice') + L(['Use the lug / ferrule size matching the conductor size – never fold extra strands or cut strands off.', 'Strip length = barrel length; no bare conductor outside the barrel, no insulation inside.', 'Use the matching die and complete the full ratchet cycle.', '<b>Pull test</b> every crimp by hand.', 'Use ferrules on fine-stranded conductors in screw terminals.', 'Use tinned copper lugs in marine environment.']) + NOTE
+    ],
+    ['solder', '🔥', 'Soldering & electronics bench', () =>
+      L(['Temperature-controlled soldering station with assorted tips.',
+        'Desoldering pump and wick (braid); hot-air station for SMD work.',
+        'Solder (lead-free and Sn60/Pb40 for repair work), flux pen, isopropyl alcohol (IPA) for cleaning.',
+        'Fume extractor.',
+        '<b>ESD protection</b>: anti-static mat, wrist strap, ESD bags for PCBs and spare cards.',
+        'Magnifier lamp, tweezers, small vice / PCB holder.',
+        'Conformal coating spray for repaired boards in humid areas.',
+        'Bench multimeter and component tester.']) +
+      H('Tips') + L(['Handle PLC, VFD and control cards by the edges and only with ESD protection.', 'Most ship electronic repairs are board replacements – keep failed boards for repair / exchange with the maker.']) + NOTE
+    ],
+    ['power', '🔨', 'Power tools & drilling', () =>
+      TB(['Tool', 'Notes'], [
+        ['Cordless drill / driver (2 batteries)', 'With HSS and step-drill set'],
+        ['Hole saws & knockout punch set (hydraulic)', 'Clean holes for cable glands in enclosures (M16–M63)'],
+        ['Angle grinder', 'Hot-work permit; cutting discs and flap discs'],
+        ['Jigsaw / multi-tool', 'Panel cut-outs'],
+        ['Rotary tool (Dremel type)', 'Small cut-outs and finishing'],
+        ['Heat gun', 'Heat-shrink, drying'],
+        ['Rivet gun, tap & die set', 'Mounting rails and brackets']]) +
+      L(['Use portable tools only from RCD-protected or low-voltage supplies, or cordless.', 'Check cables and plugs of portable tools regularly (portable appliance test) and record.', 'Hot work, sparks and drilling in hazardous areas need a permit and gas testing.']) + NOTE
+    ],
+    ['cable', '🧵', 'Cable pulling & glanding tools', () =>
+      L(['Fish tape / draw wire and cable pulling sock (grip).',
+        'Cable rollers and guides to protect cables at bends.',
+        'Cable lubricant for long pulls and multi-cable transits.',
+        'Armour / braid cutter and gland spanners (correct sizes).',
+        '<b>Ex gland kit</b>: barrier glands with compound, correct seals, Ex stopping plugs.',
+        'Multi-cable transit (MCT, e.g. Roxtec type) tools: lubricant, compression tools, spare modules and sealing blocks.',
+        'Cable ties (UV-resistant and stainless steel for outside), tie gun, cable markers.',
+        'Cable drum stand for larger cables.']) +
+      H('Tips') + L(['Respect the minimum bending radius (typically 6–8 × cable diameter for power cables; per maker).', 'Separate power and signal cables; cross at 90°.', 'Every penetration that is opened must be resealed to its fire / watertight rating – an open transit is a common survey finding.']) + NOTE
+    ],
+    ['bench', '🔬', 'Test bench setup', () =>
+      L(['Bench supply from an <b>isolation transformer</b> with RCD protection.',
+        'Variable AC supply (variac) 0–250 V for testing coils, lamps, transformers.',
+        'Bench DC power supply 0–30 V / 5 A (current-limited) and a fixed 24 V DC supply for relays, sensors and PLC I/O.',
+        'Series lamp (light-bulb) tester for first power-up of a repaired unit.',
+        'Signal sources: loop calibrator, function generator.',
+        'Small PLC / relay test board for checking spare modules.',
+        'Motor test connection with protection for small motors.',
+        'Good lighting, non-conductive bench top, rubber mat on the floor, emergency stop.']) +
+      H('Tips') + L(['Label the bench supplies with voltage and maximum current.', 'Test spare modules on arrival – not when you need them in an emergency.']) + NOTE
+    ],
+    ['consum', '📦', 'Consumables & stock list', () =>
+      TB(['Item', 'Typical stock'], [
+        ['Insulated & non-insulated lugs (tinned copper)', 'All common sizes 0.5–240 mm²'],
+        ['Bootlace ferrules', '0.25–16 mm²'],
+        ['Heat-shrink tubing (incl. adhesive-lined)', 'Assorted sizes and colours'],
+        ['Tapes', 'PVC (colours), self-amalgamating, glass-cloth, aluminium'],
+        ['Cable ties & mounts', 'Plastic UV-resistant and stainless steel'],
+        ['Cable markers & labels', 'Printed sleeves / label printer tapes'],
+        ['Contact cleaner, IPA, dielectric grease', 'Silicone-free products near gas detectors'],
+        ['Fuses', 'All types and ratings used on board (HRC, glass, semiconductor)'],
+        ['Lamps / LED tubes / indicator lamps', 'Per lighting survey'],
+        ['Relays, contactors, terminal blocks, DIN rail, MCBs', 'Most common types'],
+        ['Cable glands & blanking plugs (incl. Ex-certified)', 'M16–M63'],
+        ['Batteries', 'For instruments, torches, handheld radios'],
+        ['Cleaning cloths, brushes, vacuum cleaner (ESD-safe)', 'Switchboard cleaning']]) +
+      L(['Keep a minimum / re-order level for each item and check monthly.', 'Order early – deliveries offshore take time.']) + NOTE
+    ],
+    ['org', '🗂️', 'Workshop organisation & tool control', () =>
+      L(['<b>Shadow boards</b> and labelled drawers – a missing tool is seen immediately.',
+        '<b>Tool register</b> for instruments and special tools (serial no., calibration date, location).',
+        'Tool check-out / check-in for work at height or near open machinery (dropped-object and FOD prevention).',
+        '<b>Red-tag</b> and remove damaged tools and instruments immediately.',
+        'Keep the workshop dry: dehumidifier or heater, closed cabinets; light oil / corrosion inhibitor on steel tools.',
+        'Store electronic spares in ESD bags, dry and labelled; use silica gel in boxes.',
+        'Separate shelf for critical spares (generator AVR, governor, PLC CPU, VFD cards) – labelled and checked.',
+        'First-in-first-out for consumables with shelf life (compounds, batteries, adhesives).',
+        'Secure everything for sea – heavy items low, drawers latched.',
+        'Keep manuals, drawings and a laptop with configuration software in the workshop or electrical office.']) + NOTE
+    ]
+  ];
+  ETO.page({
+    title: 'Workshop Tools for ETO', icon: '🔧', accent: '#64748b',
+    subtitle: 'The workshop tools an ETO should have on board – hand tools, crimping, soldering, power tools, cable tools, test bench, consumables and workshop organisation.',
+    refs: ['IEC 60900', 'IEC 61340 (ESD)', 'EN 50110'],
+    calcs: S.map(([id, icon, title, html]) => ({ id, icon, title, noActions: true, inputs: [], run: () => ({ head: '<span></span>', html: html() }) }))
+  });
+})();
+
+</script>
+<script>window.ETO_FILE='handover.html';</script>
+<script>
+(function () {
+  const { esc } = ETO;
+  const H = t => `<h3>${esc(t)}</h3>`;
+  const L = arr => `<ul class="steps">${arr.map(x => `<li>${x}</li>`).join('')}</ul>`;
+  const TB = (head, rows) => `<table class="rt"><thead><tr>${head.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map((c, i) => `<td>${i === 0 ? `<b>${esc(c)}</b>` : `<span class="kb">${esc(c)}</span>`}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  const PRE = t => `<pre style="white-space:pre-wrap;background:var(--field);color:var(--ink);border:1px solid var(--line);padding:12px;border-radius:10px;font-size:13px;overflow-x:auto">${esc(t)}</pre>`;
+  const NOTE = '<p>Follow the company SMS forms and procedures – these tips complement them.</p>';
+
+  const S = [
+    ['note', '📝', 'A good handover note', () =>
+      `<p>The handover note is the most important document you leave for your relief. A good one lets the incoming ETO work safely from the first hour without calling you.</p>` +
+      H('What it must contain') + L([
+        '<b>Plant status</b>: generators, switchboards, breakers open / locked, shore connection, systems running in manual or abnormal mode.',
+        '<b>Isolations &amp; LOTO</b> in place, open permits and who holds them.',
+        '<b>Inhibits, overrides, bypasses &amp; jumpers</b> (alarms, F&amp;G, safety systems) – with reason and the plan to remove them.',
+        '<b>Open defects &amp; ongoing faults</b>: symptoms, what was checked, what was found, next steps.',
+        '<b>Temporary repairs</b> and what the permanent repair needs.',
+        '<b>PMS status</b>: overdue or upcoming jobs, jobs started but not finished.',
+        '<b>Spares</b>: ordered, expected, critical items out of stock.',
+        '<b>Surveys / audits / class items</b>: dates, outstanding conditions of class, findings to close.',
+        '<b>Modifications &amp; software changes</b> made during the tour (with backups and MoC references).',
+        '<b>Earth faults / insulation readings</b> that are low or trending down.',
+        '<b>Contacts</b>: service engineers, office superintendent, maker support numbers.',
+        '<b>Lessons learned &amp; tips</b> specific to this vessel.']) +
+      H('Example layout') + PRE(`HANDOVER – ETO            Vessel: ________    Date: ________
+Outgoing: ________        Incoming: ________
+
+1. PLANT STATUS
+   DG1 ___ DG2 ___ DG3 ___ DG4 ___  EmGen: auto / tested __/__
+   Abnormal modes: ...
+2. ISOLATIONS / PERMITS OPEN
+   Tag no. | Equipment | Reason | Holder
+3. INHIBITS / OVERRIDES / JUMPERS
+   System | Point | Reason | Since | Plan to remove
+4. OPEN DEFECTS & FAULTS
+   Equipment | Symptom | Done so far | Next step
+5. TEMPORARY REPAIRS
+6. PMS – overdue / in progress
+7. SPARES – ordered / awaited / critical missing
+8. SURVEYS, AUDITS, CLASS ITEMS
+9. MODIFICATIONS / SOFTWARE CHANGES (backup location)
+10. INSULATION / EARTH-FAULT STATUS
+11. CONTACTS
+12. NOTES & TIPS
+
+Signed (outgoing): ______   Signed (incoming): ______`) +
+      H('Tips') + L(['Walk round the vessel together – show, don’t only write.', 'Prioritise: put safety-critical items first.', 'Keep the note factual, short and readable; attach photos and references.', 'Both sign and keep a copy in the office / shared drive.']) + NOTE
+    ],
+    ['markup', '🖍️', 'Drawing mark-ups (redlines)', () =>
+      L([
+        'Mark every change on the <b>master drawing set</b> on board – one controlled set, not loose copies.',
+        'Common convention: <b>red = added</b>, <b>green = removed</b>, <b>blue = comments / notes</b> (follow your company standard).',
+        'Write clearly: cable numbers, terminal numbers, wire colours, breaker / fuse ratings.',
+        'Date, name and reference (work order / MoC) next to each mark-up.',
+        'Send mark-ups to the office / design office for <b>as-built</b> update; replace the master set when the revised drawing arrives.',
+        'Keep a <b>temporary-jumper / modification register</b> – a jumper that is not on the drawing is a trap for the next ETO.',
+        'Photograph terminal rows before disconnecting – the photo is a quick “as-found” record.',
+        'Scan marked-up drawings so the change is not lost if the paper copy is damaged.']) + NOTE
+    ],
+    ['log', '📒', 'Keeping the electrical log', () =>
+      H('What to record') + L([
+        'Daily rounds: generator loads, switchboard readings, insulation monitor (IMD) readings per switchboard.',
+        'Alarms and trips: time, equipment, cause, action taken, who was informed.',
+        'Breaker operations on main and emergency switchboards (incl. shore connection).',
+        'Emergency generator, emergency lighting and battery tests.',
+        'Insulation (megger) tests with temperature, and earth-fault finding.',
+        'Major work done, equipment out of service and returned to service.',
+        'Abnormal conditions: blackouts, partial blackouts, overloads, harmonic problems.']) +
+      H('Good practice') + L(['Write at the time of the event – not from memory at the end of the day.', 'Factual and legible; use 24-hour time and the ship’s time zone.', 'Never erase: strike through with a single line, initial and correct.', 'Keep it consistent with the engine log book and PMS records.', 'The log is evidence in an investigation – write it as if someone will read it later.']) + NOTE
+    ],
+    ['records', '🗃️', 'Records to keep', () =>
+      TB(['Record', 'Why it matters'], [
+        ['Insulation resistance records (with trends)', 'Shows deterioration before failure; surveyors check'],
+        ['IMD / earth-fault log', 'Proof that earth faults are found and removed'],
+        ['Emergency generator & battery test records', 'SOLAS / class requirement'],
+        ['PMS records with findings', 'Evidence of maintenance; basis for planning'],
+        ['Instrument calibration certificates', 'Validity of every test you record'],
+        ['Ex equipment register & inspection records (IEC 60079-17)', 'Safety and audit requirement in hazardous areas'],
+        ['F&G / fire detection test records', 'Safety system integrity'],
+        ['Protection relay settings & test reports', 'Correct selectivity and trip values'],
+        ['Modification / MoC records & jumper register', 'Control of changes'],
+        ['Permits & LOTO records', 'Safe work evidence'],
+        ['Training & competence (HV, Ex, LOTO)', 'Audit requirement'],
+        ['Service engineer reports', 'History of major repairs']]) +
+      L(['Keep records organised by system and date, on paper and electronically.', 'Retain records for the period required by the company and class (often at least the survey cycle).']) + NOTE
+    ],
+    ['label', '🏷️', 'Labelling & cable numbering', () =>
+      L([
+        'Every cable labelled at <b>both ends</b> with the number from the cable schedule / drawing.',
+        'Every core / wire labelled with its terminal or wire number (printed heat-shrink sleeves are durable).',
+        'Terminal strips numbered as on the drawing.',
+        'Breakers and fuses labelled with the consumer name exactly as in the feeder list and drawing.',
+        'Spare ways labelled “SPARE”; disconnected cables made safe (insulated, labelled, coiled).',
+        'Warning labels: multiple supplies, capacitors, back-feed, high voltage, UPS outputs.',
+        'Replace labels damaged by heat, UV or cleaning.',
+        'Use a label printer – hand-written labels fade and are hard to read.']) + NOTE
+    ],
+    ['backup', '💾', 'Digital backups (PLC, VFD, relays)', () =>
+      L([
+        'Keep backups of <b>PLC programs, HMI projects, VFD parameters, AVR / governor settings, protection relay settings, network switch configurations</b> and IAS / PMS configurations.',
+        'File naming: equipment – tag – date – version (e.g. “VFD_Thruster1_2026-10-05_v3”).',
+        'Store in at least <b>two places</b> on board (e.g. electrical office PC + external drive) and one copy with the office.',
+        'Take a new backup <b>after every change</b> and before every software update.',
+        'Record firmware / software versions and licences / dongles.',
+        'VFD keypads can often store a parameter copy – use it as a quick extra backup.',
+        'Test that a backup can be opened – a corrupt backup is no backup.',
+        'Passwords and engineering laptops are controlled per the vessel cyber-security procedure.',
+        'Keep the programming cables and software on board with the backups.']) + NOTE
+    ]
+  ];
+  ETO.page({
+    title: 'Handover & Documentation Tips', icon: '📝', accent: '#7c3aed',
+    subtitle: 'How to write a good handover note, mark up drawings, keep the electrical log, records, labels and digital backups.',
+    refs: ['ISM Code', 'Company SMS'],
+    calcs: S.map(([id, icon, title, html]) => ({ id, icon, title, noActions: true, inputs: [], run: () => ({ head: '<span></span>', html: html() }) }))
+  });
+})();
+
+</script>
+<script>window.ETO_FILE='survey.html';</script>
+<script>
+(function () {
+  const { esc } = ETO;
+  const H = t => `<h3>${esc(t)}</h3>`;
+  const L = arr => `<ul class="steps">${arr.map(x => `<li>${x}</li>`).join('')}</ul>`;
+  const TB = (head, rows) => `<table class="rt"><thead><tr>${head.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map((c, i) => `<td>${i === 0 ? `<b>${esc(c)}</b>` : `<span class="kb">${esc(c)}</span>`}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  const NOTE = '<p>Requirements differ by flag, class, vessel type and client. Use this as a practical guide alongside the class survey checklist and company procedures.</p>';
+
+  const S = [
+    ['types', '📋', 'Survey & audit types', () =>
+      TB(['Type', 'Who', 'Electrical focus'], [
+        ['Class annual survey', 'Classification society', 'General condition, emergency power, alarms, safety systems'],
+        ['Intermediate / renewal (special) survey', 'Classification society', 'Detailed testing: insulation, generators, switchboards, protection, emergency systems'],
+        ['Continuous survey of machinery (CSM)', 'Class (some items credited to chief engineer)', 'Generators, motors and switchboards opened / tested on a rolling cycle'],
+        ['Flag state inspection', 'Flag administration', 'SOLAS / MODU Code compliance, certificates'],
+        ['Port State Control (PSC)', 'Port authority (Paris / Tokyo MoU, USCG …)', 'Emergency generator, emergency lights, nav lights, fire detection, alarms'],
+        ['Vetting / client inspection', 'Charterer / oil major (SIRE, OVID, CMID / eCMID)', 'Maintenance records, critical equipment, competence'],
+        ['DP annual trials / FMEA proving', 'DP surveyor / class', 'Redundancy, blackout recovery, UPS, power management'],
+        ['ISM internal / external audit', 'Company / flag / class', 'Procedures, records, permits, training']]) + NOTE
+    ],
+    ['check', '🔍', 'What inspectors usually check', () =>
+      TB(['Area', 'Typical checks'], [
+        ['Emergency generator', 'Auto start and connection to the emergency switchboard (within 45 s), fuel level, start batteries / air, test records'],
+        ['Emergency switchboard', 'Condition, labels, interlocks with main switchboard, feeder test'],
+        ['Emergency lighting & low-location lighting', 'All lights working on emergency supply; battery-backed fittings tested'],
+        ['Batteries & battery rooms', 'Ventilation working, no ignition sources, charger alarms, condition and records'],
+        ['Main switchboard', 'Clean, covers fitted, rubber mats, labels, earth-fault (IMD) readings, synchronising and protection'],
+        ['Insulation monitoring', 'Readings on all systems, earth faults followed up'],
+        ['Navigation lights', 'Main and spare, failure alarms, supply from two sources'],
+        ['Steering gear', 'Power units, changeover, alarms, emergency supply'],
+        ['Fire detection & general alarm', 'Detector tests, panel faults, GA / PA audible everywhere'],
+        ['Hazardous areas', 'Ex equipment certified and intact, glands, unused entries plugged'],
+        ['Shore connection', 'Interlocks, phase sequence indication, earthing'],
+        ['Cable installation', 'Penetrations sealed, no damaged cables, no temporary wiring'],
+        ['Watertight / fire doors', 'Indicators, alarms, closing from bridge'],
+        ['CO₂ / fixed fire-fighting', 'Release alarms, ventilation trips']]) + NOTE
+    ],
+    ['records', '🗂️', 'Records to have ready', () =>
+      L(['Insulation resistance records (trend) for generators, motors, switchboards and cables.',
+        'IMD / earth-fault log and the actions taken.',
+        'Emergency generator test records (weekly start, periodic on-load test).',
+        'Emergency lighting and battery test records.',
+        'PMS history for electrical equipment and overdue-job explanation.',
+        'Calibration certificates of test instruments.',
+        'Ex equipment register and inspection records (IEC 60079-17).',
+        'Fire detection / F&amp;G test records.',
+        'Protection relay settings and test reports; generator protection and preferential-trip tests.',
+        'Electrical drawings up to date (as-built), single-line diagram in the switchboard room.',
+        'Permit-to-work and LOTO records.',
+        'Training and competence records (HV, Ex, electrical safety).',
+        'Outstanding conditions of class / recommendations and their close-out evidence.']) +
+      H('Tip') + L(['Prepare a folder (paper or digital) per survey type – when the surveyor asks, you answer in seconds. It builds confidence.']) + NOTE
+    ],
+    ['findings', '❗', 'Common findings & how to avoid them', () =>
+      TB(['Common finding', 'How to avoid'], [
+        ['Emergency lights not working', 'Monthly round of all emergency fittings; stock of lamps / batteries'],
+        ['Emergency generator not starting automatically / slow', 'Weekly tests, battery and charger checks, fuel and pre-heating'],
+        ['Battery room ventilation not working / blocked', 'Include fans and louvres in PMS'],
+        ['Earth faults on IMD not rectified', 'Find and remove earth faults promptly; log actions'],
+        ['Missing covers, blanking plates, open panels', 'Close up after every job; walk-round check before survey'],
+        ['Unsealed cable penetrations / transits', 'Reseal immediately after cable work; transit register'],
+        ['Ex equipment damaged, wrong glands, missing stopping plugs', 'Ex inspections per IEC 60079-17; Ex-certified spares only'],
+        ['Missing or wrong labels', 'Labelling programme; label printer'],
+        ['Navigation light failure alarm not working', 'Test failure alarms regularly'],
+        ['Overdue calibration of instruments', 'Calibration register with due dates'],
+        ['Temporary wiring / extension cables', 'Remove after use; proper installation for permanent needs'],
+        ['Rubber mats missing or damaged in front of switchboards', 'Inspect and replace'],
+        ['Drawings not updated', 'Redline and send for as-built after every change'],
+        ['Records incomplete', 'Fill PMS and logs at the time of the job']]) + NOTE
+    ],
+    ['pre', '✅', 'Pre-survey checklist (week before)', () =>
+      L(['Read the survey scope / checklist and the outstanding class items.',
+        'Test emergency generator auto start and on-load; record.',
+        'Check all emergency and low-location lights, navigation lights and their alarms.',
+        'Check battery rooms, chargers, batteries and ventilation.',
+        'Check IMD readings – find and clear any earth faults.',
+        'Walk round switchboards and panels: covers, labels, mats, cleanliness, lamps.',
+        'Check Ex equipment in hazardous areas and cable penetrations.',
+        'Test fire detection, GA / PA and alarms that are in scope.',
+        'Update PMS records and prepare the record folders.',
+        'Check instrument calibration validity and charge instrument batteries.',
+        'Prepare keys, ladders, torches and access to all spaces.',
+        'Brief the electrical team on who does what during the survey.']) + NOTE
+    ],
+    ['day', '🤝', 'On survey day', () =>
+      L(['Accompany the surveyor; bring instruments, keys, drawings and a notebook.',
+        'Be <b>honest and factual</b> – if something is not working, say so and explain the plan.',
+        'Demonstrate tests confidently and safely; follow permits even when time is short.',
+        'Do not argue – ask for the rule reference politely if a finding is unclear.',
+        'Fix small items on the spot where possible and safe.',
+        'Write down every remark and finding with location.',
+        'After the survey: plan corrective actions, close them with evidence (photos, test records) and inform the office.',
+        'Record lessons for the next survey in the handover note.']) + NOTE
+    ]
+  ];
+  ETO.page({
+    title: 'Survey, Audit & Class Tips', icon: '🧾', accent: '#0f766e',
+    subtitle: 'Prepare for class surveys, PSC, vetting and audits – what inspectors usually check, records to have ready, common findings, pre-survey checklist and survey-day tips.',
+    refs: ['SOLAS II-1', 'MODU Code', 'ISM Code', 'IEC 60079-17'],
+    calcs: S.map(([id, icon, title, html]) => ({ id, icon, title, noActions: true, inputs: [], run: () => ({ head: '<span></span>', html: html() }) }))
+  });
+})();
+
+</script>
 <script>
 (function(){
   document.querySelectorAll('.theme-btn').forEach(function(b){b.onclick=function(){var r=document.documentElement;var d=getComputedStyle(r).getPropertyValue('--bg').trim()==='#0b1220';r.setAttribute('data-theme',d?'light':'dark');try{localStorage.setItem('eto:theme',d?'light':'dark')}catch(e){}};});
@@ -4820,11 +5423,11 @@ footer .disc{flex-basis:100%}
 </script>
 <script>
 (function(){
-  const L={1:['Level 1 – Daily ETO calculations','Everyday sizing, loading and checking'],2:['Level 2 – Professional troubleshooting','Protection, drives, harmonics, insulation, lighting'],3:['Level 3 – Specialist systems','Jacking (jack-up), cranes, thrusters, power-plant & load balance, fire & gas'],4:['Level 4 – Mathematics & engineering conversions','Unit converters, maths, geometry, circuit theory, mechanical & thermal'],5:['Level 5 – ETO Operations','Troubleshoot → test → maintain'],6:['Level 6 – Instrumentation & Control','Signals & loops, temperature sensors, process measurement, calibration'],7:['Level 7 – Systems, Safety & Marine','PMS / DP simulation, Ex areas, safe isolation, shore power & navigation, networks']};
+  const L={1:['Level 1 – Daily ETO calculations','Everyday sizing, loading and checking'],2:['Level 2 – Professional troubleshooting','Protection, drives, harmonics, insulation, lighting'],3:['Level 3 – Specialist systems','Jacking (jack-up), cranes, thrusters, power-plant & load balance, fire & gas'],4:['Level 4 – Mathematics & engineering conversions','Unit converters, maths, geometry, circuit theory, mechanical & thermal'],5:['Level 5 – ETO Operations','Troubleshoot → test → maintain'],6:['Level 6 – Instrumentation & Control','Signals & loops, temperature sensors, process measurement, calibration'],7:['Level 7 – Systems, Safety & Marine','PMS / DP simulation, Ex areas, safe isolation, shore power & navigation, networks'],8:['Level 8 – Tips & Tricks for ETO','Instruments, meter tricks, workshop tools, handover & surveys']};
   const root=document.getElementById('lists');
   function draw(q){
     q=(q||'').toLowerCase();root.innerHTML='';
-    [1,2,3,4,5,6,7].forEach(l=>{
+    [1,2,3,4,5,6,7,8].forEach(l=>{
       const ps=ETO.PAGES.filter(p=>p.lvl===l&&(!q||(p.n+' '+p.d).toLowerCase().includes(q)));
       if(!ps.length)return;
       root.insertAdjacentHTML('beforeend',`<div class="lvl"><h2>${L[l][0]}</h2><span>${L[l][1]}</span></div><div class="cards">`+

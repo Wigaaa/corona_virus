@@ -12,7 +12,7 @@
 <section class="hero" style="background:linear-gradient(135deg,#1d4ed8,#7c3aed 55%,#db2777)">
   <div class="ico">⚡</div>
   <div><h1>ETO Toolkit – Marine Electrical Engineering &amp; Troubleshooting</h1>
-  <p>Calculate · Test · Diagnose · Maintain — 36 pages for ETOs on any vessel or offshore unit (OSV, DP, jack-up, drillship, tanker, passenger…). Works offline in any browser; your inputs stay on your device.</p>
+  <p>Calculate · Test · Diagnose · Maintain — 41 pages for ETOs on any vessel or offshore unit (OSV, DP, jack-up, drillship, tanker, passenger…). Works offline in any browser; your inputs stay on your device.</p>
   <div class="chips"><span class="chip">IEC 60092</span><span class="chip">IEC 60364</span><span class="chip">IEC 60909</span><span class="chip">IEC 60947</span><span class="chip">IEEE 43</span><span class="chip">IEEE 519</span><span class="chip">IACS UR E</span><span class="chip">SOLAS II-1</span><span class="chip">IEC 60079</span><span class="chip">COLREG</span></div></div>
 </section>
 <div class="wrap">
@@ -33,11 +33,11 @@
 <script src="assets/common.js"></script>
 <script>
 (function(){
-  const L={1:['Level 1 – Daily ETO calculations','Everyday sizing, loading and checking'],2:['Level 2 – Professional troubleshooting','Protection, drives, harmonics, insulation, lighting'],3:['Level 3 – Specialist systems','Jacking (jack-up), cranes, thrusters, power-plant & load balance, fire & gas'],4:['Level 4 – Mathematics & engineering conversions','Unit converters, maths, geometry, circuit theory, mechanical & thermal'],5:['Level 5 – ETO Operations','Troubleshoot → test → maintain'],6:['Level 6 – Instrumentation & Control','Signals & loops, temperature sensors, process measurement, calibration'],7:['Level 7 – Systems, Safety & Marine','PMS / DP simulation, Ex areas, safe isolation, shore power & navigation, networks']};
+  const L={1:['Level 1 – Daily ETO calculations','Everyday sizing, loading and checking'],2:['Level 2 – Professional troubleshooting','Protection, drives, harmonics, insulation, lighting'],3:['Level 3 – Specialist systems','Jacking (jack-up), cranes, thrusters, power-plant & load balance, fire & gas'],4:['Level 4 – Mathematics & engineering conversions','Unit converters, maths, geometry, circuit theory, mechanical & thermal'],5:['Level 5 – ETO Operations','Troubleshoot → test → maintain'],6:['Level 6 – Instrumentation & Control','Signals & loops, temperature sensors, process measurement, calibration'],7:['Level 7 – Systems, Safety & Marine','PMS / DP simulation, Ex areas, safe isolation, shore power & navigation, networks'],8:['Level 8 – Tips & Tricks for ETO','Instruments, meter tricks, workshop tools, handover & surveys']};
   const root=document.getElementById('lists');
   function draw(q){
     q=(q||'').toLowerCase();root.innerHTML='';
-    [1,2,3,4,5,6,7].forEach(l=>{
+    [1,2,3,4,5,6,7,8].forEach(l=>{
       const ps=ETO.PAGES.filter(p=>p.lvl===l&&(!q||(p.n+' '+p.d).toLowerCase().includes(q)));
       if(!ps.length)return;
       root.insertAdjacentHTML('beforeend',`<div class="lvl"><h2>${L[l][0]}</h2><span>${L[l][1]}</span></div><div class="cards">`+

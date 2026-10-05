@@ -38,7 +38,12 @@
     { f: 'hazardous.html', n: 'Ex / Hazardous Area Guide', i: '💥', c: '#ea580c', lvl: 7, d: 'Knowledge guide: zones, gas groups & T-classes, EPL & ATEX categories, all Ex protection types, reading Ex markings, installation, intrinsic safety, inspection & maintenance, marine areas' },
     { f: 'safety.html', n: 'Electrical Safety & Isolation Guide', i: '🦺', c: '#b91c1c', lvl: 7, d: 'Knowledge guide for ETOs: electrical hazards, safe isolation, LOTO, prove-test-prove, HV safety, stored energy, PPE & live working, permit to work, emergency response' },
     { f: 'marine.html', n: 'Marine Systems & Shore Power', i: '⚓', c: '#1e40af', lvl: 7, d: 'Shore connection compatibility & sizing, emergency-generator starting battery, battery-room hydrogen ventilation, DC fault current' },
-    { f: 'network.html', n: 'Communications & Networks', i: '🌐', c: '#4f46e5', lvl: 7, d: 'IPv4 subnet, RS-485 / Modbus RTU timing, NMEA 0183 & AIS decoder, PoE budget' }
+    { f: 'network.html', n: 'Communications & Networks', i: '🌐', c: '#4f46e5', lvl: 7, d: 'IPv4 subnet, RS-485 / Modbus RTU timing, NMEA 0183 & AIS decoder, PoE budget' },
+    { f: 'instruments.html', n: 'ETO Instruments & How to Use Them', i: '🧰', c: '#0d9488', lvl: 8, d: 'Multimeter, megger, Ductor, earth leakage / RCD tester, phase rotation, PQ analyser, oscilloscope, loop & temperature calibrators, thermal camera, battery & cable testers, network tester, minimum kit' },
+    { f: 'metertricks.html', n: 'Multimeter & Clamp-Meter Tricks', i: '🔎', c: '#ca8a04', lvl: 8, d: 'Ghost voltages & LoZ, true-RMS vs average, measuring VFDs, testing diodes, IGBTs, contactor coils & capacitors, clamp tricks, common mistakes' },
+    { f: 'workshop.html', n: 'Workshop Tools for ETO', i: '🔧', c: '#64748b', lvl: 8, d: 'Hand tools, crimping & terminating, soldering bench, power tools, cable & gland tools, test bench, consumables, workshop organisation' },
+    { f: 'handover.html', n: 'Handover & Documentation Tips', i: '📝', c: '#7c3aed', lvl: 8, d: 'Good handover note, drawing mark-ups, electrical log, records, labelling & cable numbering, digital backups' },
+    { f: 'survey.html', n: 'Survey, Audit & Class Tips', i: '🧾', c: '#0f766e', lvl: 8, d: 'Survey types, what inspectors check, records to have ready, common findings, pre-survey checklist, survey day' },
   ];
 
   const S3 = Math.sqrt(3);
