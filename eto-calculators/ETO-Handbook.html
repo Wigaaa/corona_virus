@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ETO Toolkit – Marine Electrical Engineering &amp; Troubleshooting</title>
+<title>ETO Handbook – Marine Electrical Engineering, Guides &amp; Tools</title>
 <style>
 :root{
   --bg:#f3f6fb;--card:#ffffff;--ink:#0f172a;--mut:#64748b;--line:#e2e8f0;--field:#f8fafc;
@@ -181,15 +181,16 @@ footer .disc{flex-basis:100%}
 </head>
 <body>
 <div id="indexView">
-<header class="top"><a class="home" href="#">⚡ ETO Toolkit</a><a class="btn" href="#about.html" style="margin-left:auto;text-decoration:none">ℹ️ About / Credits</a><button class="btn" id="theme0">🌓</button></header>
+<header class="top"><a class="home" href="#">📘 ETO Handbook</a><a class="btn" href="#about.html" style="margin-left:auto;text-decoration:none">ℹ️ About / Credits</a><button class="btn" id="theme0">🌓</button></header>
 <section class="hero" style="background:linear-gradient(135deg,#1d4ed8,#7c3aed 55%,#db2777)">
-  <div class="ico">⚡</div>
-  <div><h1>ETO Toolkit – Marine Electrical Engineering &amp; Troubleshooting</h1>
+  <div class="ico">📘</div>
+  <div><h1>ETO Handbook – Marine Electrical Engineering, Guides &amp; Tools</h1>
+  <p style="font-size:1.25em;font-weight:800;margin:4px 0 6px;opacity:1">Everything an ETO Needs</p>
   <p>Calculate · Test · Diagnose · Maintain — 42 pages for ETOs on any vessel or offshore unit (OSV, DP, jack-up, drillship, tanker, passenger…). Works offline in any browser; your inputs stay on your device.</p>
   <div class="chips"><span class="chip">IEC 60092</span><span class="chip">IEC 60364</span><span class="chip">IEC 60909</span><span class="chip">IEC 60947</span><span class="chip">IEEE 43</span><span class="chip">IEEE 519</span><span class="chip">IACS UR E</span><span class="chip">SOLAS II-1</span><span class="chip">IEC 60079</span><span class="chip">COLREG</span></div></div>
 </section>
 <div class="wrap">
-  <input class="search" id="q" type="search" placeholder="🔍 Search calculators (e.g. voltage drop, PI, thruster, UPS)…">
+  <input class="search" id="q" type="search" placeholder="🔍 Search pages (e.g. voltage drop, PI, thruster, DP, megger, interview)…">
   <div id="lists"></div>
   <a class="pc" style="--c:#7c3aed;margin-top:30px;max-width:520px" href="#about.html"><div class="ic">👷</div><b>About / Credits – Wagdy Mohamed Abdel Aziz, ETO</b><p>Contact details, LinkedIn, WhatsApp, experience and qualifications of the developer.</p><span class="num">Open →</span></a>
   <div class="card" style="margin-top:30px">
@@ -205,7 +206,7 @@ footer .disc{flex-basis:100%}
 </div>
 </div>
 <div id="aboutView" style="display:none">
-<header class="top"><a class="home" href="#">◀ ETO Toolkit</a><button class="btn theme-btn" style="margin-left:auto">🌓</button></header>
+<header class="top"><a class="home" href="#">◀ ETO Handbook</a><button class="btn theme-btn" style="margin-left:auto">🌓</button></header>
 <section class="ab-hero">
   <div class="ab-av">WM</div>
   <div><h1>Wagdy Mohamed Abdel Aziz</h1><p>Electrical Technical Officer (ETO) · ZMI · Jack-up barges</p></div>
@@ -246,8 +247,8 @@ footer .disc{flex-basis:100%}
   </div>
 
   <div class="card">
-    <h2>⚡ About this toolkit</h2>
-    <p class="desc" style="margin:8px 0 0">ETO Toolkit is a free marine electrical engineering &amp; troubleshooting toolbox for ETOs: 300+ calculators, troubleshooting guides, preventive-maintenance steps and simulators – power, cables, motors, generators, protection, drives, harmonics, jacking, cranes, thrusters, power-plant analysis, plus unit converters, maths, geometry, circuit theory and mechanical / thermal formulas – built for daily work on a jack-up barge. It runs offline in any browser. Calculations follow commonly used IEC / IEEE / IACS practice and are <b>aids only</b>: always verify against the vessel's drawings, equipment nameplates, manufacturer data and class / flag rules. Feedback and suggestions are welcome by email or WhatsApp.</p>
+    <h2>⚡ About this handbook</h2>
+    <p class="desc" style="margin:8px 0 0">ETO Handbook – Marine Electrical Engineering, Guides &amp; Tools – everything an ETO needs, free: 300+ calculators, troubleshooting guides, preventive-maintenance steps and simulators – power, cables, motors, generators, protection, drives, harmonics, jacking, cranes, thrusters, power-plant analysis, plus unit converters, maths, geometry, circuit theory and mechanical / thermal formulas – built for daily work on a jack-up barge. It runs offline in any browser. Calculations follow commonly used IEC / IEEE / IACS practice and are <b>aids only</b>: always verify against the vessel's drawings, equipment nameplates, manufacturer data and class / flag rules. Feedback and suggestions are welcome by email or WhatsApp.</p>
   </div>
   <p style="text-align:center;color:var(--mut);font-size:13px">Developed by Wagdy Mohamed Abdel Aziz – Electrical Technical Officer, ZMI · © 2026 · Built with the help of Claude (Anthropic)</p>
 </div>
@@ -255,7 +256,7 @@ footer .disc{flex-basis:100%}
 <div id="app" style="display:none"></div>
 <script>window.ETO_BUNDLE=true;</script>
 <script>
-/* ETO Toolkit – shared calculator engine */
+/* ETO Handbook – shared engine */
 (function () {
   'use strict';
 
@@ -424,7 +425,7 @@ footer .disc{flex-basis:100%}
     const prev = PAGES[k - 1], next = PAGES[k + 1];
     const opts = PAGES.map(p => `<option value="${p.f}" ${p.f === cfg.file ? 'selected' : ''}>${p.i}  ${esc(p.n)}</option>`).join('');
     return `
-<header class="top"><a class="home" href="${href('index.html')}">◀ ETO Toolkit</a>
+<header class="top"><a class="home" href="${href('index.html')}">◀ ETO Handbook</a>
   <select class="jump" aria-label="Jump to page">${opts}</select>
   <button class="btn" id="theme" title="Toggle dark mode">🌓</button>
   <button class="btn" id="print">🖨 Print</button></header>
@@ -447,7 +448,7 @@ footer .disc{flex-basis:100%}
   }
 
   function mount(cfg) {
-    document.title = cfg.title + ' • ETO Toolkit';
+    document.title = cfg.title + ' • ETO Handbook';
     document.documentElement.style.setProperty('--accent', cfg.accent);
     const app = document.getElementById('app');
     app.innerHTML = skeleton(cfg);
@@ -671,7 +672,7 @@ footer .disc{flex-basis:100%}
       av.style.display = 'none';
       if (!cfg) {
         iv.style.display = ''; app.style.display = 'none'; cur = null;
-        document.title = 'ETO Toolkit – Marine Electrical Engineering & Troubleshooting';
+        document.title = 'ETO Handbook – Marine Electrical Engineering, Guides & Tools';
         document.documentElement.style.setProperty('--accent', '#2563eb');
         return;
       }
@@ -4332,7 +4333,7 @@ footer .disc{flex-basis:100%}
     ],
     ['nettest', '🌐', 'Network / serial tester', () =>
       I('Checks Ethernet cables and serial links (RS-232 / RS-485 / NMEA) and reads the data on them.',
-        ['<b>Ethernet cable tester / verifier</b>: wire map (opens, shorts, crossed or split pairs), length, link speed, PoE presence.', '<b>Laptop + Wireshark</b> on a switch mirror port: see Modbus TCP, PROFINET, NMEA over UDP traffic and errors.', '<b>USB-RS485 / RS-232 adapter</b> with terminal or Modbus software: listen to a serial line or poll a device.', '<b>NMEA</b>: listen to the talker output and check sentences and checksums (see the NMEA decoder in this toolkit).', 'Check termination resistance on RS-485 / CAN with power off (≈ 60 Ω).'],
+        ['<b>Ethernet cable tester / verifier</b>: wire map (opens, shorts, crossed or split pairs), length, link speed, PoE presence.', '<b>Laptop + Wireshark</b> on a switch mirror port: see Modbus TCP, PROFINET, NMEA over UDP traffic and errors.', '<b>USB-RS485 / RS-232 adapter</b> with terminal or Modbus software: listen to a serial line or poll a device.', '<b>NMEA</b>: listen to the talker output and check sentences and checksums (see the NMEA decoder in this handbook).', 'Check termination resistance on RS-485 / CAN with power off (≈ 60 Ω).'],
         ['Connecting a laptop to ship networks must follow the vessel cyber-security procedure (scanned, authorised device).'],
         ['Transmitting on a live bus and disturbing the master.', 'Swapping A / B on RS-485.']) + NOTE
     ],
@@ -5000,7 +5001,7 @@ Signed (outgoing): ______   Signed (incoming): ______`) +
         ['S', 'How do you prioritise when several faults happen at once?', 'Safety and position keeping first (DP, power, safety systems), then production-critical, then others; communicate priorities to the chief engineer / OIM and record.'],
         ['J', 'Why do you want to work for us?', 'Show research: company fleet, vessel types, safety record, technology; link to your experience and career goals.'],
         ['J', 'What is your greatest weakness?', 'Give a real but manageable weakness and what you do to improve it.'],
-        ['J', 'How do you keep your knowledge up to date?', 'Maker courses, technical reading, standards, online learning, learning from service engineers, tools like this toolkit.']])
+        ['J', 'How do you keep your knowledge up to date?', 'Maker courses, technical reading, standards, online learning, learning from service engineers, tools like this handbook.']])
     ],
     ['final', '🏁', 'Questions to ask & final tips', () =>
       H('Questions to ask the employer') + L([
@@ -5010,7 +5011,7 @@ Signed (outgoing): ______   Signed (incoming): ______`) +
         'Training offered (maker courses, HV, Ex, DP) and career path.',
         'Current condition of the vessel and planned dry-dock / projects.',
         'Salary, allowances, insurance and payment schedule (usually at the end, or with the crewing office).']) +
-      H('Before the interview') + L(['Re-read your CV – be ready to explain every vessel and system in it.', 'Study the company and its fleet.', 'Revise the Q&A tabs in this page and the toolkit pages for your vessel type.', 'Prepare 3 STAR stories: difficult fault, safety stop, teamwork.', 'Prepare certificates (originals and copies) and check their expiry dates.']) +
+      H('Before the interview') + L(['Re-read your CV – be ready to explain every vessel and system in it.', 'Study the company and its fleet.', 'Revise the Q&A tabs in this page and the handbook pages for your vessel type.', 'Prepare 3 STAR stories: difficult fault, safety stop, teamwork.', 'Prepare certificates (originals and copies) and check their expiry dates.']) +
       H('During the interview') + L(['Be on time (online: 10 minutes early), dress smart.', 'Listen to the full question, think, then answer step by step.', 'If you do not know – say so honestly and explain how you would find out (manual, drawings, maker).', 'Always mention safety first in technical answers.', 'Draw simple sketches if allowed (single-line diagram, loop diagram).']) +
       H('After the interview') + L(['Send a short thank-you message / email.', 'Follow up politely if you have not heard back within the agreed time.', 'Write down the questions you were asked – they help next time.'])
     ]

@@ -1,4 +1,4 @@
-/* ETO Toolkit – shared calculator engine */
+/* ETO Handbook – shared engine */
 (function () {
   'use strict';
 
@@ -167,7 +167,7 @@
     const prev = PAGES[k - 1], next = PAGES[k + 1];
     const opts = PAGES.map(p => `<option value="${p.f}" ${p.f === cfg.file ? 'selected' : ''}>${p.i}  ${esc(p.n)}</option>`).join('');
     return `
-<header class="top"><a class="home" href="${href('index.html')}">◀ ETO Toolkit</a>
+<header class="top"><a class="home" href="${href('index.html')}">◀ ETO Handbook</a>
   <select class="jump" aria-label="Jump to page">${opts}</select>
   <button class="btn" id="theme" title="Toggle dark mode">🌓</button>
   <button class="btn" id="print">🖨 Print</button></header>
@@ -190,7 +190,7 @@
   }
 
   function mount(cfg) {
-    document.title = cfg.title + ' • ETO Toolkit';
+    document.title = cfg.title + ' • ETO Handbook';
     document.documentElement.style.setProperty('--accent', cfg.accent);
     const app = document.getElementById('app');
     app.innerHTML = skeleton(cfg);
@@ -414,7 +414,7 @@
       av.style.display = 'none';
       if (!cfg) {
         iv.style.display = ''; app.style.display = 'none'; cur = null;
-        document.title = 'ETO Toolkit – Marine Electrical Engineering & Troubleshooting';
+        document.title = 'ETO Handbook – Marine Electrical Engineering, Guides & Tools';
         document.documentElement.style.setProperty('--accent', '#2563eb');
         return;
       }

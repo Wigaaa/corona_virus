@@ -1,6 +1,8 @@
-# ETO Toolkit – Marine Electrical Engineering & Troubleshooting
+# ETO Handbook – Marine Electrical Engineering, Guides & Tools
 
-Open `ETO-Toolkit.html` (single file) or `index.html` (multi-page) in any browser – phone, tablet or laptop. No install, works offline.
+**Everything an ETO Needs**
+
+Open `ETO-Handbook.html` (single file) or `index.html` (multi-page) in any browser – phone, tablet or laptop. No install, works offline.
 
 **42 pages · calculators & tools in 8 levels**
 
@@ -16,6 +18,6 @@ Open `ETO-Toolkit.html` (single file) or `index.html` (multi-page) in any browse
 | 8 – Maths & conversions (reference) | Unit converters (mechanical, electrical & marine), mathematics, geometry & tanks, circuit theory, mechanical / fluid / thermal |
 
 - Shared engine `assets/common.js`, styles `assets/style.css`, one file per page in `assets/pages/`.
-- `python3 build_single_file.py` rebuilds `ETO-Toolkit.html` after edits.
+- `python3 build_single_file.py` rebuilds `ETO-Handbook.html` after edits.
 - Inputs are remembered in the browser (localStorage).
 - Default values are typical examples. Always verify against vessel drawings, nameplates, maker data and class / flag rules.

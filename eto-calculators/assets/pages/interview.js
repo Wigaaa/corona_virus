@@ -162,7 +162,7 @@
         ['S', 'How do you prioritise when several faults happen at once?', 'Safety and position keeping first (DP, power, safety systems), then production-critical, then others; communicate priorities to the chief engineer / OIM and record.'],
         ['J', 'Why do you want to work for us?', 'Show research: company fleet, vessel types, safety record, technology; link to your experience and career goals.'],
         ['J', 'What is your greatest weakness?', 'Give a real but manageable weakness and what you do to improve it.'],
-        ['J', 'How do you keep your knowledge up to date?', 'Maker courses, technical reading, standards, online learning, learning from service engineers, tools like this toolkit.']])
+        ['J', 'How do you keep your knowledge up to date?', 'Maker courses, technical reading, standards, online learning, learning from service engineers, tools like this handbook.']])
     ],
     ['final', '🏁', 'Questions to ask & final tips', () =>
       H('Questions to ask the employer') + L([
@@ -172,7 +172,7 @@
         'Training offered (maker courses, HV, Ex, DP) and career path.',
         'Current condition of the vessel and planned dry-dock / projects.',
         'Salary, allowances, insurance and payment schedule (usually at the end, or with the crewing office).']) +
-      H('Before the interview') + L(['Re-read your CV – be ready to explain every vessel and system in it.', 'Study the company and its fleet.', 'Revise the Q&A tabs in this page and the toolkit pages for your vessel type.', 'Prepare 3 STAR stories: difficult fault, safety stop, teamwork.', 'Prepare certificates (originals and copies) and check their expiry dates.']) +
+      H('Before the interview') + L(['Re-read your CV – be ready to explain every vessel and system in it.', 'Study the company and its fleet.', 'Revise the Q&A tabs in this page and the handbook pages for your vessel type.', 'Prepare 3 STAR stories: difficult fault, safety stop, teamwork.', 'Prepare certificates (originals and copies) and check their expiry dates.']) +
       H('During the interview') + L(['Be on time (online: 10 minutes early), dress smart.', 'Listen to the full question, think, then answer step by step.', 'If you do not know – say so honestly and explain how you would find out (manual, drawings, maker).', 'Always mention safety first in technical answers.', 'Draw simple sketches if allowed (single-line diagram, loop diagram).']) +
       H('After the interview') + L(['Send a short thank-you message / email.', 'Follow up politely if you have not heard back within the agreed time.', 'Write down the questions you were asked – they help next time.'])
     ]

@@ -92,7 +92,7 @@
     ],
     ['nettest', '🌐', 'Network / serial tester', () =>
       I('Checks Ethernet cables and serial links (RS-232 / RS-485 / NMEA) and reads the data on them.',
-        ['<b>Ethernet cable tester / verifier</b>: wire map (opens, shorts, crossed or split pairs), length, link speed, PoE presence.', '<b>Laptop + Wireshark</b> on a switch mirror port: see Modbus TCP, PROFINET, NMEA over UDP traffic and errors.', '<b>USB-RS485 / RS-232 adapter</b> with terminal or Modbus software: listen to a serial line or poll a device.', '<b>NMEA</b>: listen to the talker output and check sentences and checksums (see the NMEA decoder in this toolkit).', 'Check termination resistance on RS-485 / CAN with power off (≈ 60 Ω).'],
+        ['<b>Ethernet cable tester / verifier</b>: wire map (opens, shorts, crossed or split pairs), length, link speed, PoE presence.', '<b>Laptop + Wireshark</b> on a switch mirror port: see Modbus TCP, PROFINET, NMEA over UDP traffic and errors.', '<b>USB-RS485 / RS-232 adapter</b> with terminal or Modbus software: listen to a serial line or poll a device.', '<b>NMEA</b>: listen to the talker output and check sentences and checksums (see the NMEA decoder in this handbook).', 'Check termination resistance on RS-485 / CAN with power off (≈ 60 Ω).'],
         ['Connecting a laptop to ship networks must follow the vessel cyber-security procedure (scanned, authorised device).'],
         ['Transmitting on a live bus and disturbing the master.', 'Swapping A / B on RS-485.']) + NOTE
     ],
