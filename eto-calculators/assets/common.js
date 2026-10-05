@@ -266,12 +266,13 @@
             recompute();
           });
         }
+        if (i.wide) f.style.gridColumn = '1/-1';
         f._def = i;
         flds.push(f);
         grid.appendChild(f);
       });
       card.appendChild(grid);
-      if (c.inputs.length) {
+      if (c.inputs.length && !c.noActions) {
         const act = el('div', { class: 'actions' });
         const rb = el('button', { class: 'btn', type: 'button' }, '↺ Reset to defaults');
         rb.onclick = () => { try { localStorage.removeItem(key(c)); } catch (e) { /* ignore */ } show(c); };

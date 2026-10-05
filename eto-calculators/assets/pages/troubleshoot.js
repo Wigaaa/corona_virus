@@ -183,24 +183,17 @@
     const e = KB[id];
     const keys = Object.keys(e.sym);
     return {
-      id, icon: e.icon, title: e.name, report: true,
-      desc: 'Choose the symptom. You get the most likely causes (most likely first), an ordered check sequence, measurements with expected values and corrective actions. Add your findings and print a troubleshooting record.',
+      id, icon: e.icon, title: e.name, noActions: true,
+      desc: 'Choose the symptom. You get the most likely causes (most likely first), an ordered check sequence, measurements with expected values and corrective actions.',
       inputs: [
-        { k: 'sym', l: 'Symptom', opts: keys.map(k => [k, e.sym[k].t]), v: keys[0] },
-        { k: 'tag', t: 'text', l: 'Equipment / tag', v: '' },
-        { k: 'date', t: 'date', l: 'Date', v: '' },
-        { k: 'find', t: 'area', l: 'Findings / readings taken (optional – appears on the printed record)', v: '', rows: 3 },
-        { k: 'act', t: 'area', l: 'Action taken / result (optional)', v: '', rows: 2 }
+        { k: 'sym', l: 'Symptom', opts: keys.map(k => [k, e.sym[k].t]), v: keys[0], wide: true }
       ],
       run: v => {
         const s = e.sym[v.sym];
-        let h = ETO.reportHead('Troubleshooting record – ' + e.name, [['Equipment / tag', v.tag], ['Symptom', s.t], ['Date', v.date]]);
+        let h = `<h3 style="font-size:17px;text-transform:none;letter-spacing:0;color:var(--ink)">${esc(s.t)}</h3>`;
         h += `<h3>1 · Most likely causes</h3>${list(s.c)}<h3>2 · Check sequence</h3>${list(s.k)}`;
         h += `<h3>3 · Measurements & expected values</h3><table class="rt"><thead><tr><th>Measurement</th><th>Expected / healthy</th></tr></thead><tbody>${s.m.map(r => `<tr><td><span class="kb">${esc(r[0])}</span></td><td><span class="kb">${esc(r[1])}</span></td></tr>`).join('')}</tbody></table>`;
         h += `<h3>4 · Corrective actions</h3>${list(s.a)}`;
-        if (v.find) h += `<h3>Findings</h3><p style="white-space:pre-wrap">${esc(v.find)}</p>`;
-        if (v.act) h += `<h3>Action taken / result</h3><p style="white-space:pre-wrap">${esc(v.act)}</p>`;
-        h += '<div class="sign"><div>ETO signature</div><div>Chief Engineer</div></div>';
         return { head: '<span></span>', verdict: { s: 'warn', t: '🦺 ' + esc(e.s) }, html: h, notes: ['Generic guidance – always follow the equipment manual, the vessel\'s safety management system and permit-to-work.'] };
       }
     };
@@ -208,7 +201,7 @@
   ETO.page({
     title: 'Troubleshooting Assistant', icon: '🩺', accent: '#dc2626',
     subtitle: 'Equipment → symptom → likely causes → ordered checks → measurements → corrective action. Maker-independent, field-proven fault-finding logic.',
-    refs: ['Maker-independent', 'Safe isolation first', 'Printable record'],
+    refs: ['Maker-independent', 'Safe isolation first'],
     calcs
   });
 })();
