@@ -2,8 +2,8 @@
   const { R, lvl, S3, esc, std, STD_BREAKERS } = ETO;
   ETO.page({
     title: 'Marine Systems & Shore Power', icon: '⚓', accent: '#1e40af',
-    subtitle: 'Shore connection, navigation lights (COLREG), GMDSS reserve source, emergency-generator starting batteries, battery-room ventilation and DC fault current.',
-    refs: ['SOLAS II-1 & IV', 'COLREG 1972 Annex I', 'IEC 80005-3 (LV shore)', 'IEC 62485-2'],
+    subtitle: 'Shore connection, emergency-generator starting batteries, battery-room ventilation and DC fault current.',
+    refs: ['SOLAS II-1', 'IEC 80005-3 (LV shore)', 'IEC 62485-2'],
     calcs: [
       {
         id: 'shore', icon: '🔌', title: 'Shore power compatibility & sizing', desc: 'Check the shore supply against the vessel system and size the connection.',
@@ -13,25 +13,6 @@
           const s = v.kw / v.pf, i = s * 1000 / (S3 * v.vv), dv = (v.sv - v.vv) / v.vv * 100, fOk = +v.sf === +v.vf, vOk = Math.abs(dv) <= 6, kOk = s <= v.sk, eOk = v.se === v.ve, nc = Math.ceil(i / v.cr);
           const issues = [!fOk && `Frequency mismatch ${v.sf} Hz shore vs ${v.vf} Hz vessel – motors run ${v.sf < v.vf ? 'slower' : 'faster'} by ${Math.abs(v.sf / v.vf - 1) * 100 | 0} % and transformers/ballasts may overheat; a frequency converter is required.`, !vOk && `Voltage differs ${dv.toFixed(1)} % – use a transformer / converter.`, !kOk && 'Shore capacity too small for the load – shed load or request higher capacity.', !eOk && 'Different earthing systems – use an isolation transformer so the vessel IT system is not earthed by the shore supply.'].filter(Boolean);
           return { results: [R('Shore current at vessel voltage', i, 'A', 0, null, true), R('Apparent power', s, 'kVA', 0, kOk ? 'ok' : 'bad'), R('Voltage difference', dv, '%', 1, vOk ? 'ok' : 'bad'), R('Frequency', fOk ? 'match' : 'MISMATCH', '', 0, fOk ? 'ok' : 'bad'), R('Shore cables needed', nc, '', 0), R('Shore breaker (std ≥ I)', std(STD_BREAKERS, i) || '> 5000 A – select from catalogue', 'A', 0)], verdict: issues.length ? { s: 'bad', t: issues.join(' ') } : { s: 'ok', t: 'Shore supply compatible.' }, notes: ['Before closing: check phase sequence (phase-sequence relay / meter), insulation of shore cables, earth / bonding connection first, interlock with generator breakers (no paralleling unless designed).'] };
-        }
-      },
-      {
-        id: 'nav', icon: '🚦', title: 'Navigation lights (COLREG Rule 22)', desc: 'Minimum visibility range of each light by vessel length, plus status-light combinations.',
-        formula: 'COLREG Rule 22 / Annex I',
-        inputs: [{ k: 'l', l: 'Vessel length overall', u: 'm', v: 72, min: 1 }, { k: 'w', l: 'Lamp power per light', u: 'W', v: 25, min: 0 }, { k: 'n', l: 'Number of navigation lights fitted', v: 6, min: 0, step: 1 }, { k: 'v', l: 'Supply voltage', u: 'V', v: 24, min: 1 }],
-        run: v => {
-          const L = v.l, r = L >= 50 ? [6, 3, 3, 3, 3] : L >= 20 ? [5, 2, 2, 2, 2] : L >= 12 ? [3, 2, 2, 2, 2] : [2, 1, 2, 2, 2], P = v.w * v.n;
-          return { results: [R('Masthead light', r[0], 'nm', 0, null, true), R('Sidelights', r[1], 'nm', 0, null, true), R('Stern light', r[2], 'nm', 0), R('Towing light', r[3], 'nm', 0), R('All-round lights', r[4], 'nm', 0), R('Navigation-light load', P, 'W', 0), R('Current', P / v.v, 'A', 1)],
-            tables: [{ title: 'Common status lights (all-round)', head: ['Situation', 'Lights'], rows: [['Not under command (Rule 27a)', 'Two red, vertical'], ['Restricted in ability to manoeuvre (Rule 27b)', 'Red – white – red, vertical'], ['At anchor ≥ 50 m (Rule 30)', 'White forward + lower white aft (and deck lights if ≥ 100 m)'], ['Aground (Rule 30d)', 'Anchor lights + two red vertical'], ['Constrained by draught (Rule 28)', 'Three red, vertical'], ['Engaged in dredging / underwater ops (Rule 27d)', 'RAM lights + two red (obstructed side) / two green (passable side)']] }], notes: ['Navigation lights need a dedicated distribution board with failure alarm and supply from main and emergency source (SOLAS II-1/43).', 'Lengths: ≥ 50 m / 20–50 m / 12–20 m / < 12 m per Rule 22 (sidelights 2 nm from 12 m; masthead 3 nm for 12–20 m).'] };
-        }
-      },
-      {
-        id: 'gmdss', icon: '📡', title: 'GMDSS reserve source of energy', desc: 'Battery capacity for the radio installation reserve source (SOLAS IV/13).',
-        formula: 'Load = ½ × transmit + receive + additional;  Ah = Load/V × hours × factor;  recharge ≤ 10 h',
-        inputs: [{ k: 'tbl', t: 'table', l: 'Radio equipment', v: [{ n: 'VHF DSC', tx: 60, rx: 8 }, { n: 'MF/HF DSC', tx: 350, rx: 25 }, { n: 'Inmarsat-C / SSAS', tx: 120, rx: 15 }, { n: 'NAVTEX', tx: 0, rx: 10 }, { n: 'Radio lighting', tx: 0, rx: 20 }], cols: [{ k: 'n', l: 'Equipment', t: 'text', d: '', w: 160 }, { k: 'tx', l: 'Transmit W', t: 'num', d: 0 }, { k: 'rx', l: 'Receive / standby W', t: 'num', d: 0 }] }, { k: 'v', l: 'Battery voltage', u: 'V', v: 24, min: 1 }, { k: 'h', l: 'Required duration', opts: [[1, '1 h (emergency source complies with II-1/42-43)'], [6, '6 h (otherwise)']], v: 1 }, { k: 'f', l: 'Ageing / temperature / DoD factor', v: 1.5, min: 1, step: 0.05 }],
-        run: v => {
-          const W = v.tbl.reduce((s, r) => s + 0.5 * r.tx + r.rx, 0), ah = W / v.v * v.h * v.f;
-          return { results: [R('Average load', W, 'W', 0), R('Load current', W / v.v, 'A', 2), R('Minimum battery capacity', ah, 'Ah', 0, null, true), R('Charger current to recharge in 10 h', ah * 1.2 / 10, 'A', 1)], notes: ['Check the battery monthly (off-load voltage and on-load test) and its capacity yearly – see SOLAS IV/13 and IMO COMSAR/Circ.32 guidelines.'] };
         }
       },
       {

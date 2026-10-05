@@ -154,3 +154,10 @@ footer .disc{flex-basis:100%}
   body.print-report .card{border:0;padding:0}
   .rt{display:table}.rt td,.rt th{white-space:normal}
 }
+
+.icards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.icard{border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:12px;padding:12px 14px;background:var(--field)}
+.icard .ih{font-size:15px;margin-bottom:6px;color:var(--accent)}.icard .ih b{color:var(--ink)}
+.icard dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:13.5px}
+.icard dt{color:var(--mut);font-weight:600}.icard dd{margin:0}
+@media print{.icard{break-inside:avoid}}

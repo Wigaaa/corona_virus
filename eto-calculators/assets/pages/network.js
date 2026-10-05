@@ -92,8 +92,8 @@
   })();
   ETO.page({
     title: 'Communications & Networks', icon: '🌐', accent: '#4f46e5',
-    subtitle: 'IP subnetting, fibre-optic link budgets, Modbus addressing and timing, NMEA 0183 & AIS decoding, CAN / NMEA 2000 limits and PoE budgets – for DP, IAS and navigation networks.',
-    refs: ['IEEE 802.3', 'Modbus spec v1.1b3', 'NMEA 0183 / 2000', 'CiA 301 (CANopen)', 'IEC 61162'],
+    subtitle: 'IP subnetting, RS-485 / Modbus RTU serial timing, NMEA 0183 & AIS decoding and PoE budgets – for DP, IAS and navigation networks.',
+    refs: ['IEEE 802.3', 'Modbus RTU', 'NMEA 0183 / IEC 61162-1', 'ITU-R M.1371 (AIS)'],
     calcs: [
       {
         id: 'subnet', icon: '🔢', title: 'IPv4 subnet calculator', desc: 'Network, broadcast, host range and mask for an IP address and prefix.',
@@ -103,24 +103,6 @@
           const a = ip2n(v.ip); if (a == null) throw new Error('Invalid IPv4 address'); if (!Number.isInteger(v.p)) throw new Error('Prefix must be a whole number');
           const mask = v.p === 0 ? 0 : (0xffffffff << (32 - v.p)) >>> 0, net = (a & mask) >>> 0, bc = (net | (~mask >>> 0)) >>> 0, hosts = v.p >= 31 ? (v.p === 31 ? 2 : 1) : 2 ** (32 - v.p) - 2, b = ip2n(v.ip2), same = b != null && ((b & mask) >>> 0) === net;
           return { results: [R('Network', n2ip(net) + '/' + v.p, '', 0, null, true), R('Subnet mask', n2ip(mask), '', 0), R('Wildcard', n2ip(~mask >>> 0), '', 0), R('Broadcast', n2ip(bc), '', 0), R('First host', v.p >= 31 ? n2ip(net) : n2ip(net + 1), '', 0), R('Last host', v.p >= 31 ? n2ip(bc) : n2ip(bc - 1), '', 0), R('Usable hosts', hosts, '', 0), R('Second IP in same subnet', b == null ? '—' : same ? 'YES' : 'NO – needs a router / gateway', '', 0, b == null ? null : same ? 'ok' : 'warn')] };
-        }
-      },
-      {
-        id: 'fibre', icon: '💡', title: 'Fibre-optic power budget', desc: 'Will the optical link work with margin?',
-        formula: 'Loss = L × α + n_c × connector loss + n_s × splice loss     margin = (P_tx − S_rx) − loss − safety margin',
-        inputs: [{ k: 'tx', l: 'Transmitter power (min)', u: 'dBm', v: -8, max: 10 }, { k: 'rx', l: 'Receiver sensitivity', u: 'dBm', v: -24 }, { k: 'ft', l: 'Fibre / wavelength', opts: [[3.0, 'Multimode 850 nm (3.0 dB/km)'], [1.0, 'Multimode 1300 nm (1.0 dB/km)'], [0.35, 'Single-mode 1310 nm (0.35 dB/km)'], [0.25, 'Single-mode 1550 nm (0.25 dB/km)']], v: 3.0 }, { k: 'l', l: 'Length', u: 'm', v: 450, min: 0 }, { k: 'nc', l: 'Mated connector pairs', v: 4, min: 0, step: 1 }, { k: 'cl', l: 'Loss per connector pair', u: 'dB', v: 0.75, min: 0 }, { k: 'ns', l: 'Splices', v: 2, min: 0, step: 1 }, { k: 'sl', l: 'Loss per splice', u: 'dB', v: 0.3, min: 0 }, { k: 'sm', l: 'Safety / ageing margin', u: 'dB', v: 3, min: 0 }],
-        run: v => { const loss = v.l / 1000 * v.ft + v.nc * v.cl + v.ns * v.sl, bud = v.tx - v.rx, m = bud - loss - v.sm; return { results: [R('Power budget', bud, 'dB', 2), R('Total link loss', loss, 'dB', 2), R('Expected receive power', v.tx - loss, 'dBm', 2), R('Remaining margin', m, 'dB', 2, m >= 0 ? 'ok' : 'bad', true)], verdict: { s: m >= 0 ? 'ok' : 'bad', t: m >= 0 ? 'Link should work with the safety margin.' : 'Not enough optical budget – clean / replace connectors, reduce splices or use single-mode / higher-power optics.' }, notes: ['Connector / splice values are TIA-568 maximums (0.75 / 0.3 dB); real values are often lower. Always clean connectors before measuring.'] }; }
-      },
-      {
-        id: 'modbus', icon: '🔗', title: 'Modbus address & function-code helper', desc: 'Convert between the “data-model” reference (e.g. 40001) and the zero-based protocol address used on the wire.',
-        formula: '4xxxx = holding register (FC 03/06/16)   3xxxx = input register (FC 04)   1xxxx = discrete input (FC 02)   0xxxx = coil (FC 01/05/15)   on-wire address = reference − base',
-        inputs: [{ k: 'm', l: 'Convert', opts: [['ref', 'Reference (e.g. 40001 / 400001) → protocol address'], ['addr', 'Table + protocol address → reference']], v: 'ref' }, { k: 'ref', t: 'text', l: 'Reference number', v: '40108', show: v => v.m === 'ref' }, { k: 'tb', l: 'Table', opts: [['4', 'Holding registers'], ['3', 'Input registers'], ['1', 'Discrete inputs'], ['0', 'Coils']], v: '4', show: v => v.m === 'addr' }, { k: 'a', l: 'Protocol (zero-based) address', v: 107, min: 0, max: 65535, step: 1, show: v => v.m === 'addr' }],
-        run: v => {
-          const INFO = { 4: ['Holding register', 'FC 03 read · FC 06 write single · FC 16 write multiple'], 3: ['Input register', 'FC 04 read'], 1: ['Discrete input', 'FC 02 read'], 0: ['Coil', 'FC 01 read · FC 05 write single · FC 15 write multiple'] };
-          let t, a;
-          if (v.m === 'ref') { const s = String(v.ref).trim(); if (!/^[0134]\d{4,5}$/.test(s)) throw new Error('Enter a 5- or 6-digit reference starting with 0, 1, 3 or 4'); t = s[0]; a = parseInt(s.slice(1), 10) - 1; if (a < 0) throw new Error('Reference numbers start at x0001'); }
-          else { t = String(v.tb); a = v.a; if (!Number.isInteger(a)) throw new Error('Address must be whole number'); }
-          return { results: [R('Data type', INFO[t][0], '', 0, null, true), R('Protocol address (decimal)', a, '', 0, null, true), R('Protocol address (hex)', '0x' + a.toString(16).toUpperCase().padStart(4, '0'), '', 0), R('5-digit reference', a < 9999 ? t + String(a + 1).padStart(4, '0') : 'n/a (> 9999)', '', 0), R('6-digit reference', t + String(a + 1).padStart(5, '0'), '', 0), R('Function codes', INFO[t][1], '', 0)], notes: ['“Off by one” is the most common Modbus commissioning error – check whether the device manual lists references (start at 1) or addresses (start at 0).'] };
         }
       },
       {
@@ -158,12 +140,6 @@
           if (firstPos) res.push(R('Position (decimal)', `${firstPos[0].toFixed(5)}, ${firstPos[1].toFixed(5)}`, '', 0, null, true), R('Position (deg-min)', NMEA.dm(firstPos[0], 'NS') + '  ' + NMEA.dm(firstPos[1], 'EW'), '', 0));
           return { head: '<span></span>', results: res, verdict: okN === lines.length ? { s: 'ok', t: 'All checksums valid.' } : { s: 'bad', t: 'Checksum errors – corrupted data: check baud rate / wiring / ground loops, or two talkers on one listener (IEC 61162-1 allows one talker per line).' }, html: h };
         }
-      },
-      {
-        id: 'can', icon: '🚌', title: 'CAN / CANopen / NMEA 2000 bus length', desc: 'Maximum bus length for a bit rate (bit-timing limited).',
-        formula: 'Recommended lengths per CiA 301 (CANopen); NMEA 2000 = 250 kbit/s',
-        inputs: [{ k: 'r', l: 'Bit rate', opts: [[1000, '1 Mbit/s'], [800, '800 kbit/s'], [500, '500 kbit/s'], [250, '250 kbit/s (NMEA 2000, J1939)'], [125, '125 kbit/s'], [50, '50 kbit/s'], [20, '20 kbit/s'], [10, '10 kbit/s']], v: 250 }, { k: 'l', l: 'Planned bus (backbone) length', u: 'm', v: 120, min: 0 }],
-        run: v => { const max = { 1000: 25, 800: 50, 500: 100, 250: 250, 125: 500, 50: 1000, 20: 2500, 10: 5000 }[v.r], ok = v.l <= max; return { results: [R('Maximum bus length', max, 'm', 0, null, true), R('Planned', v.l, 'm', 0, ok ? 'ok' : 'bad')], verdict: { s: ok ? 'ok' : 'bad', t: ok ? 'Within the length limit.' : 'Too long for this bit rate – reduce bit rate or use repeaters / bridges.' }, notes: ['120 Ω terminator at each end of the backbone only. NMEA 2000: backbone max 200 m (Mid cable) / 100 m (Light); drop cables ≤ 6 m each, ≤ 78 m total.'] }; }
       },
       {
         id: 'poe', icon: '🔌', title: 'PoE power budget', desc: 'Check that a PoE switch can power all cameras / access points / phones.',

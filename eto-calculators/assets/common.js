@@ -33,10 +33,10 @@
     { f: 'process.html', n: 'Process Measurement', i: '🧭', c: '#2563eb', lvl: 6, d: 'DP flow (√ extraction), hydrostatic & DP level ranging (wet / dry leg), pressure units & gauge/abs, transmitter range & turndown, accuracy budget' },
     { f: 'calibration.html', n: 'Calibration & Loop Check', i: '✅', c: '#16a34a', lvl: 6, d: '5-point calibration record (as-found / as-left) with error % span & pass/fail, switch set/reset (deadband) test, loop-check sheet – printable' },
     { f: 'pmssim.html', n: 'PMS / DP / Blackout Simulator', i: '🔄', c: '#be123c', lvl: 7, d: '“What happens if DG1 trips” timeline, spinning reserve, DP split-bus worst-case failure, emergency generator sequence, generator ROCOF' },
-    { f: 'hazardous.html', n: 'Ex / Hazardous Area', i: '💥', c: '#ea580c', lvl: 7, d: 'Zone → EPL → protection concepts, gas group & T-class selector, Ex marking decoder, intrinsic-safety entity check, inspection checklist' },
-    { f: 'safety.html', n: 'Electrical Safety & Isolation', i: '🦺', c: '#b91c1c', lvl: 7, d: 'LOTO & HV isolation checklists, prove-test-prove, capacitor discharge time, touch voltage, permit checklist' },
-    { f: 'marine.html', n: 'Marine Systems & Shore Power', i: '⚓', c: '#1e40af', lvl: 7, d: 'Shore connection compatibility & sizing, COLREG navigation lights, GMDSS reserve battery, starting batteries, battery room hydrogen ventilation' },
-    { f: 'network.html', n: 'Communications & Networks', i: '🌐', c: '#4f46e5', lvl: 7, d: 'IPv4 subnet, fibre optic power budget, Modbus addressing, serial timing, NMEA 0183 & AIS decoder, CAN bus length, PoE budget' }
+    { f: 'hazardous.html', n: 'Ex / Hazardous Area Guide', i: '💥', c: '#ea580c', lvl: 7, d: 'Knowledge guide: zones, gas groups & T-classes, EPL & ATEX categories, all Ex protection types, reading Ex markings, installation, intrinsic safety, inspection & maintenance, marine areas' },
+    { f: 'safety.html', n: 'Electrical Safety & Isolation Guide', i: '🦺', c: '#b91c1c', lvl: 7, d: 'Knowledge guide for ETOs: electrical hazards, safe isolation, LOTO, prove-test-prove, HV safety, stored energy, PPE & live working, permit to work, emergency response' },
+    { f: 'marine.html', n: 'Marine Systems & Shore Power', i: '⚓', c: '#1e40af', lvl: 7, d: 'Shore connection compatibility & sizing, emergency-generator starting battery, battery-room hydrogen ventilation, DC fault current' },
+    { f: 'network.html', n: 'Communications & Networks', i: '🌐', c: '#4f46e5', lvl: 7, d: 'IPv4 subnet, RS-485 / Modbus RTU timing, NMEA 0183 & AIS decoder, PoE budget' }
   ];
 
   const S3 = Math.sqrt(3);
