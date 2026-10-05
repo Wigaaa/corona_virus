@@ -62,23 +62,11 @@
         ['Power the backbone near the middle for long networks to limit voltage drop.', 'One network = one power supply point unless designed otherwise (avoid ground loops).', 'Gateways convert NMEA 0183 ↔ 2000 – check which sentences / PGNs are translated.'],
         ['Devices drop off: low voltage at the far end, too many LEN, missing terminator.', 'Measure ≈ 60 Ω between CAN_H and CAN_L (power off) and network voltage at the furthest device.'])
     ],
-    ['ship_eth', '🌐', 'Ship Ethernet: IEC 61162-450 / 460', () =>
-      P('Modern integrated bridge / navigation systems send NMEA-type sentences over Ethernet (“Lightweight Ethernet”), with IEC 61162-460 adding network-security requirements.',
-        [['IEC 61162-450', 'NMEA sentences carried in UDP multicast datagrams on a ship navigation network; multicast groups by data type'], ['IEC 61162-460', 'Security & safety for 450 networks: segregation, controlled gateways to other networks, monitoring'], ['Typical users', 'ECDIS, radar, conning, BNWAS, VDR, INS / IBS'], ['Related', 'IACS UR E26 (cyber resilience of ships) and E27 (cyber resilience of on-board systems) – ships contracted from 1 July 2024']],
-        ['Use managed switches with IGMP snooping – multicast floods unmanaged networks.', 'Never connect office laptops / USB devices to the navigation network without the procedure.', 'Keep a network diagram, IP plan and switch configuration backup on board.'],
-        ['Equipment stops receiving data after a switch replacement – IGMP / VLAN configuration lost.', 'Duplicate IP addresses after equipment replacement.', 'Check multicast traffic with Wireshark on a mirrored port.'])
-    ],
     ['hart', '📶', 'HART & 4–20 mA', () =>
       P('HART (Highway Addressable Remote Transducer) superimposes a digital signal on the 4–20 mA loop – the analogue value still works, the digital layer gives configuration, diagnostics and extra variables.',
         [['Signal', 'FSK on the loop: 1200 Hz = “1”, 2200 Hz = “0”, ±0.5 mA, 1200 bit/s'], ['Loop resistance', 'Minimum ≈ 230 Ω (250 Ω typical) for communication'], ['Modes', 'Point-to-point (normal 4–20 mA + HART) or multidrop (current fixed at 4 mA, up to 15 devices; 63 with HART 7)'], ['Tools', 'Handheld communicator / HART modem + DD / DTM files'], ['WirelessHART', 'IEC 62591, 2.4 GHz mesh network for wireless field devices']],
         ['A HART communicator can be connected anywhere across the loop resistor or device terminals – it does not interrupt the 4–20 mA.', 'Check NAMUR NE43 failure currents (≤ 3.6 / ≥ 21 mA) configured as required by the control system.', 'Barriers / isolators in IS loops must be “HART-transparent”.'],
         ['“No device found”: loop resistance too low (< 230 Ω), wrong polling address, isolator not HART-compatible.', 'Noise on the loop from VFD cables disturbing HART.', 'See the Signals & Loops page for 4–20 mA scaling and loop budget.'])
-    ],
-    ['ff', '🏭', 'Foundation Fieldbus (H1 / HSE)', () =>
-      P('Digital process-instrument bus mainly found in oil & gas processing (FPSO, drilling, process plant). Devices run function blocks themselves (control in the field).',
-        [['H1', 'MBP (IEC 61158-2), 31.25 kbit/s, bus-powered 2-wire, intrinsically safe options (FISCO / FNICO)'], ['Segment', 'Up to 1900 m including spurs; up to 32 devices (typically 12–16 with power and IS limits)'], ['HSE', 'High-Speed Ethernet backbone linking H1 segments'], ['Configuration', 'Device Description (DD) files, link active scheduler']],
-        ['Each segment needs a power conditioner and terminators at both ends.', 'Count device current and spur lengths against the segment design.'],
-        ['Segment voltage too low at the far end, water in junction boxes, short-circuit protection on spur couplers tripped.'])
     ],
     ['ethercat', '⚡', 'EtherCAT', () =>
       P('Very fast master–slave industrial Ethernet: the frame passes through every slave, which reads / writes its data “on the fly”. Used in high-performance automation, drives and test systems.',
@@ -86,33 +74,14 @@
         ['Order of slaves matters – the configured topology must match the physical one.', 'Not routed over normal IP networks – use dedicated segments.'],
         ['Working-counter errors / slave lost: cable or connector fault at the first missing slave.'])
     ],
-    ['iec61850', '🔋', 'IEC 61850 (switchboards & protection)', () =>
-      P('The standard for substation / switchgear automation – increasingly used in modern ship and offshore power systems for protection relays, generator controllers and PMS.',
-        [['MMS', 'Client / server reporting and control (SCADA / PMS ↔ relays)'], ['GOOSE', 'Fast peer-to-peer multicast messages between IEDs for trips and interlocks (few ms), replacing hard-wired signals'], ['Sampled Values', 'Digitised CT / VT measurements over Ethernet'], ['Configuration', 'SCL files: ICD (device), SCD (complete system)'], ['Redundancy', 'PRP / HSR (IEC 62439-3) – zero recovery time by sending duplicate frames']],
-        ['GOOSE replaces copper wiring for trips / interlocks – after any change, test the protection function end-to-end.', 'Keep a copy of the SCD file and relay settings on board.', 'Do not connect laptops to the protection network without a procedure.'],
-        ['GOOSE “not received” alarms: VLAN / priority settings, failed switch port, wrong configuration revision.', 'Time-synchronisation (PTP / SNTP) loss affects event records.'])
-    ],
-    ['itot', '☁️', 'OPC UA & MQTT (IT / OT, remote monitoring)', () =>
-      P('Used to move data from ship automation to performance-monitoring systems and shore offices.',
-        [['OPC UA', 'Platform-independent, client/server and pub/sub, built-in security (certificates, encryption), rich information model; TCP 4840'], ['MQTT', 'Lightweight publish / subscribe via a broker; TCP 1883, 8883 with TLS; ideal for satellite links'], ['Typical use', 'Fleet performance monitoring, condition monitoring, remote diagnostics, data to shore']],
-        ['These links cross the IT / OT boundary – they must go through firewalls / DMZ per the ship cyber-security plan (IACS UR E26 / E27, IEC 62443).', 'Certificates expire – an OPC UA link that suddenly fails may need certificate renewal.'],
-        ['Connection refused: certificate not trusted, firewall rule, wrong endpoint.', 'Data gaps: satellite link down – check buffering on the edge device.'])
-    ],
     ['asi', '🧩', 'AS-Interface & IO-Link (sensor level)', () =>
       P('Low-cost connection of simple sensors and actuators.',
         [['AS-i', 'Unshielded yellow flat cable carrying data AND power; up to 31 slaves (62 with A/B addressing); 100 m (300 m with repeaters); cycle ≈ 5 ms'], ['IO-Link', 'Point-to-point (IEC 61131-9) on standard 3-wire sensor cable up to 20 m; 4.8 / 38.4 / 230.4 kbit/s; IODD device files; parameters stored in the master for easy device replacement']],
         ['AS-i needs its own AS-i power supply (with data decoupling).', 'IO-Link masters can automatically re-load parameters into a replaced sensor (data storage).'],
         ['AS-i: duplicate address 0 after replacement, low voltage at cable end.', 'IO-Link: wrong device / IODD after replacement.'])
     ],
-    ['redund', '🔁', 'Redundancy & network topologies (DP, IAS)', () =>
-      TB(['Method', 'Standard', 'Recovery time', 'Typical use'], [['RSTP', 'IEEE 802.1w', 'Hundreds of ms to seconds', 'General Ethernet rings / meshes'], ['MRP', 'IEC 62439-2', '≤ 200 ms (or 500 ms)', 'PROFINET rings, automation'], ['DLR', 'ODVA', '< 3 ms', 'EtherNet/IP rings'], ['PRP', 'IEC 62439-3', '0 ms (two independent networks, duplicate frames)', 'Protection / IEC 61850, critical DP control'], ['HSR', 'IEC 62439-3', '0 ms (ring, frames sent both ways)', 'IEC 61850 substation rings'], ['Dual network A / B', 'Class DP rules', 'Depends on system – usually bumpless', 'DP control systems (DP2 / DP3), IAS']]) +
-      L(['DP class 2 and 3 require redundant networks so a single failure (cable, switch, power supply) cannot cause loss of position; DP3 also requires physical separation (fire / flood) of A and B.', 'Power network switches from independent UPS supplies matching the A / B split.', 'Test redundancy during annual DP trials (FMEA proving): disconnect one network and confirm no loss of function.', 'Monitor ring / redundancy alarms – a ring running “open” has lost its redundancy without any visible effect.'])
-    ],
-    ['cyber', '🛡️', 'Cyber security for OT networks', () =>
-      L(['IACS <b>UR E26</b> (cyber resilience of ships) and <b>UR E27</b> (cyber resilience of on-board systems and equipment) apply to ships contracted for construction from 1 July 2024; IMO MSC-FAL.1/Circ.3 applies to all ships through the SMS.', 'Segregate networks: navigation, automation / PMS, safety systems, office / crew – connected only through controlled gateways / firewalls.', 'Control removable media and laptops connected to OT networks (scan, approved devices only).', 'Keep an asset inventory, network diagrams and configuration backups; change default passwords.', 'Remote access by makers only through approved, logged, time-limited connections.', 'Report and log incidents; know the recovery plan (restore from backups, manual control).'])
-    ],
     ['trouble', '🧰', 'Troubleshooting toolkit', () =>
-      H('Tools') + L(['<b>Multimeter</b> – termination resistance (power off), bus idle voltages, power supply at the far end.', '<b>Oscilloscope</b> (differential probe or two channels) – signal shape, reflections, noise.', '<b>Protocol analyser</b> – Wireshark (Ethernet: Modbus TCP, PROFINET, EtherNet/IP, IEC 61162-450), serial sniffer, CAN analyser, PROFIBUS tester.', '<b>Managed-switch diagnostics</b> – port status, error counters, MRP / RSTP state, LLDP neighbours.', '<b>Loop calibrator / HART communicator</b> for 4–20 mA and HART.']) +
+      H('Tools') + L(['<b>Multimeter</b> – termination resistance (power off), bus idle voltages, power supply at the far end.', '<b>Oscilloscope</b> (differential probe or two channels) – signal shape, reflections, noise.', '<b>Protocol analyser</b> – Wireshark (Ethernet: Modbus TCP, PROFINET, EtherNet/IP), serial sniffer, CAN analyser, PROFIBUS tester.', '<b>Managed-switch diagnostics</b> – port status, error counters, MRP / RSTP state, LLDP neighbours.', '<b>Loop calibrator / HART communicator</b> for 4–20 mA and HART.']) +
       H('Systematic approach') + L(['1. What changed? (equipment replaced, software update, cable work, welding nearby).', '2. Physical layer first: power, LEDs, connectors, cable, termination, earthing.', '3. Configuration: address / device name, baud rate / parity, IP / subnet, files (GSD, EDS, GSDML).', '4. Traffic: is the device sending / replying? Use the analyser.', '5. Application: correct register / data mapping, scaling, byte order.', '6. Document the fix and update drawings / backups.']) +
       H('Quick resistance checks (power OFF)') + TB(['Bus', 'Expected between data lines', 'Meaning of deviations'], [['RS-485 / Modbus RTU', '≈ 60 Ω (two 120 Ω)', '120 Ω = one terminator missing; ≈ 40 Ω = three fitted'], ['CAN / CANopen / J1939 / NMEA 2000', '≈ 60 Ω', 'Same as above'], ['PROFIBUS DP', '≈ 110 Ω at an end (two 220 Ω)', 'Terminator switch position / missing'], ['DeviceNet', '≈ 60 Ω (two 121 Ω)', 'Same as above']])
     ],
@@ -132,23 +101,18 @@
         ['SAE J1939', 'CAN', 'Line', '250 / 500 kbit/s', '40 m (typ. engine network)', '≈ 30 ECUs per segment', 'Multi-master', 'Diesel engines & gensets'],
         ['NMEA 0183', 'RS-422', 'Talker → listeners', '4800 / 38 400 baud', '≈ 1000 m+ at 4800', '1 talker + listeners', 'Talker / listener', 'GPS, gyro, AIS, ECDIS, VDR'],
         ['NMEA 2000', 'CAN 250 kbit/s, 12 V powered', 'Backbone + drops', '250 kbit/s', '200 m backbone', '50 physical', 'Multi-master', 'Small-ship navigation & monitoring'],
-        ['IEC 61162-450', 'Ethernet (UDP multicast)', 'Star (switches)', '100 Mbit/s+', '100 m copper link', 'Practically unlimited', 'Publish / subscribe (multicast)', 'Integrated bridge / INS'],
         ['HART', 'FSK on 4–20 mA loop', 'Point-to-point / multidrop', '1200 bit/s', 'Loop-dependent (≈ 1500 m)', '1 (15 / 63 multidrop)', 'Master / slave', 'Transmitter configuration & diagnostics'],
-        ['Foundation Fieldbus H1', 'MBP, bus-powered', 'Trunk / spurs', '31.25 kbit/s', '1900 m', '32 (typ. 12–16)', 'Scheduled (LAS)', 'Oil & gas process instruments'],
         ['EtherCAT', 'Ethernet', 'Line / tree / ring', '100 Mbit/s, < 100 µs cycles', '100 m between slaves', '65 535', 'Master / slave on-the-fly', 'Motion control, drives, test rigs'],
-        ['IEC 61850', 'Ethernet (+ PRP / HSR)', 'Star / ring', '100 Mbit/s–1 Gbit/s', '100 m copper / km fibre', 'Practically unlimited', 'Client / server + GOOSE multicast', 'Switchboard protection & PMS'],
-        ['OPC UA', 'Ethernet / IP', 'Any IP network', 'Network-dependent', 'Unlimited (routed)', 'Unlimited', 'Client / server, pub / sub', 'IT/OT integration, data to shore'],
-        ['MQTT', 'TCP/IP', 'Broker-centred', 'Network-dependent', 'Unlimited (routed)', 'Unlimited', 'Publish / subscribe', 'Remote monitoring over satellite'],
         ['AS-i', '2-wire flat cable with power', 'Any (line / tree)', '167 kbit/s, ≈ 5 ms cycle', '100 m (300 m with repeaters)', '31 / 62', 'Master / slave', 'Simple sensors & valves'],
         ['IO-Link', '3-wire sensor cable', 'Point-to-point', '4.8–230.4 kbit/s', '20 m', '1 per port', 'Master / device', 'Smart sensors']]) +
-      H('Quick selection guide') + TB(['Need', 'Usually best choice'], [['Read data from a generator controller, VFD, power meter or BWTS', 'Modbus RTU (RS-485) or Modbus TCP'], ['Navigation sensor to ECDIS / radar / AIS', 'NMEA 0183 (IEC 61162-1/2); IEC 61162-450 on integrated bridges'], ['Diesel engine data and fault codes', 'SAE J1939 (CAN)'], ['Fast I/O and drives in new automation', 'PROFINET or EtherNet/IP (vendor-dependent)'], ['Existing European engine-room automation', 'PROFIBUS DP'], ['Configure / diagnose 4–20 mA transmitters', 'HART'], ['Protection relays and switchboard interlocks', 'IEC 61850 (GOOSE, PRP)'], ['Ship-to-shore data', 'OPC UA or MQTT through a firewall / DMZ'], ['Maximum availability (DP, protection)', 'Redundant networks: dual A/B, PRP / HSR or fast ring (DLR / MRP)']]) +
+      H('Quick selection guide') + TB(['Need', 'Usually best choice'], [['Read data from a generator controller, VFD, power meter or BWTS', 'Modbus RTU (RS-485) or Modbus TCP'], ['Navigation sensor to ECDIS / radar / AIS', 'NMEA 0183 (IEC 61162-1/2); NMEA 2000 on smaller vessels'], ['Diesel engine data and fault codes', 'SAE J1939 (CAN)'], ['Fast I/O and drives in new automation', 'PROFINET or EtherNet/IP (vendor-dependent)'], ['Existing European engine-room automation', 'PROFIBUS DP'], ['Configure / diagnose 4–20 mA transmitters', 'HART']]) +
       `<p>Values are typical published limits; the equipment manuals and the vessel network drawings govern.</p>`
     ]
   ];
   ETO.page({
     title: 'Industrial Communications', icon: '🔗', accent: '#4f46e5',
-    subtitle: 'Every industrial communication type an ETO meets on board – serial lines, fieldbuses, industrial Ethernet, navigation networks, power-system protocols and IT/OT links – with what to know, common faults and a full comparison.',
-    refs: ['IEC 61158 / 61784', 'IEC 61162', 'IEC 61850', 'IEC 62439', 'IACS UR E26 / E27'],
+    subtitle: 'Every industrial communication type an ETO meets on board – serial lines, fieldbuses, industrial Ethernet, navigation networks and sensor-level links – with what to know, common faults and a full comparison.',
+    refs: ['IEC 61158 / 61784', 'IEC 61162', 'IEC 61131-9', 'SAE J1939'],
     calcs: S.map(([id, icon, title, html]) => ({ id, icon, title, noActions: true, inputs: [], run: () => ({ head: '<span></span>', html: html() }) }))
   });
 })();
