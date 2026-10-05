@@ -41,7 +41,9 @@
         formula: 'Ib ≤ In ≤ Iz     I2 ≤ 1.45 × Iz',
         inputs: [{ k: 'ib', l: 'Design current Ib', u: 'A', v: 180, min: 0.1 }, { k: 'iz', l: 'Cable derated capacity Iz', u: 'A', v: 230, min: 0.1 }],
         run: v => {
-          const n = std(STD_BREAKERS, v.ib), ok = n <= v.iz;
+          const n = std(STD_BREAKERS, v.ib);
+          if (n === null) return { results: [R('Design current Ib', v.ib, 'A', 0, 'warn', true)], verdict: { s: 'warn', t: 'Ib exceeds the largest frame in the reference list (5000 A) – select from the manufacturer catalogue / protection study (or split the load).' } };
+          const ok = n <= v.iz;
           return { results: [R('Selected rating In', n, 'A', 0, ok ? 'ok' : 'bad', true), R('Ib ≤ In ≤ Iz', ok ? 'OK' : 'FAIL', '', 0, ok ? 'ok' : 'bad'), R('Adjustable Ir (0.8×In)…', 0.8 * n, 'A', 0), R('Cable utilisation Ib/Iz', v.ib / v.iz * 100, '%', 0)], verdict: { s: ok ? 'ok' : 'bad', t: ok ? 'Breaker protects the cable against overload.' : 'Next breaker above Ib exceeds Iz – use a bigger cable or set Ir ≤ Iz on an adjustable breaker.' } };
         }
       },
@@ -100,8 +102,8 @@
           { k: 'flc', l: 'Motor FLC', u: 'A', v: 90, min: 0.1 }, { k: 'ts', l: 'Starting time', opts: [[1.6, '≤ 3 s'], [2, '3 – 10 s'], [2.5, '10 – 20 s']], v: 2 }, { k: 'iz', l: 'Cable Iz', u: 'A', v: 160, min: 1 }, { k: 'lrc', l: 'Locked-rotor ratio', v: 6.5, min: 1, step: 0.1 }
         ],
         run: v => {
-          const am = std(STD_FUSES, v.flc * 1.0), gg = std(STD_FUSES, v.flc * v.ts);
-          return { results: [R('aM fuse (motor)', am, 'A', 0, am <= v.iz ? 'ok' : 'warn', true), R('gG fuse', gg, 'A', 0, gg <= v.iz ? 'ok' : 'warn'), R('Starting current', v.flc * v.lrc, 'A', 0)], notes: ['aM fuses give short-circuit protection only – thermal overload relay is mandatory.', 'gG fuse with In > Iz fails cable overload protection – use aM + overload relay.'] };
+          const am = std(STD_FUSES, v.flc * 1.0) || '> 1250 A (catalogue)', gg = std(STD_FUSES, v.flc * v.ts) || '> 1250 A (catalogue)';
+          return { results: [R('aM fuse (motor)', am, 'A', 0, typeof am === 'number' && am <= v.iz ? 'ok' : 'warn', true), R('gG fuse', gg, 'A', 0, typeof gg === 'number' && gg <= v.iz ? 'ok' : 'warn'), R('Starting current', v.flc * v.lrc, 'A', 0)], notes: ['aM fuses give short-circuit protection only – thermal overload relay is mandatory.', 'gG fuse with In > Iz fails cable overload protection – use aM + overload relay.'] };
         }
       },
       {

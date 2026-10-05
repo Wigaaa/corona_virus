@@ -42,6 +42,7 @@
         ],
         run: v => {
           const t1 = Math.tan(Math.acos(v.pf1)), t2 = Math.tan(Math.acos(v.pf2)), qc = v.p * (t1 - t2), w = 2 * Math.PI * v.f;
+          if (qc <= 0) return { results: [R('Capacitor bank', 0, 'kVAR', 1, 'ok', true), R('Existing PF', v.pf1, '', 3), R('Target PF', v.pf2, '', 3)], verdict: { s: 'info', t: 'No correction needed – the target PF must be higher than the existing PF. (Adding capacitors here would only push the PF towards leading.)' } };
           const s1 = v.p / v.pf1, s2 = v.p / v.pf2;
           return { results: [R('Capacitor bank', qc, 'kVAR', 1, qc < 0 ? 'warn' : null, true), R('C per phase (delta)', qc * 1000 / (3 * w * v.v * v.v) * 1e6, 'µF', 1), R('C per phase (star)', qc * 1000 / (w * v.v * v.v) * 1e6, 'µF', 1),
             R('Capacitor line current', qc * 1000 / (S3 * v.v), 'A'), R('Current before', s1 * 1000 / (S3 * v.v), 'A'), R('Current after', s2 * 1000 / (S3 * v.v), 'A'), R('kVA saved', s1 - s2, 'kVA')],

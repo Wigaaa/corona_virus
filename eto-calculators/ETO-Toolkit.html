@@ -315,12 +315,13 @@ footer .disc{flex-basis:100%}
   };
   const R = (l, v, u, d, s, big) => ({ l, v, u, d, s, big });
   const lvl = (v, okMax, warnMax) => (v <= okMax ? 'ok' : v <= warnMax ? 'warn' : 'bad');
-  const std = (list, v) => list.find(x => x >= v - 1e-9) || list[list.length - 1];
+  // next standard value ≥ v; null when v exceeds the list (never rounds down)
+  const std = (list, v) => { const x = list.find(y => y >= v - 1e-9); return x === undefined ? null : x; };
   const rho = (mat, T) => (mat === 'Al' ? 0.02826 * (1 + 0.00403 * (T - 20)) : 0.01724 * (1 + 0.00393 * (T - 20))); // ohm·mm²/m
   // IEC 60228 class-2 maximum DC resistance at 20 °C (ohm/km) – real stranded conductors, not theoretical rho
   const R20 = {
-    Cu: [[1.5, 13.3], [2.5, 7.98], [4, 4.95], [6, 3.30], [10, 1.91], [16, 1.21], [25, 0.780], [35, 0.554], [50, 0.386], [70, 0.272], [95, 0.206], [120, 0.161], [150, 0.129], [185, 0.106], [240, 0.0801], [300, 0.0641], [400, 0.0486], [500, 0.0384], [630, 0.0287]],
-    Al: [[16, 1.91], [25, 1.20], [35, 0.868], [50, 0.641], [70, 0.443], [95, 0.320], [120, 0.253], [150, 0.206], [185, 0.164], [240, 0.125], [300, 0.100], [400, 0.0778], [500, 0.0605], [630, 0.0469]]
+    Cu: [[0.5, 36.0], [0.75, 24.5], [1, 18.1], [1.5, 13.3], [2.5, 7.98], [4, 4.95], [6, 3.30], [10, 1.91], [16, 1.21], [25, 0.780], [35, 0.554], [50, 0.386], [70, 0.272], [95, 0.206], [120, 0.161], [150, 0.129], [185, 0.106], [240, 0.0801], [300, 0.0641], [400, 0.0486], [500, 0.0384], [630, 0.0287]],
+    Al: [[10, 3.08], [16, 1.91], [25, 1.20], [35, 0.868], [50, 0.641], [70, 0.443], [95, 0.320], [120, 0.253], [150, 0.206], [185, 0.164], [240, 0.125], [300, 0.100], [400, 0.0778], [500, 0.0605], [630, 0.0469]]
   };
   // conductor resistance in ohm/m at temperature T (interpolates the effective resistivity between standard sizes)
   const res = (mat, size, T) => {
@@ -868,6 +869,7 @@ footer .disc{flex-basis:100%}
         ],
         run: v => {
           const t1 = Math.tan(Math.acos(v.pf1)), t2 = Math.tan(Math.acos(v.pf2)), qc = v.p * (t1 - t2), w = 2 * Math.PI * v.f;
+          if (qc <= 0) return { results: [R('Capacitor bank', 0, 'kVAR', 1, 'ok', true), R('Existing PF', v.pf1, '', 3), R('Target PF', v.pf2, '', 3)], verdict: { s: 'info', t: 'No correction needed – the target PF must be higher than the existing PF. (Adding capacitors here would only push the PF towards leading.)' } };
           const s1 = v.p / v.pf1, s2 = v.p / v.pf2;
           return { results: [R('Capacitor bank', qc, 'kVAR', 1, qc < 0 ? 'warn' : null, true), R('C per phase (delta)', qc * 1000 / (3 * w * v.v * v.v) * 1e6, 'µF', 1), R('C per phase (star)', qc * 1000 / (w * v.v * v.v) * 1e6, 'µF', 1),
             R('Capacitor line current', qc * 1000 / (S3 * v.v), 'A'), R('Current before', s1 * 1000 / (S3 * v.v), 'A'), R('Current after', s2 * 1000 / (S3 * v.v), 'A'), R('kVA saved', s1 - s2, 'kVA')],
@@ -1085,7 +1087,7 @@ footer .disc{flex-basis:100%}
         ],
         run: v => {
           const smin = v.isc * 1000 * Math.sqrt(v.t) / v.k, imax = v.k * v.s / Math.sqrt(v.t) / 1000, tmax = (v.k * v.s / (v.isc * 1000)) ** 2, st = v.s >= smin ? 'ok' : 'bad';
-          return { results: [R('Minimum size', smin, 'mm²', 1, st, true), R('Next standard size', std(STD_SIZES, smin), 'mm²', 0), R('Withstand current of installed cable', imax, 'kA', 2, st), R('Max permissible time', tmax, 's', 3, st)],
+          return { results: [R('Minimum size', smin, 'mm²', 1, st, true), R('Next standard size', std(STD_SIZES, smin) || '> 630 mm² – parallel cables', 'mm²', 0, std(STD_SIZES, smin) ? null : 'warn'), R('Withstand current of installed cable', imax, 'kA', 2, st), R('Max permissible time', tmax, 's', 3, st)],
             verdict: { s: st, t: st === 'ok' ? 'Installed cable withstands the fault.' : 'Installed cable too small for this fault duration – increase size, or use a faster / current-limiting breaker.' } };
         }
       },
@@ -1100,7 +1102,7 @@ footer .disc{flex-basis:100%}
         ],
         run: v => {
           const sa = v.if * 1000 * Math.sqrt(v.t) / v.k, st = v.sp <= 16 ? v.sp : v.sp <= 35 ? 16 : v.sp / 2;
-          return { results: [R('Adiabatic minimum', sa, 'mm²', 1), R('Table minimum (same metal)', st, 'mm²', 1), R('Recommended (larger of both)', std(STD_SIZES, Math.max(sa, st)), 'mm²', 1, 'ok', true)],
+          return { results: [R('Adiabatic minimum', sa, 'mm²', 1), R('Table minimum (same metal)', st, 'mm²', 1), R('Recommended (larger of both)', std(STD_SIZES, Math.max(sa, st)) || '> 630 mm² – parallel / special', 'mm²', 1, std(STD_SIZES, Math.max(sa, st)) ? 'ok' : 'warn', true)],
             notes: ['Class rules (IEC 60092-352) may require the earth conductor to be at least as large as shown even for single-core cable armour / screens.'] };
         }
       },
@@ -1711,7 +1713,9 @@ footer .disc{flex-basis:100%}
         formula: 'Ib ≤ In ≤ Iz     I2 ≤ 1.45 × Iz',
         inputs: [{ k: 'ib', l: 'Design current Ib', u: 'A', v: 180, min: 0.1 }, { k: 'iz', l: 'Cable derated capacity Iz', u: 'A', v: 230, min: 0.1 }],
         run: v => {
-          const n = std(STD_BREAKERS, v.ib), ok = n <= v.iz;
+          const n = std(STD_BREAKERS, v.ib);
+          if (n === null) return { results: [R('Design current Ib', v.ib, 'A', 0, 'warn', true)], verdict: { s: 'warn', t: 'Ib exceeds the largest frame in the reference list (5000 A) – select from the manufacturer catalogue / protection study (or split the load).' } };
+          const ok = n <= v.iz;
           return { results: [R('Selected rating In', n, 'A', 0, ok ? 'ok' : 'bad', true), R('Ib ≤ In ≤ Iz', ok ? 'OK' : 'FAIL', '', 0, ok ? 'ok' : 'bad'), R('Adjustable Ir (0.8×In)…', 0.8 * n, 'A', 0), R('Cable utilisation Ib/Iz', v.ib / v.iz * 100, '%', 0)], verdict: { s: ok ? 'ok' : 'bad', t: ok ? 'Breaker protects the cable against overload.' : 'Next breaker above Ib exceeds Iz – use a bigger cable or set Ir ≤ Iz on an adjustable breaker.' } };
         }
       },
@@ -1770,8 +1774,8 @@ footer .disc{flex-basis:100%}
           { k: 'flc', l: 'Motor FLC', u: 'A', v: 90, min: 0.1 }, { k: 'ts', l: 'Starting time', opts: [[1.6, '≤ 3 s'], [2, '3 – 10 s'], [2.5, '10 – 20 s']], v: 2 }, { k: 'iz', l: 'Cable Iz', u: 'A', v: 160, min: 1 }, { k: 'lrc', l: 'Locked-rotor ratio', v: 6.5, min: 1, step: 0.1 }
         ],
         run: v => {
-          const am = std(STD_FUSES, v.flc * 1.0), gg = std(STD_FUSES, v.flc * v.ts);
-          return { results: [R('aM fuse (motor)', am, 'A', 0, am <= v.iz ? 'ok' : 'warn', true), R('gG fuse', gg, 'A', 0, gg <= v.iz ? 'ok' : 'warn'), R('Starting current', v.flc * v.lrc, 'A', 0)], notes: ['aM fuses give short-circuit protection only – thermal overload relay is mandatory.', 'gG fuse with In > Iz fails cable overload protection – use aM + overload relay.'] };
+          const am = std(STD_FUSES, v.flc * 1.0) || '> 1250 A (catalogue)', gg = std(STD_FUSES, v.flc * v.ts) || '> 1250 A (catalogue)';
+          return { results: [R('aM fuse (motor)', am, 'A', 0, typeof am === 'number' && am <= v.iz ? 'ok' : 'warn', true), R('gG fuse', gg, 'A', 0, typeof gg === 'number' && gg <= v.iz ? 'ok' : 'warn'), R('Starting current', v.flc * v.lrc, 'A', 0)], notes: ['aM fuses give short-circuit protection only – thermal overload relay is mandatory.', 'gG fuse with In > Iz fails cable overload protection – use aM + overload relay.'] };
         }
       },
       {
@@ -1888,7 +1892,7 @@ footer .disc{flex-basis:100%}
         id: 'pc', icon: '⏚', title: 'Protective conductor size', desc: 'Adiabatic protective earth conductor selection.',
         formula: 'S = √(I² t) / k',
         inputs: [{ k: 'i', l: 'Earth fault current', u: 'kA', v: 8, min: 0.001 }, { k: 't', l: 'Disconnection time', u: 's', v: 0.5, min: 0.001 }, { k: 'k', l: 'k factor', opts: [[143, 'Cu XLPE/EPR (143)'], [115, 'Cu PVC (115)'], [159, 'Cu bare/bolted (159)'], [94, 'Al XLPE (94)']], v: 143 }],
-        run: v => { const s = v.i * 1000 * Math.sqrt(v.t) / v.k; return { results: [R('Minimum area', s, 'mm²', 1), R('Next standard', std(STD_SIZES, s), 'mm²', 0, 'ok', true)] }; }
+        run: v => { const s = v.i * 1000 * Math.sqrt(v.t) / v.k; return { results: [R('Minimum area', s, 'mm²', 1), R('Next standard', std(STD_SIZES, s) || '> 630 mm²', 'mm²', 0, std(STD_SIZES, s) ? 'ok' : 'warn', true)] }; }
       },
       {
         id: 'bond', icon: '🔗', title: 'Continuity / bonding test', desc: 'Compare measured bonding / earth continuity resistance with the calculated value.',
@@ -4099,9 +4103,9 @@ footer .disc{flex-basis:100%}
       },
       {
         id: 'shunt', icon: '🔧', title: 'Shunt / sense resistor', desc: 'Resistor to convert a current loop to a voltage input, and the voltage at any current.',
-        formula: 'R = V_span / 16 mA   (4–20 mA)     V = I × R',
+        formula: 'R = V(20 mA) / 20 mA   →   V(4 mA) = V(20 mA) / 5 automatically     V = I × R',
         inputs: [{ k: 'v0', l: 'Desired voltage at 4 mA', u: 'V', v: 1, min: 0 }, { k: 'v1', l: 'Desired voltage at 20 mA', u: 'V', v: 5, min: 0.01 }, { k: 'i', l: 'Present loop current', u: 'mA', v: 12, min: 0 }],
-        run: v => { const r = v.v1 / 0.02; return { results: [R('Resistor', r, 'Ω', 1, null, true), R('Voltage at 4 mA', 0.004 * r, 'V', 3), R('Voltage at present current', v.i / 1000 * r, 'V', 3), R('Power at 22 mA', 0.022 ** 2 * r * 1000, 'mW', 1)], notes: ['Use a 0.1 % precision resistor. 250 Ω gives the standard 1–5 V.', Math.abs(0.004 * r - v.v0) > 0.01 ? 'A single resistor gives V(4 mA) = V(20 mA)/5 – a different offset needs a signal conditioner.' : 'Offset matches.'] }; }
+        run: v => { const r = v.v1 / 0.02; return { results: [R('Resistor', r, 'Ω', 1, null, true), R('Voltage at 4 mA', 0.004 * r, 'V', 3), R('Voltage at present current', v.i / 1000 * r, 'V', 3), R('Power at 22 mA', 0.022 ** 2 * r * 1000, 'mW', 1)], notes: ['Sized on the full-scale (20 mA) voltage so the analogue input is never over-ranged. Use a 0.1 % precision resistor; 250 Ω gives the standard 1–5 V.', Math.abs(0.004 * r - v.v0) > 0.01 ? `A passive resistor always gives V(4 mA) = V(20 mA)/5 = ${(0.004 * r).toFixed(2)} V – the requested ${v.v0} V at 4 mA needs a signal conditioner / isolator with offset. Do NOT size on the 16 mA span: that would exceed the input range at 20 mA.` : 'Requested 4 mA voltage matches.'] }; }
       },
       {
         id: 'pulse', icon: '📟', title: 'Pulse / frequency flowmeter', desc: 'Flow rate from pulse frequency and K-factor, and totaliser.',
@@ -4545,7 +4549,7 @@ footer .disc{flex-basis:100%}
         run: v => {
           const s = v.kw / v.pf, i = s * 1000 / (S3 * v.vv), dv = (v.sv - v.vv) / v.vv * 100, fOk = +v.sf === +v.vf, vOk = Math.abs(dv) <= 6, kOk = s <= v.sk, eOk = v.se === v.ve, nc = Math.ceil(i / v.cr);
           const issues = [!fOk && `Frequency mismatch ${v.sf} Hz shore vs ${v.vf} Hz vessel – motors run ${v.sf < v.vf ? 'slower' : 'faster'} by ${Math.abs(v.sf / v.vf - 1) * 100 | 0} % and transformers/ballasts may overheat; a frequency converter is required.`, !vOk && `Voltage differs ${dv.toFixed(1)} % – use a transformer / converter.`, !kOk && 'Shore capacity too small for the load – shed load or request higher capacity.', !eOk && 'Different earthing systems – use an isolation transformer so the vessel IT system is not earthed by the shore supply.'].filter(Boolean);
-          return { results: [R('Shore current at vessel voltage', i, 'A', 0, null, true), R('Apparent power', s, 'kVA', 0, kOk ? 'ok' : 'bad'), R('Voltage difference', dv, '%', 1, vOk ? 'ok' : 'bad'), R('Frequency', fOk ? 'match' : 'MISMATCH', '', 0, fOk ? 'ok' : 'bad'), R('Shore cables needed', nc, '', 0), R('Shore breaker (std ≥ I)', std(STD_BREAKERS, i), 'A', 0)], verdict: issues.length ? { s: 'bad', t: issues.join(' ') } : { s: 'ok', t: 'Shore supply compatible.' }, notes: ['Before closing: check phase sequence (phase-sequence relay / meter), insulation of shore cables, earth / bonding connection first, interlock with generator breakers (no paralleling unless designed).'] };
+          return { results: [R('Shore current at vessel voltage', i, 'A', 0, null, true), R('Apparent power', s, 'kVA', 0, kOk ? 'ok' : 'bad'), R('Voltage difference', dv, '%', 1, vOk ? 'ok' : 'bad'), R('Frequency', fOk ? 'match' : 'MISMATCH', '', 0, fOk ? 'ok' : 'bad'), R('Shore cables needed', nc, '', 0), R('Shore breaker (std ≥ I)', std(STD_BREAKERS, i) || '> 5000 A – select from catalogue', 'A', 0)], verdict: issues.length ? { s: 'bad', t: issues.join(' ') } : { s: 'ok', t: 'Shore supply compatible.' }, notes: ['Before closing: check phase sequence (phase-sequence relay / meter), insulation of shore cables, earth / bonding connection first, interlock with generator breakers (no paralleling unless designed).'] };
         }
       },
       {

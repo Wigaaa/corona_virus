@@ -47,9 +47,9 @@
       },
       {
         id: 'shunt', icon: '🔧', title: 'Shunt / sense resistor', desc: 'Resistor to convert a current loop to a voltage input, and the voltage at any current.',
-        formula: 'R = V_span / 16 mA   (4–20 mA)     V = I × R',
+        formula: 'R = V(20 mA) / 20 mA   →   V(4 mA) = V(20 mA) / 5 automatically     V = I × R',
         inputs: [{ k: 'v0', l: 'Desired voltage at 4 mA', u: 'V', v: 1, min: 0 }, { k: 'v1', l: 'Desired voltage at 20 mA', u: 'V', v: 5, min: 0.01 }, { k: 'i', l: 'Present loop current', u: 'mA', v: 12, min: 0 }],
-        run: v => { const r = v.v1 / 0.02; return { results: [R('Resistor', r, 'Ω', 1, null, true), R('Voltage at 4 mA', 0.004 * r, 'V', 3), R('Voltage at present current', v.i / 1000 * r, 'V', 3), R('Power at 22 mA', 0.022 ** 2 * r * 1000, 'mW', 1)], notes: ['Use a 0.1 % precision resistor. 250 Ω gives the standard 1–5 V.', Math.abs(0.004 * r - v.v0) > 0.01 ? 'A single resistor gives V(4 mA) = V(20 mA)/5 – a different offset needs a signal conditioner.' : 'Offset matches.'] }; }
+        run: v => { const r = v.v1 / 0.02; return { results: [R('Resistor', r, 'Ω', 1, null, true), R('Voltage at 4 mA', 0.004 * r, 'V', 3), R('Voltage at present current', v.i / 1000 * r, 'V', 3), R('Power at 22 mA', 0.022 ** 2 * r * 1000, 'mW', 1)], notes: ['Sized on the full-scale (20 mA) voltage so the analogue input is never over-ranged. Use a 0.1 % precision resistor; 250 Ω gives the standard 1–5 V.', Math.abs(0.004 * r - v.v0) > 0.01 ? `A passive resistor always gives V(4 mA) = V(20 mA)/5 = ${(0.004 * r).toFixed(2)} V – the requested ${v.v0} V at 4 mA needs a signal conditioner / isolator with offset. Do NOT size on the 16 mA span: that would exceed the input range at 20 mA.` : 'Requested 4 mA voltage matches.'] }; }
       },
       {
         id: 'pulse', icon: '📟', title: 'Pulse / frequency flowmeter', desc: 'Flow rate from pulse frequency and K-factor, and totaliser.',

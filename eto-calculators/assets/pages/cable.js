@@ -155,7 +155,7 @@
         ],
         run: v => {
           const smin = v.isc * 1000 * Math.sqrt(v.t) / v.k, imax = v.k * v.s / Math.sqrt(v.t) / 1000, tmax = (v.k * v.s / (v.isc * 1000)) ** 2, st = v.s >= smin ? 'ok' : 'bad';
-          return { results: [R('Minimum size', smin, 'mm²', 1, st, true), R('Next standard size', std(STD_SIZES, smin), 'mm²', 0), R('Withstand current of installed cable', imax, 'kA', 2, st), R('Max permissible time', tmax, 's', 3, st)],
+          return { results: [R('Minimum size', smin, 'mm²', 1, st, true), R('Next standard size', std(STD_SIZES, smin) || '> 630 mm² – parallel cables', 'mm²', 0, std(STD_SIZES, smin) ? null : 'warn'), R('Withstand current of installed cable', imax, 'kA', 2, st), R('Max permissible time', tmax, 's', 3, st)],
             verdict: { s: st, t: st === 'ok' ? 'Installed cable withstands the fault.' : 'Installed cable too small for this fault duration – increase size, or use a faster / current-limiting breaker.' } };
         }
       },
@@ -170,7 +170,7 @@
         ],
         run: v => {
           const sa = v.if * 1000 * Math.sqrt(v.t) / v.k, st = v.sp <= 16 ? v.sp : v.sp <= 35 ? 16 : v.sp / 2;
-          return { results: [R('Adiabatic minimum', sa, 'mm²', 1), R('Table minimum (same metal)', st, 'mm²', 1), R('Recommended (larger of both)', std(STD_SIZES, Math.max(sa, st)), 'mm²', 1, 'ok', true)],
+          return { results: [R('Adiabatic minimum', sa, 'mm²', 1), R('Table minimum (same metal)', st, 'mm²', 1), R('Recommended (larger of both)', std(STD_SIZES, Math.max(sa, st)) || '> 630 mm² – parallel / special', 'mm²', 1, std(STD_SIZES, Math.max(sa, st)) ? 'ok' : 'warn', true)],
             notes: ['Class rules (IEC 60092-352) may require the earth conductor to be at least as large as shown even for single-core cable armour / screens.'] };
         }
       },

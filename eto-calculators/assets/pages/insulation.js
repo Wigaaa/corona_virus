@@ -49,7 +49,7 @@
         id: 'pc', icon: '⏚', title: 'Protective conductor size', desc: 'Adiabatic protective earth conductor selection.',
         formula: 'S = √(I² t) / k',
         inputs: [{ k: 'i', l: 'Earth fault current', u: 'kA', v: 8, min: 0.001 }, { k: 't', l: 'Disconnection time', u: 's', v: 0.5, min: 0.001 }, { k: 'k', l: 'k factor', opts: [[143, 'Cu XLPE/EPR (143)'], [115, 'Cu PVC (115)'], [159, 'Cu bare/bolted (159)'], [94, 'Al XLPE (94)']], v: 143 }],
-        run: v => { const s = v.i * 1000 * Math.sqrt(v.t) / v.k; return { results: [R('Minimum area', s, 'mm²', 1), R('Next standard', std(STD_SIZES, s), 'mm²', 0, 'ok', true)] }; }
+        run: v => { const s = v.i * 1000 * Math.sqrt(v.t) / v.k; return { results: [R('Minimum area', s, 'mm²', 1), R('Next standard', std(STD_SIZES, s) || '> 630 mm²', 'mm²', 0, std(STD_SIZES, s) ? 'ok' : 'warn', true)] }; }
       },
       {
         id: 'bond', icon: '🔗', title: 'Continuity / bonding test', desc: 'Compare measured bonding / earth continuity resistance with the calculated value.',
