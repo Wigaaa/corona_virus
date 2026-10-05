@@ -1,6 +1,6 @@
 # ETO Handbook – Marine Electrical Engineering, Guides & Tools
 
-**Everything an ETO Needs**
+**Everything an ETO Needs** – by: ETO / Wagdy Mohamed
 
 Open `ETO-Handbook.html` (single file) or `index.html` (multi-page) in any browser – phone, tablet or laptop. No install, works offline.
 
