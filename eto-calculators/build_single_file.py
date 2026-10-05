@@ -12,7 +12,11 @@ about = rd('about.html')
 about_body = re.search(r'<body>(.*?)<script>', about, re.S).group(1)
 about_script = re.search(r'<script>\n(.*?)</script>\s*</body>', about, re.S).group(1)
 about_body = about_body.replace('href="index.html"', 'href="#"')
-body = body.replace('href="index.html"', 'href="#"').replace('href="about.html"', 'href="#about.html"').replace('id="theme"', 'id="theme0"')
+body = body.replace('href="index.html"', 'href="#"')
+# every link to a page file must become an in-file route (#page.html) in the single-file build
+body = re.sub(r'href="([a-z0-9]+\.html)"', r'href="#\1"', body)
+about_body = re.sub(r'href="([a-z0-9]+\.html)"', r'href="#\1"', about_body)
+body = body.replace('id="theme"', 'id="theme0"')
 idx_script = idx_script.replace('href="${p.f}"', 'href="#${p.f}"').replace("getElementById('theme')", "getElementById('theme0')")
 pages = [m for m in re.findall(r"\{ f: '([a-z]+\.html)'", rd('assets/common.js'))]
 out = ['<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>ETO Toolkit – Marine Electrical Engineering &amp; Troubleshooting</title>\n<style>\n', css, '\n', extra_style, '\n</style>\n</head>\n<body>\n<div id="indexView">', body, '</div>\n<div id="aboutView" style="display:none">', about_body, '</div>\n<div id="app" style="display:none"></div>\n<script>window.ETO_BUNDLE=true;</script>\n<script>\n', rd('assets/common.js'), '\n</script>\n']
