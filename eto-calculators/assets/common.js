@@ -47,6 +47,18 @@
     { f: 'mechthermal.html', n: 'Mechanical, Fluid & Thermal', i: '🔧', c: '#65a30d', lvl: 8, d: 'Power-torque-speed, gears, belts, shaft stress, sling load, pump power, pipe flow, heater sizing, expansion, fuel efficiency, ventilation' }
   ];
 
+  // level names (home page sections + page breadcrumb) and their colours
+  const LEVELS = {
+    1: ['Daily ETO calculations', 'Power, PF, cables, motors, generators, transformers, batteries & UPS', '#2563eb'],
+    2: ['Protection, Earthing & Power Quality', 'Short-circuit & protection, earthing & insulation, drives, harmonics, lighting', '#dc2626'],
+    3: ['Power Plant, DP & Specialist Systems', 'Power plant & load balance, PMS / blackout simulator, DP, thrusters, jacking, cranes', '#0284c7'],
+    4: ['Instrumentation, Control & Communications', 'Signals & loops, sensors, process measurement, calibration, industrial communications & networks', '#0d9488'],
+    5: ['ETO Operations', 'Troubleshoot → test → maintain', '#16a34a'],
+    6: ['Safety & Hazardous Areas', 'Electrical safety & isolation, Ex / hazardous areas, fire & gas', '#ea580c'],
+    7: ['Tips & Tricks for ETO', 'Instruments, meter tricks, workshop tools, handover, surveys & interview preparation', '#7c3aed'],
+    8: ['Mathematics & Engineering Conversions', 'Reference: unit converters, maths, geometry & tanks, circuit theory, mechanical / fluid / thermal', '#db2777']
+  };
+
   const S3 = Math.sqrt(3);
   const STD_SIZES = [1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240, 300, 400, 500, 630];
   const STD_BREAKERS = [16, 20, 25, 32, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3200, 4000, 5000];
@@ -166,18 +178,20 @@
     const k = PAGES.indexOf(me);
     const prev = PAGES[k - 1], next = PAGES[k + 1];
     const opts = PAGES.map(p => `<option value="${p.f}" ${p.f === cfg.file ? 'selected' : ''}>${p.i}  ${esc(p.n)}</option>`).join('');
+    const lv = LEVELS[me.lvl];
     return `
-<header class="top"><a class="home" href="${href('index.html')}">◀ ETO Handbook</a>
-  <select class="jump" aria-label="Jump to page">${opts}</select>
-  <button class="btn" id="theme" title="Toggle dark mode">🌓</button>
-  <button class="btn" id="print">🖨 Print</button></header>
-<section class="hero"><div class="ico">${cfg.icon}</div><div><h1>${esc(cfg.title)}</h1><p>${esc(cfg.subtitle)}</p>
+<a class="skip" href="#panel">Skip to content</a>
+<header class="top"><a class="home" href="${href('index.html')}" aria-label="ETO Handbook – home"><span class="back" aria-hidden="true">◀</span><span class="logo" aria-hidden="true">📘</span><span class="txt">ETO Handbook</span></a>
+  <label class="sr-only" for="jump">Jump to page</label><select class="jump" id="jump">${opts}</select>
+  <button class="btn" id="theme" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">🌓</button>
+  <button class="btn" id="print" type="button" aria-label="Print this page" title="Print">🖨<span class="txt"> Print</span></button></header>
+<section class="hero"><div class="ico" aria-hidden="true">${cfg.icon}</div><div>${lv ? `<div class="crumb"><b>Level ${me.lvl}</b>${esc(lv[0])}</div>` : ''}<h1>${esc(cfg.title)}</h1><p>${esc(cfg.subtitle)}</p>
   <div class="chips">${(cfg.refs || []).map(r => `<span class="chip">${esc(r)}</span>`).join('')}</div></div></section>
-<div class="layout"><nav class="tabs" id="tabs"></nav><main class="panel" id="panel"></main></div>
+<div class="layout"><nav class="tabs" id="tabs" aria-label="Sections of this page"><div class="tabs-h"><span>Sections</span><span>${cfg.calcs.length}</span></div></nav><main class="panel" id="panel" tabindex="-1"></main></div>
 <footer><div class="nav">${prev ? `<a href="${href(prev.f)}">◀ ${esc(prev.n)}</a>` : ''}</div>
   <div class="nav">${next ? `<a href="${href(next.f)}">${esc(next.n)} ▶</a>` : ''}</div>
   <div class="nav"><a href="${href('about.html')}">ℹ️ About / Credits</a></div>
-  <div class="disc">⚠ Calculation aid only. Always verify against the vessel's electrical drawings, equipment nameplates, manufacturer data and class / flag rules before acting on any result.</div></footer>`;
+  <div class="disc" role="note">⚠ Calculation aid only. Always verify against the vessel's electrical drawings, equipment nameplates, manufacturer data and class / flag rules before acting on any result.</div></footer>`;
   }
 
   function page(cfg) {
@@ -197,6 +211,8 @@
     const tabs = document.getElementById('tabs'), panel = document.getElementById('panel');
     app.querySelector('.jump').onchange = e => (location.href = href(e.target.value));
     document.getElementById('print').onclick = () => window.print();
+    // skip link: move focus without touching the hash (the hash is the router)
+    app.querySelector('.skip').onclick = e => { e.preventDefault(); const p = document.getElementById('panel'); p.focus(); p.scrollIntoView(); };
     document.getElementById('theme').onclick = () => {
       const r = document.documentElement;
       const dark = getComputedStyle(r).getPropertyValue('--bg').trim() === '#0b1220';
@@ -229,7 +245,7 @@
 
     function show(c) {
       cur = c;
-      tabs.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.id === c.id));
+      tabs.querySelectorAll('.tab').forEach(t => { const on = t.dataset.id === c.id; t.classList.toggle('on', on); if (on) t.setAttribute('aria-current', 'page'); else t.removeAttribute('aria-current'); });
       const vals = load(c);
       panel.innerHTML = '';
       const card = el('div', { class: 'card' });
@@ -408,14 +424,14 @@
       if (f === 'about.html') {
         iv.style.display = 'none'; app.style.display = 'none'; av.style.display = ''; cur = null; window.scrollTo(0, 0);
         document.title = 'About & Credits';
-        document.documentElement.style.setProperty('--accent', '#2563eb');
+        document.documentElement.style.setProperty('--accent', '#4f46e5');
         return;
       }
       av.style.display = 'none';
       if (!cfg) {
         iv.style.display = ''; app.style.display = 'none'; cur = null;
         document.title = 'ETO Handbook – Marine Electrical Engineering, Guides & Tools';
-        document.documentElement.style.setProperty('--accent', '#2563eb');
+        document.documentElement.style.setProperty('--accent', '#4f46e5');
         return;
       }
       iv.style.display = 'none'; app.style.display = '';
@@ -429,5 +445,5 @@
   // theme restore
   try { const t = localStorage.getItem('eto:theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) { /* ignore */ }
 
-  window.ETO = { PAGES, S3, STD_SIZES, STD_BREAKERS, STD_FUSES, esc, fmt, R, lvl, std, rho, res, interp, vdrop, units, fmtAuto, reportHead, chart, page, start };
+  window.ETO = { PAGES, LEVELS, S3, STD_SIZES, STD_BREAKERS, STD_FUSES, esc, fmt, R, lvl, std, rho, res, interp, vdrop, units, fmtAuto, reportHead, chart, page, start };
 })();
