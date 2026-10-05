@@ -44,7 +44,9 @@
           { k: 'j', l: 'Total inertia (motor + load @ motor shaft)', u: 'kg·m²', v: 6, min: 0.0001 }, { k: 'n', l: 'Final speed', u: 'rpm', v: 1780, min: 1 }, { k: 'p', l: 'Motor rated power', u: 'kW', v: 110, min: 0.1 }, { k: 'ta', l: 'Accelerating torque available', u: '% of rated', v: 100, min: 1 }, { k: 'tl', l: 'Average load torque', u: '% of rated', v: 30, min: 0 }
         ],
         run: v => {
-          const w = 2 * PI * v.n / 60, tr = v.p * 1000 / w, net = (v.ta - v.tl) / 100 * tr, t = net > 0 ? v.j * w / net : Infinity;
+          const w = 2 * PI * v.n / 60, tr = v.p * 1000 / w, net = (v.ta - v.tl) / 100 * tr;
+          if (net <= 0) return { results: [R('Rated torque', tr, 'Nm', 0), R('Net accelerating torque', net, 'Nm', 0, 'bad')], verdict: { s: 'bad', t: 'Load torque is not below the available torque – the motor cannot accelerate this load.' } };
+          const t = v.j * w / net;
           return { results: [R('Acceleration time', t, 's', 1, t > 30 ? 'warn' : null, true), R('Rated torque', tr, 'Nm', 0), R('Net accelerating torque', net, 'Nm', 0), R('Kinetic energy', 0.5 * v.j * w * w / 1000, 'kJ', 1)], notes: ['Set VFD ramp ≥ this time or the drive will go into current limit / DC-bus overvoltage on decel.'] };
         }
       },

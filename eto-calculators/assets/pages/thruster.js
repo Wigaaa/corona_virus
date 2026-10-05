@@ -19,7 +19,7 @@
         inputs: [
           { k: 'p', l: 'Thruster rated shaft power', u: 'kW', v: 1500, min: 1 }, { k: 'x1', l: 'Present speed', u: '%', v: 40, min: 0, max: 110 }, { k: 'x2', l: 'New speed (X)', u: '%', v: 80, min: 0, max: 110 }, { k: 'n', l: 'Power exponent', v: 3, min: 1, max: 3.5, step: 0.1, hint: '3 for FPP propeller; CPP at constant rpm ≈ pitch-based' },
           { k: 'em', l: 'Motor efficiency', u: '%', v: 96, min: 1, max: 100 }, { k: 'ev', l: 'Drive + transformer efficiency', u: '%', v: 96, min: 1, max: 100 }, { k: 'pf', l: 'Plant PF of load', v: 0.95, min: 0.3, max: 1, step: 0.01 },
-          { k: 'base', l: 'Existing plant load', u: 'kW', v: 3000, min: 0 }, { k: 'dg', l: 'DG rating', u: 'kW', v: 2000, min: 1 }, { k: 'dn', l: 'DGs online', v: 3, min: 1, step: 1 }
+          { k: 'base', l: 'Existing plant load (incl. this thruster at present speed)', u: 'kW', v: 3000, min: 0 }, { k: 'dg', l: 'DG rating', u: 'kW', v: 2000, min: 1 }, { k: 'dn', l: 'DGs online', v: 3, min: 1, step: 1 }
         ],
         run: v => {
           const k = 1 / (v.em / 100 * v.ev / 100), pa = v.p * (v.x1 / 100) ** v.n * k, pb = v.p * (v.x2 / 100) ** v.n * k, d = pb - pa, cap = v.dn * v.dg, la = (v.base) / cap * 100, lb = (v.base + d) / cap * 100, st = lvl(lb, 85, 100);

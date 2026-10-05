@@ -253,25 +253,37 @@ footer .disc{flex-basis:100%}
     if (typeof v === 'string') return v;
     if (v == null || !isFinite(v)) return '—';
     d = d == null ? 2 : d;
-    return Number(v.toFixed(d)).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+    const n = Number(v.toFixed(d));
+    return (n === 0 ? 0 : n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
   };
   const R = (l, v, u, d, s, big) => ({ l, v, u, d, s, big });
   const lvl = (v, okMax, warnMax) => (v <= okMax ? 'ok' : v <= warnMax ? 'warn' : 'bad');
   const std = (list, v) => list.find(x => x >= v - 1e-9) || list[list.length - 1];
   const rho = (mat, T) => (mat === 'Al' ? 0.02826 * (1 + 0.00403 * (T - 20)) : 0.01724 * (1 + 0.00393 * (T - 20))); // ohm·mm²/m
-  const interp = (pts, x) => {
+  // IEC 60228 class-2 maximum DC resistance at 20 °C (ohm/km) – real stranded conductors, not theoretical rho
+  const R20 = {
+    Cu: [[1.5, 13.3], [2.5, 7.98], [4, 4.95], [6, 3.30], [10, 1.91], [16, 1.21], [25, 0.780], [35, 0.554], [50, 0.386], [70, 0.272], [95, 0.206], [120, 0.161], [150, 0.129], [185, 0.106], [240, 0.0801], [300, 0.0641], [400, 0.0486], [500, 0.0384], [630, 0.0287]],
+    Al: [[16, 1.91], [25, 1.20], [35, 0.868], [50, 0.641], [70, 0.443], [95, 0.320], [120, 0.253], [150, 0.206], [185, 0.164], [240, 0.125], [300, 0.100], [400, 0.0778], [500, 0.0605], [630, 0.0469]]
+  };
+  // conductor resistance in ohm/m at temperature T (interpolates the effective resistivity between standard sizes)
+  const res = (mat, size, T) => {
+    const pts = R20[mat === 'Al' ? 'Al' : 'Cu'].map(p => [p[0], p[1] * p[0] / 1000]); // ohm·mm²/m
+    const r20 = interp(pts, size) / size, a = mat === 'Al' ? 0.00403 : 0.00393;
+    return r20 * (1 + a * (T - 20));
+  };
+  function interp(pts, x) {
     if (x <= pts[0][0]) return pts[0][1];
     for (let i = 1; i < pts.length; i++) if (x <= pts[i][0]) {
       const [x0, y0] = pts[i - 1], [x1, y1] = pts[i];
       return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
     }
     return pts[pts.length - 1][1];
-  };
+  }
   // voltage drop (V) for a cable: k = sqrt3 (3-ph) or 2 (1-ph); R,X in ohm/m
   const vdrop = (sys, I, L, size, mat, T, Xmohm, pf, par) => {
     if (sys === 'dc') { pf = 1; Xmohm = 0; }
-    const k = sys === '3' ? S3 : 2;
-    const r = rho(mat, T) / size; // ohm/m
+    const k = String(sys) === '3' ? S3 : 2;
+    const r = res(mat, size, T); // ohm/m
     const x = Xmohm / 1000;       // ohm/m
     const phi = Math.acos(Math.min(1, pf));
     return { v: k * I * L * (r * pf + x * Math.sin(phi)) / (par || 1), r: r * 1000, x: Xmohm, k };
@@ -373,7 +385,7 @@ footer .disc{flex-basis:100%}
           const inp = f.querySelector('input,select');
           inp.value = vals[i.k];
           inp.addEventListener('input', () => {
-            if (t === 'sel') { const x = inp.value; vals[i.k] = x !== '' && !isNaN(x) ? Number(x) : x; }
+            if (t === 'sel') { const o = i.opts.find(o => String(o[0]) === inp.value); vals[i.k] = o ? o[0] : inp.value; }
             else vals[i.k] = inp.value === '' ? NaN : parseFloat(inp.value);
             recompute();
           });
@@ -484,7 +496,7 @@ footer .disc{flex-basis:100%}
         holder.querySelectorAll('input,select').forEach(inp => inp.addEventListener('input', () => {
           const col = i.cols.find(c => c.k === inp.dataset.k);
           const x = inp.value;
-          vals[i.k][+inp.dataset.r][inp.dataset.k] = col.t === 'text' ? x : col.t === 'sel' ? (x !== '' && !isNaN(x) ? Number(x) : x) : (x === '' ? NaN : parseFloat(x));
+          vals[i.k][+inp.dataset.r][inp.dataset.k] = col.t === 'text' ? x : col.t === 'sel' ? (() => { const o = col.opts.find(o => String(o[0]) === x); return o ? o[0] : x; })() : (x === '' ? NaN : parseFloat(x));
           recompute();
         }));
         holder.querySelectorAll('[data-del]').forEach(b => (b.onclick = () => { vals[i.k].splice(+b.dataset.del, 1); draw(); recompute(); }));
@@ -534,7 +546,7 @@ footer .disc{flex-basis:100%}
   // theme restore
   try { const t = localStorage.getItem('eto:theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) { /* ignore */ }
 
-  window.ETO = { PAGES, S3, STD_SIZES, STD_BREAKERS, STD_FUSES, esc, fmt, R, lvl, std, rho, interp, vdrop, page, start };
+  window.ETO = { PAGES, S3, STD_SIZES, STD_BREAKERS, STD_FUSES, esc, fmt, R, lvl, std, rho, res, interp, vdrop, page, start };
 })();
 
 </script>
@@ -657,7 +669,9 @@ footer .disc{flex-basis:100%}
           { k: 'a', l: 'Current L1', u: 'A', v: 102, min: 0 }, { k: 'b', l: 'Current L2', u: 'A', v: 98, min: 0 }, { k: 'c', l: 'Current L3', u: 'A', v: 110, min: 0 }
         ],
         run: v => {
-          const av = (v.a + v.b + v.c) / 3, mx = Math.max(Math.abs(v.a - av), Math.abs(v.b - av), Math.abs(v.c - av)), u = mx / av * 100, st = lvl(u, 10, 20);
+          const av = (v.a + v.b + v.c) / 3;
+          if (av <= 0) throw new Error('Enter the phase currents');
+          const mx = Math.max(Math.abs(v.a - av), Math.abs(v.b - av), Math.abs(v.c - av)), u = mx / av * 100, st = lvl(u, 10, 20);
           return { results: [R('Unbalance', u, '%', 2, st, true), R('Average current', av, 'A'), R('Max deviation', mx, 'A'), R('Highest phase', Math.max(v.a, v.b, v.c), 'A'), R('Lowest phase', Math.min(v.a, v.b, v.c), 'A')],
             verdict: { s: st, t: u <= 10 ? 'Balanced – within ≈10%.' : u <= 20 ? 'Noticeable unbalance – check phase voltages & connections.' : 'Severe unbalance – possible phase loss / winding fault. Investigate before running.' },
             notes: ['Current unbalance in motors is ≈ 6–10× the voltage unbalance. Check voltage balance first.'] };
@@ -709,8 +723,9 @@ footer .disc{flex-basis:100%}
             case 'kvapf': s = v.kva; p = s * v.pf; q = Math.sqrt(s * s - p * p); break;
             default: s = v.kva; q = v.kvar; if (q > s) throw new Error('kVAR cannot exceed kVA'); p = Math.sqrt(s * s - q * q);
           }
+          if (!(s > 0)) throw new Error('Enter non-zero power values');
           const pf = p / s;
-          return { results: [R('Power factor', pf, '', 3, lvl(1 - pf, 0.15, 0.25), true), R('Active power P', p, 'kW'), R('Reactive power Q', q, 'kVAR'), R('Apparent power S', s, 'kVA'), R('Angle φ', deg(Math.acos(pf)), '°', 1), R('tan φ', q / p, '', 3)] };
+          return { results: [R('Power factor', pf, '', 3, lvl(1 - pf, 0.15, 0.25), true), R('Active power P', p, 'kW'), R('Reactive power Q', q, 'kVAR'), R('Apparent power S', s, 'kVA'), R('Angle φ', deg(Math.acos(pf)), '°', 1), R('tan φ', p > 0 ? q / p : 'n/a', '', 3)] };
         }
       },
       {
@@ -750,6 +765,7 @@ footer .disc{flex-basis:100%}
           let p = 0, q = 0;
           const rows = v.tbl.map(r => { const pf = Math.min(1, Math.max(0.01, r.pf)); const qq = r.kw * Math.tan(Math.acos(pf)); p += r.kw; q += qq; return [ETO.esc(r.n), r.kw, pf, qq, r.kw / pf]; });
           const s = Math.hypot(p, q);
+          if (s <= 0) throw new Error('Enter at least one load');
           return { results: [R('Total kW', p, 'kW', 1), R('Total kVAR', q, 'kVAR', 1), R('Total kVA', s, 'kVA', 1), R('Overall PF', p / s, '', 3, null, true)],
             tables: [{ title: 'Breakdown', head: ['Load', 'kW', 'PF', 'kVAR', 'kVA'], rows }] };
         }
@@ -785,7 +801,7 @@ footer .disc{flex-basis:100%}
 <script>window.ETO_FILE='cable.html';</script>
 <script>
 (function () {
-  const { R, lvl, S3, std, rho, vdrop, STD_SIZES } = ETO;
+  const { R, lvl, S3, std, res, vdrop, STD_SIZES } = ETO;
   const MAT = { opts: [['Cu', 'Copper'], ['Al', 'Aluminium']], v: 'Cu' };
   const SYS = [['3', '3-phase'], ['1', 'Single-phase / 2-wire']];
   const KFAC = [[143, 'Cu – XLPE / EPR (k=143)'], [115, 'Cu – PVC (k=115)'], [94, 'Al – XLPE / EPR (k=94)'], [76, 'Al – PVC (k=76)']];
@@ -808,12 +824,16 @@ footer .disc{flex-basis:100%}
   const loadI = v => {
     if (v.mode === 'i') return v.i;
     const pin = v.p * 1000 / (v.eff / 100);
-    return v.sys === 'dc' ? pin / v.v : v.sys === '1' ? pin / (v.v * v.pf) : pin / (S3 * v.v * v.pf);
+    return String(v.sys) === 'dc' ? pin / v.v : String(v.sys) === '1' ? pin / (v.v * v.pf) : pin / (S3 * v.v * v.pf);
   };
   const pfOf = v => (v.sys === 'dc' ? 1 : v.pf);
   const sysName = v => ({ '3': '3-phase', '1': 'single-phase', dc: 'DC' }[v.sys]);
-  // Indicative current ratings, Cu, 3 loaded conductors, cable on tray in air (IEC 60364-5-52 method E, 30 °C ambient)
-  const AMP = { 90: [26, 36, 49, 63, 86, 115, 149, 185, 225, 289, 352, 410, 473, 542, 641, 741, 868, 998, 1151], 70: [22, 30, 40, 51, 70, 94, 119, 148, 180, 232, 282, 328, 379, 434, 514, 593, 694, 799, 920] };
+  // Indicative ratings, Cu, cable on perforated tray in air, 30 °C ambient (IEC 60364-5-52 Tables B.52.4 PVC / B.52.5 XLPE, method E).
+  // [loaded conductors][insulation temp]. Taken from the published tables – verify against the standard / vessel cable schedule.
+  const AMP = {
+    2: { 90: [26, 36, 49, 63, 86, 115, 149, 185, 225, 289, 352, 410, 473, 542, 641, 741, 868, 998, 1151], 70: [22, 30, 40, 51, 70, 94, 119, 148, 180, 232, 282, 328, 379, 434, 514, 593, 694, 799, 920] },
+    3: { 90: [23, 31, 42, 54, 75, 100, 127, 158, 192, 246, 298, 346, 395, 450, 538, 621, 754, 868, 1005], 70: [18.5, 25, 34, 43, 60, 80, 101, 126, 153, 196, 238, 276, 319, 364, 430, 497, 600, 694, 808] }
+  };
   const ct = (tmax, tref, tamb) => Math.sqrt((tmax - tamb) / (tmax - tref));
 
   ETO.page({
@@ -834,7 +854,7 @@ footer .disc{flex-basis:100%}
           { k: 'n', l: 'Parallel cables per phase', v: 1, min: 1, step: 1 }
         ],
         run: v => {
-          if (v.tamb >= v.tmax) throw new Error('Ambient must be below conductor temperature');
+          if (v.tamb >= v.tmax || v.tref >= v.tmax) throw new Error('Ambient and reference ambient must both be below the conductor maximum temperature');
           const c = ct(v.tmax, v.tref, v.tamb), iz = v.it * c * v.g * v.n, m = iz / v.ib, st = m >= 1.15 ? 'ok' : m >= 1 ? 'warn' : 'bad';
           return { results: [R('Derated capacity Iz', iz, 'A', 1, st, true), R('Temperature factor', c, '', 3), R('Grouping factor', v.g, '', 2), R('Margin Iz / Ib', m, '×', 2, st)],
             verdict: { s: st, t: m < 1 ? 'Cable too small – increase size or parallel cables.' : m < 1.15 ? 'Passes but with little margin.' : 'Cable adequate for current.' },
@@ -875,19 +895,19 @@ footer .disc{flex-basis:100%}
         ]),
         run: v => {
           if (v.tamb >= v.ins) throw new Error('Ambient must be below conductor temperature');
-          const I = loadI(v), Ic = I / v.par, k = v.sys === '3' ? S3 : 2, pf = pfOf(v), x = v.sys === 'dc' ? 0 : v.x;
+          const I = loadI(v), Ic = I / v.par, k = String(v.sys) === '3' ? S3 : 2, pf = pfOf(v), x = v.sys === 'dc' ? 0 : v.x;
           // current capacity
           const der = ct(v.ins, 30, v.tamb) * v.g, need = Ic / der, al = v.mat === 'Al' ? 0.78 : 1;
-          const ia = STD_SIZES.findIndex((sz, i) => AMP[v.ins][i] * al >= need), sA = ia < 0 ? null : STD_SIZES[ia];
+          const tab = AMP[String(v.sys) === '3' ? 3 : 2][v.ins], ia = STD_SIZES.findIndex((sz, i) => tab[i] * al >= need), sA = ia < 0 ? null : STD_SIZES[ia];
           // voltage drop
           const zmax = v.v * v.lim / 100 / (k * Ic * v.l), sinp = Math.sin(Math.acos(pf)), rmax = (zmax - x / 1000 * sinp) / pf;
-          const sV = rmax > 0 ? std(STD_SIZES, rho(v.mat, v.t) / rmax) : null;
+          const sV = rmax > 0 ? (STD_SIZES.find(sz => res(v.mat, sz, v.t) <= rmax) || null) : null;
           if (sA == null || sV == null) return { results: [R('Design current', I, 'A', 2)], verdict: { s: 'bad', t: 'No single standard cable satisfies this – use parallel cables or a higher voltage.' } };
           const sel = Math.max(sA, sV), gov = sA > sV ? 'current capacity' : sV > sA ? 'voltage drop' : 'both equally';
-          const isel = STD_SIZES.indexOf(sel), rated = AMP[v.ins][isel] * al * der * v.par, dv = vdrop(v.sys, I, v.l, sel, v.mat, v.t, x, pf, v.par), pc = dv.v / v.v * 100;
+          const isel = STD_SIZES.indexOf(sel), rated = tab[isel] * al * der * v.par, dv = vdrop(v.sys, I, v.l, sel, v.mat, v.t, x, pf, v.par), pc = dv.v / v.v * 100;
           return { results: [R('Recommended size', sel, 'mm²', 1, 'ok', true), R('Governed by', gov, ''), R('Design current', I, 'A', 2), R('Size for current capacity', sA, 'mm²', 1), R('Size for voltage drop', sV, 'mm²', 1), R('Derated capacity of selected', rated, 'A', 0, rated >= I ? 'ok' : 'bad'), R('Voltage drop with selected', pc, '%', 2, pc <= v.lim ? 'ok' : 'bad'), R('Derating factor (temp × group)', der, '', 3)],
             verdict: { s: 'ok', t: `Use ${sel} mm² per phase${v.par > 1 ? ' × ' + v.par + ' parallel cables' : ''} – ${gov === 'both equally' ? 'both criteria give the same size' : 'governed by ' + gov}.` },
-            notes: ['Ampacity table is indicative (Cu, 3 loaded conductors, tray in air, IEC 60364-5-52 method E; Al ≈ 0.78×). Marine cables (IEC 60092-353/-354) have their own tables at 45 °C – confirm with the vessel cable schedule.', 'Also check short-circuit withstand (Cable page) and the breaker/overload protection.', v.sys === 'dc' ? 'DC: both conductors included in the drop; keep 24 V systems ≤ 2–3%.' : 'Power input is converted with PF and efficiency above.'] };
+            notes: ['Ampacity table is indicative (Cu, tray in air, IEC 60364-5-52 method E: 3 loaded conductors for 3-phase, 2 for single-phase/DC; Al ≈ 0.78×). Marine cables (IEC 60092-353/-354) have their own tables at 45 °C – confirm with the vessel cable schedule.', 'Also check short-circuit withstand (Cable page) and the breaker/overload protection.', v.sys === 'dc' ? 'DC: both conductors included in the drop; keep 24 V systems ≤ 2–3%.' : 'Power input is converted with PF and efficiency above.'] };
         }
       },
       {
@@ -920,7 +940,7 @@ footer .disc{flex-basis:100%}
           { k: 'tamb', l: 'Actual ambient', u: '°C', v: 55 }
         ],
         run: v => {
-          if (v.tamb >= v.tmax) throw new Error('Ambient must be below conductor temperature');
+          if (v.tamb >= v.tmax || v.tref >= v.tmax) throw new Error('Ambient and reference ambient must both be below the conductor maximum temperature');
           const rows = [30, 35, 40, 45, 50, 55, 60, 65, 70].filter(t => t < v.tmax).map(t => [t + ' °C', ct(v.tmax, v.tref, t), v.it * ct(v.tmax, v.tref, t)]);
           const c = ct(v.tmax, v.tref, v.tamb);
           return { results: [R('Correction factor', c, '', 3, null, true), R('Derated rating', v.it * c, 'A', 1)], tables: [{ title: 'Ambient table', head: ['Ambient', 'Factor', 'Rating (A)'], rows }] };
@@ -1081,6 +1101,7 @@ footer .disc{flex-basis:100%}
           { k: 'lo', l: 'Relay range min', u: 'A', v: 100, min: 0 }, { k: 'hi', l: 'Relay range max', u: 'A', v: 160, min: 0 }
         ],
         run: v => {
+          if (v.hi <= v.lo) throw new Error('Relay range max must be greater than min');
           const set = v.fla * (v.sf > 1 ? 1.1 : 1.0), max = v.fla * (v.sf > 1 ? 1.25 : 1.15);
           const inr = set >= v.lo && set <= v.hi, t = { 10: [4, 10], 20: [6, 20], 30: [9, 30] }[v.cls];
           return { results: [R('Recommended setting', set, 'A', 1, inr ? 'ok' : 'bad', true), R('Maximum allowed', max, 'A', 1), R('Setting as % of range', (set - v.lo) / (v.hi - v.lo) * 100, '%', 0), R('Trip time at 7.2×Ie', t[0] + ' – ' + t[1], 's')],
@@ -1358,7 +1379,7 @@ footer .disc{flex-basis:100%}
           { k: 'x', l: 'Load factor', v: 0.75, min: 0.01, max: 1.5, step: 0.05 }, { k: 'pf', l: 'Load PF', v: 0.85, min: 0.1, max: 1, step: 0.01 }
         ],
         run: v => {
-          const out = v.x * v.s * v.pf, loss = v.p0 + v.x * v.x * v.pk, eff = out / (out + loss) * 100, xo = Math.sqrt(v.p0 / v.pk), em = xo * v.s * v.pf / (xo * v.s * v.pf + 2 * v.p0) * 100;
+          const out = v.x * v.s * v.pf, loss = v.p0 + v.x * v.x * v.pk, eff = out / (out + loss) * 100, xo = Math.sqrt(v.p0 / v.pk), em = v.p0 > 0 ? xo * v.s * v.pf / (xo * v.s * v.pf + 2 * v.p0) * 100 : 100;
           return { results: [R('Efficiency', eff, '%', 2, null, true), R('Total loss', loss, 'kW', 2), R('Copper loss', v.x * v.x * v.pk, 'kW', 2), R('Max-efficiency load', xo * 100, '%', 0), R('Max efficiency', em, '%', 2), R('Heat to remove', loss, 'kW', 2)] };
         }
       },
@@ -1371,7 +1392,7 @@ footer .disc{flex-basis:100%}
         ],
         run: v => {
           const In = v.s * 1000 / (S3 * v.vr), z = v.vsc / v.vr * In / v.it * 100, r = v.psc * (In / v.it) ** 2 / (v.s * 1000) * 100, x = Math.sqrt(Math.max(0, z * z - r * r));
-          return { results: [R('Impedance Z', z, '%', 2, null, true), R('Resistance R', r, '%', 2), R('Reactance X', x, '%', 2), R('Rated current', In, 'A', 1), R('X/R', x / r, '', 1)] };
+          return { results: [R('Impedance Z', z, '%', 2, null, true), R('Resistance R', r, '%', 2), R('Reactance X', x, '%', 2), R('Rated current', In, 'A', 1), R('X/R', r > 0 ? x / r : 'n/a (R = 0)', '', 1)] };
         }
       },
       {
@@ -1394,7 +1415,7 @@ footer .disc{flex-basis:100%}
 <script>window.ETO_FILE='battery.html';</script>
 <script>
 (function () {
-  const { R, lvl, S3, esc, rho } = ETO;
+  const { R, lvl, S3, esc, res, STD_SIZES } = ETO;
   ETO.page({
     title: 'Battery & UPS Calculations', icon: '🔋', accent: '#ca8a04',
     subtitle: 'Battery sizing, autonomy with Peukert, charger rating, UPS loading / runtime and DC voltage drop.',
@@ -1481,8 +1502,8 @@ footer .disc{flex-basis:100%}
           { k: 'v', l: 'System voltage', u: 'V', v: 24, min: 1 }, { k: 'i', l: 'Current', u: 'A', v: 30, min: 0 }, { k: 'l', l: 'Length (one way)', u: 'm', v: 20, min: 0 }, { k: 's', l: 'Cable size', u: 'mm²', v: 10, min: 0.5 }, { k: 't', l: 'Conductor temperature', u: '°C', v: 40 }, { k: 'lim', l: 'Allowed drop', u: '%', v: 3, min: 0.1 }
         ],
         run: v => {
-          const vd = 2 * v.i * v.l * rho('Cu', v.t) / v.s, pc = vd / v.v * 100, st = lvl(pc, v.lim, v.lim * 1.3);
-          return { results: [R('Voltage drop', vd, 'V', 3, st, true), R('Voltage drop', pc, '%', 2, st), R('Voltage at load', v.v - vd, 'V', 2), R('Min. size for limit', 2 * v.i * v.l * rho('Cu', v.t) / (v.v * v.lim / 100), 'mm²', 1)] };
+          const vd = 2 * v.i * v.l * res('Cu', v.s, v.t), pc = vd / v.v * 100, st = lvl(pc, v.lim, v.lim * 1.3);
+          return { results: [R('Voltage drop', vd, 'V', 3, st, true), R('Voltage drop', pc, '%', 2, st), R('Voltage at load', v.v - vd, 'V', 2), R('Min. standard size for limit', STD_SIZES.find(sz => 2 * v.i * v.l * res('Cu', sz, v.t) <= v.v * v.lim / 100) || 'none ≤ 630', 'mm²', 0)] };
         }
       },
       {
@@ -1499,7 +1520,7 @@ footer .disc{flex-basis:100%}
 <script>window.ETO_FILE='protection.html';</script>
 <script>
 (function () {
-  const { R, lvl, S3, esc, rho, std, STD_BREAKERS, STD_FUSES } = ETO;
+  const { R, lvl, S3, esc, res, std, STD_BREAKERS, STD_FUSES } = ETO;
   const kap = xr => 1.02 + 0.98 * Math.exp(-3 / xr);
   ETO.page({
     title: 'Short-circuit & Protection', icon: '🛡️', accent: '#dc2626',
@@ -1517,7 +1538,7 @@ footer .disc{flex-basis:100%}
         ],
         run: v => {
           const zs = v.z / 100 * v.v * v.v / (v.s * 1000), rs = zs / Math.sqrt(1 + v.xr ** 2), xs = rs * v.xr;
-          const rc = rho('Cu', 20) / v.sz * v.L / v.par, xc = v.xc / 1000 * v.L / v.par;
+          const rc = res('Cu', v.sz, 20) * v.L / v.par, xc = v.xc / 1000 * v.L / v.par;
           const zt = Math.hypot(rs + rc, xs + xc), isrc = v.v / (S3 * Math.hypot(rs, xs)), isc = v.v / (S3 * zt), im = 4 * v.mf, tot = isc + im, xrt = (xs + xc) / (rs + rc);
           return { results: [R('At source terminals', isrc / 1000, 'kA', 2), R('At fault point (source+cable)', isc / 1000, 'kA', 2), R('Motor contribution', im / 1000, 'kA', 2), R('Total Isc (rms)', tot / 1000, 'kA', 2, null, true), R('X/R at point', xrt, '', 1), R('Peak current ip', kap(xrt) * Math.SQRT2 * tot / 1000, 'kA', 1)],
             notes: ['Motor contribution ≈ 4× FLC of running motors (LV). The max fault (all DGs + transformers) governs breaker Icu; the min fault (one DG, arcing) governs trip sensitivity.'] };
@@ -1567,7 +1588,7 @@ footer .disc{flex-basis:100%}
           { k: 'l', l: 'Cable length', u: 'm', v: 80, min: 0 }, { k: 'ia', l: 'Trip current for required time (Ia)', u: 'A', v: 2000, min: 1, hint: 'Ii of MCCB, or fuse current for 0.4 s / 5 s' }
         ],
         run: v => {
-          const r1 = rho('Cu', 70) / v.sp * v.l, r2 = rho('Cu', 70) / v.se * v.l, zs = v.ze + r1 + r2, ief = v.u0 / zs, ok = ief >= v.ia, zmax = v.u0 / v.ia;
+          const r1 = res('Cu', v.sp, 70) * v.l, r2 = res('Cu', v.se, 70) * v.l, zs = v.ze + r1 + r2, ief = v.u0 / zs, ok = ief >= v.ia, zmax = v.u0 / v.ia;
           return { results: [R('Loop impedance Zs', zs, 'Ω', 4), R('Earth-fault current', ief, 'A', 0, ok ? 'ok' : 'bad', true), R('Max permitted Zs', zmax, 'Ω', 4), R('Ief / Ia', ief / v.ia, '×', 2, ok ? 'ok' : 'bad')], verdict: { s: ok ? 'ok' : 'bad', t: ok ? 'Automatic disconnection achieved.' : 'Earth-fault current too low to trip – increase earth conductor, use earth-fault relay / RCD.' } };
         }
       },
@@ -1597,7 +1618,7 @@ footer .disc{flex-basis:100%}
         id: 'fuse', icon: '🔗', title: 'Fuse rating', desc: 'Guideline fuse sizes for a motor or cable feeder (always confirm on the fuse time-current curve).',
         formula: 'aM: In ≥ FLC     gG (motor): In ≈ k × FLC with k = 1.6 / 2.0 / 2.5 by starting time     In ≤ Iz',
         inputs: [
-          { k: 'flc', l: 'Motor FLC', u: 'A', v: 90, min: 0.1 }, { k: 'ts', l: 'Starting time', opts: [[1.6, '≤ 3 s'], [2, '3 – 10 s'], [2.5, '10 – 20 s']], v: 2 }, { k: 'iz', l: 'Cable Iz', u: 'A', v: 160, min: 1 }, { k: 'ilr', l: 'Locked-rotor ratio', v: 6.5, min: 1, step: 0.1 }
+          { k: 'flc', l: 'Motor FLC', u: 'A', v: 90, min: 0.1 }, { k: 'ts', l: 'Starting time', opts: [[1.6, '≤ 3 s'], [2, '3 – 10 s'], [2.5, '10 – 20 s']], v: 2 }, { k: 'iz', l: 'Cable Iz', u: 'A', v: 160, min: 1 }, { k: 'lrc', l: 'Locked-rotor ratio', v: 6.5, min: 1, step: 0.1 }
         ],
         run: v => {
           const am = std(STD_FUSES, v.flc * 1.0), gg = std(STD_FUSES, v.flc * v.ts);
@@ -1621,7 +1642,7 @@ footer .disc{flex-basis:100%}
 <script>window.ETO_FILE='insulation.html';</script>
 <script>
 (function () {
-  const { R, lvl, S3, std, rho, STD_SIZES } = ETO;
+  const { R, lvl, S3, std, res, STD_SIZES } = ETO;
   ETO.page({
     title: 'Earthing & Insulation', icon: '🧪', accent: '#475569',
     subtitle: 'Insulation resistance, polarisation index, earth-fault levels in IT systems, bonding and megger test interpretation.',
@@ -1678,7 +1699,7 @@ footer .disc{flex-basis:100%}
         formula: 'R_exp = ρ × L / A     limit ≈ 0.1 Ω to main earth (hull)',
         inputs: [{ k: 'l', l: 'Conductor length', u: 'm', v: 30, min: 0 }, { k: 's', l: 'Conductor size', u: 'mm²', v: 16, min: 0.5 }, { k: 'rm', l: 'Measured resistance', u: 'mΩ', v: 38, min: 0 }, { k: 't', l: 'Conductor temperature', u: '°C', v: 25 }],
         run: v => {
-          const rexp = rho('Cu', v.t) / v.s * v.l * 1000, ratio = v.rm / (rexp || 1), st = ratio <= 1.25 ? 'ok' : ratio <= 2 ? 'warn' : 'bad', abs = v.rm <= 100;
+          const rexp = res('Cu', v.s, v.t) * v.l * 1000, ratio = v.rm / (rexp || 1), st = ratio <= 1.25 ? 'ok' : ratio <= 2 ? 'warn' : 'bad', abs = v.rm <= 100;
           return { results: [R('Expected', rexp, 'mΩ', 1), R('Measured', v.rm, 'mΩ', 1, st, true), R('Measured / expected', ratio, '×', 2, st), R('≤ 0.1 Ω', abs ? 'YES' : 'NO', '', 0, abs ? 'ok' : 'bad')], verdict: { s: st, t: st === 'ok' ? 'Continuity good.' : 'Extra resistance – suspect loose / corroded connection or hidden break; clean, re-torque and retest.' } };
         }
       },
@@ -1744,7 +1765,9 @@ footer .disc{flex-basis:100%}
           { k: 'j', l: 'Total inertia (motor + load @ motor shaft)', u: 'kg·m²', v: 6, min: 0.0001 }, { k: 'n', l: 'Final speed', u: 'rpm', v: 1780, min: 1 }, { k: 'p', l: 'Motor rated power', u: 'kW', v: 110, min: 0.1 }, { k: 'ta', l: 'Accelerating torque available', u: '% of rated', v: 100, min: 1 }, { k: 'tl', l: 'Average load torque', u: '% of rated', v: 30, min: 0 }
         ],
         run: v => {
-          const w = 2 * PI * v.n / 60, tr = v.p * 1000 / w, net = (v.ta - v.tl) / 100 * tr, t = net > 0 ? v.j * w / net : Infinity;
+          const w = 2 * PI * v.n / 60, tr = v.p * 1000 / w, net = (v.ta - v.tl) / 100 * tr;
+          if (net <= 0) return { results: [R('Rated torque', tr, 'Nm', 0), R('Net accelerating torque', net, 'Nm', 0, 'bad')], verdict: { s: 'bad', t: 'Load torque is not below the available torque – the motor cannot accelerate this load.' } };
+          const t = v.j * w / net;
           return { results: [R('Acceleration time', t, 's', 1, t > 30 ? 'warn' : null, true), R('Rated torque', tr, 'Nm', 0), R('Net accelerating torque', net, 'Nm', 0), R('Kinetic energy', 0.5 * v.j * w * w / 1000, 'kJ', 1)], notes: ['Set VFD ramp ≥ this time or the drive will go into current limit / DC-bus overvoltage on decel.'] };
         }
       },
@@ -1847,12 +1870,12 @@ footer .disc{flex-basis:100%}
         id: 'thdv', icon: '📈', title: 'THD-V evaluation', desc: 'Compare voltage THD with class / IEEE limits.',
         formula: 'THD-V = √(ΣVh²) / V1 × 100',
         inputs: [
-          { k: 'lim', l: 'Limit set', opts: [['8', 'IACS UR E24: THD-V ≤ 8%, single ≤ 5%'], ['5', 'IEEE 519 (≤ 1 kV): THD-V ≤ 5%'], ['10', 'IEC 61000-2-4 class 3: 10%']], v: '8' },
+          { k: 'lim', l: 'Limit set', opts: [['iacs', 'IACS UR E24 (ships): THD-V ≤ 8%, single ≤ 5%'], ['ieee1', 'IEEE 519, V ≤ 1 kV: THD-V ≤ 8%, single ≤ 5%'], ['ieee69', 'IEEE 519, 1–69 kV: THD-V ≤ 5%, single ≤ 3%'], ['iec3', 'IEC 61000-2-4 class 3: THD-V ≤ 10%, 5th ≤ 9%']], v: 'iacs' },
           { k: 'tbl', t: 'table', l: 'Measured voltage harmonics (% of fundamental)', v: [{ h: 5, m: 3.2 }, { h: 7, m: 2.1 }, { h: 11, m: 1.2 }, { h: 13, m: 0.8 }], cols: [{ k: 'h', l: 'Order h', t: 'num', d: 5, w: 60 }, { k: 'm', l: '% of V1', t: 'num', d: 0, w: 80 }] }
         ],
         run: v => {
           let sq = 0, mx = 0; v.tbl.forEach(r => { sq += r.m * r.m; mx = Math.max(mx, r.m); });
-          const thd = Math.sqrt(sq), lim = +v.lim, st = lvl(thd, lim * 0.8, lim), sing = lim === 8 ? 5 : lim === 5 ? 3 : 7, st2 = mx <= sing ? 'ok' : 'bad';
+          const LIM = { iacs: [8, 5], ieee1: [8, 5], ieee69: [5, 3], iec3: [10, 9] }[v.lim], thd = Math.sqrt(sq), lim = LIM[0], st = lvl(thd, lim * 0.8, lim), sing = LIM[1], st2 = mx <= sing ? 'ok' : 'bad';
           return { results: [R('THD-V', thd, '%', 2, st, true), R('Largest single harmonic', mx, '%', 2, st2), R('Limit (THD / single)', lim + ' / ' + sing, '%'), R('Margin', lim - thd, '%', 2)], verdict: { s: st === 'bad' || st2 === 'bad' ? 'bad' : st, t: st === 'ok' && st2 === 'ok' ? 'Voltage quality acceptable.' : 'Distortion beyond limits – check filters, number of VFDs online, generator Xd″, and capacitor banks.' } };
         }
       },
@@ -2025,6 +2048,7 @@ footer .disc{flex-basis:100%}
         inputs: [{ k: 'tbl', t: 'table', l: 'Motor currents (during same jacking step)', v: [{ n: 'Leg1-M1', a: 52 }, { n: 'Leg1-M2', a: 54 }, { n: 'Leg1-M3', a: 49 }, { n: 'Leg1-M4', a: 63 }, { n: 'Leg1-M5', a: 51 }, { n: 'Leg1-M6', a: 50 }], cols: [{ k: 'n', l: 'Motor', t: 'text', d: 'Motor' }, { k: 'a', l: 'Current A', t: 'num', d: 0 }] }],
         run: v => {
           const n = v.tbl.length, avg = v.tbl.reduce((a, r) => a + r.a, 0) / n; let worst = 0;
+          if (!n || avg <= 0) throw new Error('Enter at least one motor current');
           const rows = v.tbl.map(r => { const d = (r.a - avg) / avg * 100; worst = Math.max(worst, Math.abs(d)); return [esc(r.n), r.a, d, Math.abs(d) <= 10 ? '✅' : Math.abs(d) <= 20 ? '⚠️' : '⛔']; });
           const st = lvl(worst, 10, 20);
           return { results: [R('Average current', avg, 'A', 1), R('Worst deviation', worst, '%', 1, st, true), R('Total current', avg * n, 'A', 0)], tables: [{ title: 'Share', head: ['Motor', 'Current A', 'Deviation %', 'Status'], rows, states: rows.map(r => r[3] === '✅' ? 'ok' : r[3] === '⚠️' ? 'warn' : 'bad') }], verdict: { s: st, t: st === 'ok' ? 'Load well shared.' : 'Unequal sharing – check brake release/air gap, gear mesh, VFD torque reference and motor connections.' } };
@@ -2044,6 +2068,7 @@ footer .disc{flex-basis:100%}
         formula: 'Wear remaining = (gap_max − gap_measured) / (gap_max − gap_nominal)',
         inputs: [{ k: 'g0', l: 'Nominal air gap', u: 'mm', v: 0.4, min: 0.01, step: 0.01 }, { k: 'gm', l: 'Maximum permitted gap', u: 'mm', v: 0.9, min: 0.01, step: 0.01 }, { k: 'g', l: 'Measured gap', u: 'mm', v: 0.65, min: 0, step: 0.01 }],
         run: v => {
+          if (v.gm <= v.g0) throw new Error('Maximum permitted gap must be larger than the nominal gap');
           const rem = (v.gm - v.g) / (v.gm - v.g0) * 100, st = v.g > v.gm ? 'bad' : rem < 25 ? 'warn' : 'ok';
           return { results: [R('Gap vs maximum', v.g / v.gm * 100, '%', 0, st, true), R('Wear margin remaining', Math.max(0, rem), '%', 0, st), R('Gap increase since new', v.g - v.g0, 'mm', 2)], verdict: { s: st, t: st === 'ok' ? 'Air gap within limits.' : st === 'warn' ? 'Approaching wear limit – adjust / plan lining replacement.' : 'Beyond limit – brake may fail to release/hold. Adjust or replace linings.' } };
         }
@@ -2195,7 +2220,7 @@ footer .disc{flex-basis:100%}
         inputs: [
           { k: 'p', l: 'Thruster rated shaft power', u: 'kW', v: 1500, min: 1 }, { k: 'x1', l: 'Present speed', u: '%', v: 40, min: 0, max: 110 }, { k: 'x2', l: 'New speed (X)', u: '%', v: 80, min: 0, max: 110 }, { k: 'n', l: 'Power exponent', v: 3, min: 1, max: 3.5, step: 0.1, hint: '3 for FPP propeller; CPP at constant rpm ≈ pitch-based' },
           { k: 'em', l: 'Motor efficiency', u: '%', v: 96, min: 1, max: 100 }, { k: 'ev', l: 'Drive + transformer efficiency', u: '%', v: 96, min: 1, max: 100 }, { k: 'pf', l: 'Plant PF of load', v: 0.95, min: 0.3, max: 1, step: 0.01 },
-          { k: 'base', l: 'Existing plant load', u: 'kW', v: 3000, min: 0 }, { k: 'dg', l: 'DG rating', u: 'kW', v: 2000, min: 1 }, { k: 'dn', l: 'DGs online', v: 3, min: 1, step: 1 }
+          { k: 'base', l: 'Existing plant load (incl. this thruster at present speed)', u: 'kW', v: 3000, min: 0 }, { k: 'dg', l: 'DG rating', u: 'kW', v: 2000, min: 1 }, { k: 'dn', l: 'DGs online', v: 3, min: 1, step: 1 }
         ],
         run: v => {
           const k = 1 / (v.em / 100 * v.ev / 100), pa = v.p * (v.x1 / 100) ** v.n * k, pb = v.p * (v.x2 / 100) ** v.n * k, d = pb - pa, cap = v.dn * v.dg, la = (v.base) / cap * 100, lb = (v.base + d) / cap * 100, st = lvl(lb, 85, 100);

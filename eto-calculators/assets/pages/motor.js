@@ -99,6 +99,7 @@
           { k: 'lo', l: 'Relay range min', u: 'A', v: 100, min: 0 }, { k: 'hi', l: 'Relay range max', u: 'A', v: 160, min: 0 }
         ],
         run: v => {
+          if (v.hi <= v.lo) throw new Error('Relay range max must be greater than min');
           const set = v.fla * (v.sf > 1 ? 1.1 : 1.0), max = v.fla * (v.sf > 1 ? 1.25 : 1.15);
           const inr = set >= v.lo && set <= v.hi, t = { 10: [4, 10], 20: [6, 20], 30: [9, 30] }[v.cls];
           return { results: [R('Recommended setting', set, 'A', 1, inr ? 'ok' : 'bad', true), R('Maximum allowed', max, 'A', 1), R('Setting as % of range', (set - v.lo) / (v.hi - v.lo) * 100, '%', 0), R('Trip time at 7.2×Ie', t[0] + ' – ' + t[1], 's')],

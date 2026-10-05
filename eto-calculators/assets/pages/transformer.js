@@ -70,7 +70,7 @@
           { k: 'x', l: 'Load factor', v: 0.75, min: 0.01, max: 1.5, step: 0.05 }, { k: 'pf', l: 'Load PF', v: 0.85, min: 0.1, max: 1, step: 0.01 }
         ],
         run: v => {
-          const out = v.x * v.s * v.pf, loss = v.p0 + v.x * v.x * v.pk, eff = out / (out + loss) * 100, xo = Math.sqrt(v.p0 / v.pk), em = xo * v.s * v.pf / (xo * v.s * v.pf + 2 * v.p0) * 100;
+          const out = v.x * v.s * v.pf, loss = v.p0 + v.x * v.x * v.pk, eff = out / (out + loss) * 100, xo = Math.sqrt(v.p0 / v.pk), em = v.p0 > 0 ? xo * v.s * v.pf / (xo * v.s * v.pf + 2 * v.p0) * 100 : 100;
           return { results: [R('Efficiency', eff, '%', 2, null, true), R('Total loss', loss, 'kW', 2), R('Copper loss', v.x * v.x * v.pk, 'kW', 2), R('Max-efficiency load', xo * 100, '%', 0), R('Max efficiency', em, '%', 2), R('Heat to remove', loss, 'kW', 2)] };
         }
       },
@@ -83,7 +83,7 @@
         ],
         run: v => {
           const In = v.s * 1000 / (S3 * v.vr), z = v.vsc / v.vr * In / v.it * 100, r = v.psc * (In / v.it) ** 2 / (v.s * 1000) * 100, x = Math.sqrt(Math.max(0, z * z - r * r));
-          return { results: [R('Impedance Z', z, '%', 2, null, true), R('Resistance R', r, '%', 2), R('Reactance X', x, '%', 2), R('Rated current', In, 'A', 1), R('X/R', x / r, '', 1)] };
+          return { results: [R('Impedance Z', z, '%', 2, null, true), R('Resistance R', r, '%', 2), R('Reactance X', x, '%', 2), R('Rated current', In, 'A', 1), R('X/R', r > 0 ? x / r : 'n/a (R = 0)', '', 1)] };
         }
       },
       {

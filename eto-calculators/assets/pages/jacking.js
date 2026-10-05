@@ -36,6 +36,7 @@
         inputs: [{ k: 'tbl', t: 'table', l: 'Motor currents (during same jacking step)', v: [{ n: 'Leg1-M1', a: 52 }, { n: 'Leg1-M2', a: 54 }, { n: 'Leg1-M3', a: 49 }, { n: 'Leg1-M4', a: 63 }, { n: 'Leg1-M5', a: 51 }, { n: 'Leg1-M6', a: 50 }], cols: [{ k: 'n', l: 'Motor', t: 'text', d: 'Motor' }, { k: 'a', l: 'Current A', t: 'num', d: 0 }] }],
         run: v => {
           const n = v.tbl.length, avg = v.tbl.reduce((a, r) => a + r.a, 0) / n; let worst = 0;
+          if (!n || avg <= 0) throw new Error('Enter at least one motor current');
           const rows = v.tbl.map(r => { const d = (r.a - avg) / avg * 100; worst = Math.max(worst, Math.abs(d)); return [esc(r.n), r.a, d, Math.abs(d) <= 10 ? '✅' : Math.abs(d) <= 20 ? '⚠️' : '⛔']; });
           const st = lvl(worst, 10, 20);
           return { results: [R('Average current', avg, 'A', 1), R('Worst deviation', worst, '%', 1, st, true), R('Total current', avg * n, 'A', 0)], tables: [{ title: 'Share', head: ['Motor', 'Current A', 'Deviation %', 'Status'], rows, states: rows.map(r => r[3] === '✅' ? 'ok' : r[3] === '⚠️' ? 'warn' : 'bad') }], verdict: { s: st, t: st === 'ok' ? 'Load well shared.' : 'Unequal sharing – check brake release/air gap, gear mesh, VFD torque reference and motor connections.' } };
@@ -55,6 +56,7 @@
         formula: 'Wear remaining = (gap_max − gap_measured) / (gap_max − gap_nominal)',
         inputs: [{ k: 'g0', l: 'Nominal air gap', u: 'mm', v: 0.4, min: 0.01, step: 0.01 }, { k: 'gm', l: 'Maximum permitted gap', u: 'mm', v: 0.9, min: 0.01, step: 0.01 }, { k: 'g', l: 'Measured gap', u: 'mm', v: 0.65, min: 0, step: 0.01 }],
         run: v => {
+          if (v.gm <= v.g0) throw new Error('Maximum permitted gap must be larger than the nominal gap');
           const rem = (v.gm - v.g) / (v.gm - v.g0) * 100, st = v.g > v.gm ? 'bad' : rem < 25 ? 'warn' : 'ok';
           return { results: [R('Gap vs maximum', v.g / v.gm * 100, '%', 0, st, true), R('Wear margin remaining', Math.max(0, rem), '%', 0, st), R('Gap increase since new', v.g - v.g0, 'mm', 2)], verdict: { s: st, t: st === 'ok' ? 'Air gap within limits.' : st === 'warn' ? 'Approaching wear limit – adjust / plan lining replacement.' : 'Beyond limit – brake may fail to release/hold. Adjust or replace linings.' } };
         }

@@ -37,25 +37,37 @@
     if (typeof v === 'string') return v;
     if (v == null || !isFinite(v)) return '—';
     d = d == null ? 2 : d;
-    return Number(v.toFixed(d)).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+    const n = Number(v.toFixed(d));
+    return (n === 0 ? 0 : n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
   };
   const R = (l, v, u, d, s, big) => ({ l, v, u, d, s, big });
   const lvl = (v, okMax, warnMax) => (v <= okMax ? 'ok' : v <= warnMax ? 'warn' : 'bad');
   const std = (list, v) => list.find(x => x >= v - 1e-9) || list[list.length - 1];
   const rho = (mat, T) => (mat === 'Al' ? 0.02826 * (1 + 0.00403 * (T - 20)) : 0.01724 * (1 + 0.00393 * (T - 20))); // ohm·mm²/m
-  const interp = (pts, x) => {
+  // IEC 60228 class-2 maximum DC resistance at 20 °C (ohm/km) – real stranded conductors, not theoretical rho
+  const R20 = {
+    Cu: [[1.5, 13.3], [2.5, 7.98], [4, 4.95], [6, 3.30], [10, 1.91], [16, 1.21], [25, 0.780], [35, 0.554], [50, 0.386], [70, 0.272], [95, 0.206], [120, 0.161], [150, 0.129], [185, 0.106], [240, 0.0801], [300, 0.0641], [400, 0.0486], [500, 0.0384], [630, 0.0287]],
+    Al: [[16, 1.91], [25, 1.20], [35, 0.868], [50, 0.641], [70, 0.443], [95, 0.320], [120, 0.253], [150, 0.206], [185, 0.164], [240, 0.125], [300, 0.100], [400, 0.0778], [500, 0.0605], [630, 0.0469]]
+  };
+  // conductor resistance in ohm/m at temperature T (interpolates the effective resistivity between standard sizes)
+  const res = (mat, size, T) => {
+    const pts = R20[mat === 'Al' ? 'Al' : 'Cu'].map(p => [p[0], p[1] * p[0] / 1000]); // ohm·mm²/m
+    const r20 = interp(pts, size) / size, a = mat === 'Al' ? 0.00403 : 0.00393;
+    return r20 * (1 + a * (T - 20));
+  };
+  function interp(pts, x) {
     if (x <= pts[0][0]) return pts[0][1];
     for (let i = 1; i < pts.length; i++) if (x <= pts[i][0]) {
       const [x0, y0] = pts[i - 1], [x1, y1] = pts[i];
       return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
     }
     return pts[pts.length - 1][1];
-  };
+  }
   // voltage drop (V) for a cable: k = sqrt3 (3-ph) or 2 (1-ph); R,X in ohm/m
   const vdrop = (sys, I, L, size, mat, T, Xmohm, pf, par) => {
     if (sys === 'dc') { pf = 1; Xmohm = 0; }
-    const k = sys === '3' ? S3 : 2;
-    const r = rho(mat, T) / size; // ohm/m
+    const k = String(sys) === '3' ? S3 : 2;
+    const r = res(mat, size, T); // ohm/m
     const x = Xmohm / 1000;       // ohm/m
     const phi = Math.acos(Math.min(1, pf));
     return { v: k * I * L * (r * pf + x * Math.sin(phi)) / (par || 1), r: r * 1000, x: Xmohm, k };
@@ -157,7 +169,7 @@
           const inp = f.querySelector('input,select');
           inp.value = vals[i.k];
           inp.addEventListener('input', () => {
-            if (t === 'sel') { const x = inp.value; vals[i.k] = x !== '' && !isNaN(x) ? Number(x) : x; }
+            if (t === 'sel') { const o = i.opts.find(o => String(o[0]) === inp.value); vals[i.k] = o ? o[0] : inp.value; }
             else vals[i.k] = inp.value === '' ? NaN : parseFloat(inp.value);
             recompute();
           });
@@ -268,7 +280,7 @@
         holder.querySelectorAll('input,select').forEach(inp => inp.addEventListener('input', () => {
           const col = i.cols.find(c => c.k === inp.dataset.k);
           const x = inp.value;
-          vals[i.k][+inp.dataset.r][inp.dataset.k] = col.t === 'text' ? x : col.t === 'sel' ? (x !== '' && !isNaN(x) ? Number(x) : x) : (x === '' ? NaN : parseFloat(x));
+          vals[i.k][+inp.dataset.r][inp.dataset.k] = col.t === 'text' ? x : col.t === 'sel' ? (() => { const o = col.opts.find(o => String(o[0]) === x); return o ? o[0] : x; })() : (x === '' ? NaN : parseFloat(x));
           recompute();
         }));
         holder.querySelectorAll('[data-del]').forEach(b => (b.onclick = () => { vals[i.k].splice(+b.dataset.del, 1); draw(); recompute(); }));
@@ -318,5 +330,5 @@
   // theme restore
   try { const t = localStorage.getItem('eto:theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) { /* ignore */ }
 
-  window.ETO = { PAGES, S3, STD_SIZES, STD_BREAKERS, STD_FUSES, esc, fmt, R, lvl, std, rho, interp, vdrop, page, start };
+  window.ETO = { PAGES, S3, STD_SIZES, STD_BREAKERS, STD_FUSES, esc, fmt, R, lvl, std, rho, res, interp, vdrop, page, start };
 })();

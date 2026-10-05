@@ -32,12 +32,12 @@
         id: 'thdv', icon: '📈', title: 'THD-V evaluation', desc: 'Compare voltage THD with class / IEEE limits.',
         formula: 'THD-V = √(ΣVh²) / V1 × 100',
         inputs: [
-          { k: 'lim', l: 'Limit set', opts: [['8', 'IACS UR E24: THD-V ≤ 8%, single ≤ 5%'], ['5', 'IEEE 519 (≤ 1 kV): THD-V ≤ 5%'], ['10', 'IEC 61000-2-4 class 3: 10%']], v: '8' },
+          { k: 'lim', l: 'Limit set', opts: [['iacs', 'IACS UR E24 (ships): THD-V ≤ 8%, single ≤ 5%'], ['ieee1', 'IEEE 519, V ≤ 1 kV: THD-V ≤ 8%, single ≤ 5%'], ['ieee69', 'IEEE 519, 1–69 kV: THD-V ≤ 5%, single ≤ 3%'], ['iec3', 'IEC 61000-2-4 class 3: THD-V ≤ 10%, 5th ≤ 9%']], v: 'iacs' },
           { k: 'tbl', t: 'table', l: 'Measured voltage harmonics (% of fundamental)', v: [{ h: 5, m: 3.2 }, { h: 7, m: 2.1 }, { h: 11, m: 1.2 }, { h: 13, m: 0.8 }], cols: [{ k: 'h', l: 'Order h', t: 'num', d: 5, w: 60 }, { k: 'm', l: '% of V1', t: 'num', d: 0, w: 80 }] }
         ],
         run: v => {
           let sq = 0, mx = 0; v.tbl.forEach(r => { sq += r.m * r.m; mx = Math.max(mx, r.m); });
-          const thd = Math.sqrt(sq), lim = +v.lim, st = lvl(thd, lim * 0.8, lim), sing = lim === 8 ? 5 : lim === 5 ? 3 : 7, st2 = mx <= sing ? 'ok' : 'bad';
+          const LIM = { iacs: [8, 5], ieee1: [8, 5], ieee69: [5, 3], iec3: [10, 9] }[v.lim], thd = Math.sqrt(sq), lim = LIM[0], st = lvl(thd, lim * 0.8, lim), sing = LIM[1], st2 = mx <= sing ? 'ok' : 'bad';
           return { results: [R('THD-V', thd, '%', 2, st, true), R('Largest single harmonic', mx, '%', 2, st2), R('Limit (THD / single)', lim + ' / ' + sing, '%'), R('Margin', lim - thd, '%', 2)], verdict: { s: st === 'bad' || st2 === 'bad' ? 'bad' : st, t: st === 'ok' && st2 === 'ok' ? 'Voltage quality acceptable.' : 'Distortion beyond limits – check filters, number of VFDs online, generator Xd″, and capacitor banks.' } };
         }
       },

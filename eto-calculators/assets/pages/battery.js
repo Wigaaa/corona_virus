@@ -1,5 +1,5 @@
 (function () {
-  const { R, lvl, S3, esc, rho } = ETO;
+  const { R, lvl, S3, esc, res, STD_SIZES } = ETO;
   ETO.page({
     title: 'Battery & UPS Calculations', icon: '🔋', accent: '#ca8a04',
     subtitle: 'Battery sizing, autonomy with Peukert, charger rating, UPS loading / runtime and DC voltage drop.',
@@ -86,8 +86,8 @@
           { k: 'v', l: 'System voltage', u: 'V', v: 24, min: 1 }, { k: 'i', l: 'Current', u: 'A', v: 30, min: 0 }, { k: 'l', l: 'Length (one way)', u: 'm', v: 20, min: 0 }, { k: 's', l: 'Cable size', u: 'mm²', v: 10, min: 0.5 }, { k: 't', l: 'Conductor temperature', u: '°C', v: 40 }, { k: 'lim', l: 'Allowed drop', u: '%', v: 3, min: 0.1 }
         ],
         run: v => {
-          const vd = 2 * v.i * v.l * rho('Cu', v.t) / v.s, pc = vd / v.v * 100, st = lvl(pc, v.lim, v.lim * 1.3);
-          return { results: [R('Voltage drop', vd, 'V', 3, st, true), R('Voltage drop', pc, '%', 2, st), R('Voltage at load', v.v - vd, 'V', 2), R('Min. size for limit', 2 * v.i * v.l * rho('Cu', v.t) / (v.v * v.lim / 100), 'mm²', 1)] };
+          const vd = 2 * v.i * v.l * res('Cu', v.s, v.t), pc = vd / v.v * 100, st = lvl(pc, v.lim, v.lim * 1.3);
+          return { results: [R('Voltage drop', vd, 'V', 3, st, true), R('Voltage drop', pc, '%', 2, st), R('Voltage at load', v.v - vd, 'V', 2), R('Min. standard size for limit', STD_SIZES.find(sz => 2 * v.i * v.l * res('Cu', sz, v.t) <= v.v * v.lim / 100) || 'none ≤ 630', 'mm²', 0)] };
         }
       },
       {

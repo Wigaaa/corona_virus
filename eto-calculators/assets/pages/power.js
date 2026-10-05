@@ -115,7 +115,9 @@
           { k: 'a', l: 'Current L1', u: 'A', v: 102, min: 0 }, { k: 'b', l: 'Current L2', u: 'A', v: 98, min: 0 }, { k: 'c', l: 'Current L3', u: 'A', v: 110, min: 0 }
         ],
         run: v => {
-          const av = (v.a + v.b + v.c) / 3, mx = Math.max(Math.abs(v.a - av), Math.abs(v.b - av), Math.abs(v.c - av)), u = mx / av * 100, st = lvl(u, 10, 20);
+          const av = (v.a + v.b + v.c) / 3;
+          if (av <= 0) throw new Error('Enter the phase currents');
+          const mx = Math.max(Math.abs(v.a - av), Math.abs(v.b - av), Math.abs(v.c - av)), u = mx / av * 100, st = lvl(u, 10, 20);
           return { results: [R('Unbalance', u, '%', 2, st, true), R('Average current', av, 'A'), R('Max deviation', mx, 'A'), R('Highest phase', Math.max(v.a, v.b, v.c), 'A'), R('Lowest phase', Math.min(v.a, v.b, v.c), 'A')],
             verdict: { s: st, t: u <= 10 ? 'Balanced – within ≈10%.' : u <= 20 ? 'Noticeable unbalance – check phase voltages & connections.' : 'Severe unbalance – possible phase loss / winding fault. Investigate before running.' },
             notes: ['Current unbalance in motors is ≈ 6–10× the voltage unbalance. Check voltage balance first.'] };

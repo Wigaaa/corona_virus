@@ -1,5 +1,5 @@
 (function () {
-  const { R, lvl, S3, esc, rho, std, STD_BREAKERS, STD_FUSES } = ETO;
+  const { R, lvl, S3, esc, res, std, STD_BREAKERS, STD_FUSES } = ETO;
   const kap = xr => 1.02 + 0.98 * Math.exp(-3 / xr);
   ETO.page({
     title: 'Short-circuit & Protection', icon: '🛡️', accent: '#dc2626',
@@ -17,7 +17,7 @@
         ],
         run: v => {
           const zs = v.z / 100 * v.v * v.v / (v.s * 1000), rs = zs / Math.sqrt(1 + v.xr ** 2), xs = rs * v.xr;
-          const rc = rho('Cu', 20) / v.sz * v.L / v.par, xc = v.xc / 1000 * v.L / v.par;
+          const rc = res('Cu', v.sz, 20) * v.L / v.par, xc = v.xc / 1000 * v.L / v.par;
           const zt = Math.hypot(rs + rc, xs + xc), isrc = v.v / (S3 * Math.hypot(rs, xs)), isc = v.v / (S3 * zt), im = 4 * v.mf, tot = isc + im, xrt = (xs + xc) / (rs + rc);
           return { results: [R('At source terminals', isrc / 1000, 'kA', 2), R('At fault point (source+cable)', isc / 1000, 'kA', 2), R('Motor contribution', im / 1000, 'kA', 2), R('Total Isc (rms)', tot / 1000, 'kA', 2, null, true), R('X/R at point', xrt, '', 1), R('Peak current ip', kap(xrt) * Math.SQRT2 * tot / 1000, 'kA', 1)],
             notes: ['Motor contribution ≈ 4× FLC of running motors (LV). The max fault (all DGs + transformers) governs breaker Icu; the min fault (one DG, arcing) governs trip sensitivity.'] };
@@ -67,7 +67,7 @@
           { k: 'l', l: 'Cable length', u: 'm', v: 80, min: 0 }, { k: 'ia', l: 'Trip current for required time (Ia)', u: 'A', v: 2000, min: 1, hint: 'Ii of MCCB, or fuse current for 0.4 s / 5 s' }
         ],
         run: v => {
-          const r1 = rho('Cu', 70) / v.sp * v.l, r2 = rho('Cu', 70) / v.se * v.l, zs = v.ze + r1 + r2, ief = v.u0 / zs, ok = ief >= v.ia, zmax = v.u0 / v.ia;
+          const r1 = res('Cu', v.sp, 70) * v.l, r2 = res('Cu', v.se, 70) * v.l, zs = v.ze + r1 + r2, ief = v.u0 / zs, ok = ief >= v.ia, zmax = v.u0 / v.ia;
           return { results: [R('Loop impedance Zs', zs, 'Ω', 4), R('Earth-fault current', ief, 'A', 0, ok ? 'ok' : 'bad', true), R('Max permitted Zs', zmax, 'Ω', 4), R('Ief / Ia', ief / v.ia, '×', 2, ok ? 'ok' : 'bad')], verdict: { s: ok ? 'ok' : 'bad', t: ok ? 'Automatic disconnection achieved.' : 'Earth-fault current too low to trip – increase earth conductor, use earth-fault relay / RCD.' } };
         }
       },
@@ -97,7 +97,7 @@
         id: 'fuse', icon: '🔗', title: 'Fuse rating', desc: 'Guideline fuse sizes for a motor or cable feeder (always confirm on the fuse time-current curve).',
         formula: 'aM: In ≥ FLC     gG (motor): In ≈ k × FLC with k = 1.6 / 2.0 / 2.5 by starting time     In ≤ Iz',
         inputs: [
-          { k: 'flc', l: 'Motor FLC', u: 'A', v: 90, min: 0.1 }, { k: 'ts', l: 'Starting time', opts: [[1.6, '≤ 3 s'], [2, '3 – 10 s'], [2.5, '10 – 20 s']], v: 2 }, { k: 'iz', l: 'Cable Iz', u: 'A', v: 160, min: 1 }, { k: 'ilr', l: 'Locked-rotor ratio', v: 6.5, min: 1, step: 0.1 }
+          { k: 'flc', l: 'Motor FLC', u: 'A', v: 90, min: 0.1 }, { k: 'ts', l: 'Starting time', opts: [[1.6, '≤ 3 s'], [2, '3 – 10 s'], [2.5, '10 – 20 s']], v: 2 }, { k: 'iz', l: 'Cable Iz', u: 'A', v: 160, min: 1 }, { k: 'lrc', l: 'Locked-rotor ratio', v: 6.5, min: 1, step: 0.1 }
         ],
         run: v => {
           const am = std(STD_FUSES, v.flc * 1.0), gg = std(STD_FUSES, v.flc * v.ts);

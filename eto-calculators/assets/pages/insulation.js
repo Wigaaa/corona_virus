@@ -1,5 +1,5 @@
 (function () {
-  const { R, lvl, S3, std, rho, STD_SIZES } = ETO;
+  const { R, lvl, S3, std, res, STD_SIZES } = ETO;
   ETO.page({
     title: 'Earthing & Insulation', icon: '🧪', accent: '#475569',
     subtitle: 'Insulation resistance, polarisation index, earth-fault levels in IT systems, bonding and megger test interpretation.',
@@ -56,7 +56,7 @@
         formula: 'R_exp = ρ × L / A     limit ≈ 0.1 Ω to main earth (hull)',
         inputs: [{ k: 'l', l: 'Conductor length', u: 'm', v: 30, min: 0 }, { k: 's', l: 'Conductor size', u: 'mm²', v: 16, min: 0.5 }, { k: 'rm', l: 'Measured resistance', u: 'mΩ', v: 38, min: 0 }, { k: 't', l: 'Conductor temperature', u: '°C', v: 25 }],
         run: v => {
-          const rexp = rho('Cu', v.t) / v.s * v.l * 1000, ratio = v.rm / (rexp || 1), st = ratio <= 1.25 ? 'ok' : ratio <= 2 ? 'warn' : 'bad', abs = v.rm <= 100;
+          const rexp = res('Cu', v.s, v.t) * v.l * 1000, ratio = v.rm / (rexp || 1), st = ratio <= 1.25 ? 'ok' : ratio <= 2 ? 'warn' : 'bad', abs = v.rm <= 100;
           return { results: [R('Expected', rexp, 'mΩ', 1), R('Measured', v.rm, 'mΩ', 1, st, true), R('Measured / expected', ratio, '×', 2, st), R('≤ 0.1 Ω', abs ? 'YES' : 'NO', '', 0, abs ? 'ok' : 'bad')], verdict: { s: st, t: st === 'ok' ? 'Continuity good.' : 'Extra resistance – suspect loose / corroded connection or hidden break; clean, re-torque and retest.' } };
         }
       },

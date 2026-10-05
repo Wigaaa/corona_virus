@@ -1,5 +1,5 @@
 (function () {
-  const { R, lvl, S3, std, rho, vdrop, STD_SIZES } = ETO;
+  const { R, lvl, S3, std, res, vdrop, STD_SIZES } = ETO;
   const MAT = { opts: [['Cu', 'Copper'], ['Al', 'Aluminium']], v: 'Cu' };
   const SYS = [['3', '3-phase'], ['1', 'Single-phase / 2-wire']];
   const KFAC = [[143, 'Cu – XLPE / EPR (k=143)'], [115, 'Cu – PVC (k=115)'], [94, 'Al – XLPE / EPR (k=94)'], [76, 'Al – PVC (k=76)']];
@@ -22,12 +22,16 @@
   const loadI = v => {
     if (v.mode === 'i') return v.i;
     const pin = v.p * 1000 / (v.eff / 100);
-    return v.sys === 'dc' ? pin / v.v : v.sys === '1' ? pin / (v.v * v.pf) : pin / (S3 * v.v * v.pf);
+    return String(v.sys) === 'dc' ? pin / v.v : String(v.sys) === '1' ? pin / (v.v * v.pf) : pin / (S3 * v.v * v.pf);
   };
   const pfOf = v => (v.sys === 'dc' ? 1 : v.pf);
   const sysName = v => ({ '3': '3-phase', '1': 'single-phase', dc: 'DC' }[v.sys]);
-  // Indicative current ratings, Cu, 3 loaded conductors, cable on tray in air (IEC 60364-5-52 method E, 30 °C ambient)
-  const AMP = { 90: [26, 36, 49, 63, 86, 115, 149, 185, 225, 289, 352, 410, 473, 542, 641, 741, 868, 998, 1151], 70: [22, 30, 40, 51, 70, 94, 119, 148, 180, 232, 282, 328, 379, 434, 514, 593, 694, 799, 920] };
+  // Indicative ratings, Cu, cable on perforated tray in air, 30 °C ambient (IEC 60364-5-52 Tables B.52.4 PVC / B.52.5 XLPE, method E).
+  // [loaded conductors][insulation temp]. Taken from the published tables – verify against the standard / vessel cable schedule.
+  const AMP = {
+    2: { 90: [26, 36, 49, 63, 86, 115, 149, 185, 225, 289, 352, 410, 473, 542, 641, 741, 868, 998, 1151], 70: [22, 30, 40, 51, 70, 94, 119, 148, 180, 232, 282, 328, 379, 434, 514, 593, 694, 799, 920] },
+    3: { 90: [23, 31, 42, 54, 75, 100, 127, 158, 192, 246, 298, 346, 395, 450, 538, 621, 754, 868, 1005], 70: [18.5, 25, 34, 43, 60, 80, 101, 126, 153, 196, 238, 276, 319, 364, 430, 497, 600, 694, 808] }
+  };
   const ct = (tmax, tref, tamb) => Math.sqrt((tmax - tamb) / (tmax - tref));
 
   ETO.page({
@@ -48,7 +52,7 @@
           { k: 'n', l: 'Parallel cables per phase', v: 1, min: 1, step: 1 }
         ],
         run: v => {
-          if (v.tamb >= v.tmax) throw new Error('Ambient must be below conductor temperature');
+          if (v.tamb >= v.tmax || v.tref >= v.tmax) throw new Error('Ambient and reference ambient must both be below the conductor maximum temperature');
           const c = ct(v.tmax, v.tref, v.tamb), iz = v.it * c * v.g * v.n, m = iz / v.ib, st = m >= 1.15 ? 'ok' : m >= 1 ? 'warn' : 'bad';
           return { results: [R('Derated capacity Iz', iz, 'A', 1, st, true), R('Temperature factor', c, '', 3), R('Grouping factor', v.g, '', 2), R('Margin Iz / Ib', m, '×', 2, st)],
             verdict: { s: st, t: m < 1 ? 'Cable too small – increase size or parallel cables.' : m < 1.15 ? 'Passes but with little margin.' : 'Cable adequate for current.' },
@@ -89,19 +93,19 @@
         ]),
         run: v => {
           if (v.tamb >= v.ins) throw new Error('Ambient must be below conductor temperature');
-          const I = loadI(v), Ic = I / v.par, k = v.sys === '3' ? S3 : 2, pf = pfOf(v), x = v.sys === 'dc' ? 0 : v.x;
+          const I = loadI(v), Ic = I / v.par, k = String(v.sys) === '3' ? S3 : 2, pf = pfOf(v), x = v.sys === 'dc' ? 0 : v.x;
           // current capacity
           const der = ct(v.ins, 30, v.tamb) * v.g, need = Ic / der, al = v.mat === 'Al' ? 0.78 : 1;
-          const ia = STD_SIZES.findIndex((sz, i) => AMP[v.ins][i] * al >= need), sA = ia < 0 ? null : STD_SIZES[ia];
+          const tab = AMP[String(v.sys) === '3' ? 3 : 2][v.ins], ia = STD_SIZES.findIndex((sz, i) => tab[i] * al >= need), sA = ia < 0 ? null : STD_SIZES[ia];
           // voltage drop
           const zmax = v.v * v.lim / 100 / (k * Ic * v.l), sinp = Math.sin(Math.acos(pf)), rmax = (zmax - x / 1000 * sinp) / pf;
-          const sV = rmax > 0 ? std(STD_SIZES, rho(v.mat, v.t) / rmax) : null;
+          const sV = rmax > 0 ? (STD_SIZES.find(sz => res(v.mat, sz, v.t) <= rmax) || null) : null;
           if (sA == null || sV == null) return { results: [R('Design current', I, 'A', 2)], verdict: { s: 'bad', t: 'No single standard cable satisfies this – use parallel cables or a higher voltage.' } };
           const sel = Math.max(sA, sV), gov = sA > sV ? 'current capacity' : sV > sA ? 'voltage drop' : 'both equally';
-          const isel = STD_SIZES.indexOf(sel), rated = AMP[v.ins][isel] * al * der * v.par, dv = vdrop(v.sys, I, v.l, sel, v.mat, v.t, x, pf, v.par), pc = dv.v / v.v * 100;
+          const isel = STD_SIZES.indexOf(sel), rated = tab[isel] * al * der * v.par, dv = vdrop(v.sys, I, v.l, sel, v.mat, v.t, x, pf, v.par), pc = dv.v / v.v * 100;
           return { results: [R('Recommended size', sel, 'mm²', 1, 'ok', true), R('Governed by', gov, ''), R('Design current', I, 'A', 2), R('Size for current capacity', sA, 'mm²', 1), R('Size for voltage drop', sV, 'mm²', 1), R('Derated capacity of selected', rated, 'A', 0, rated >= I ? 'ok' : 'bad'), R('Voltage drop with selected', pc, '%', 2, pc <= v.lim ? 'ok' : 'bad'), R('Derating factor (temp × group)', der, '', 3)],
             verdict: { s: 'ok', t: `Use ${sel} mm² per phase${v.par > 1 ? ' × ' + v.par + ' parallel cables' : ''} – ${gov === 'both equally' ? 'both criteria give the same size' : 'governed by ' + gov}.` },
-            notes: ['Ampacity table is indicative (Cu, 3 loaded conductors, tray in air, IEC 60364-5-52 method E; Al ≈ 0.78×). Marine cables (IEC 60092-353/-354) have their own tables at 45 °C – confirm with the vessel cable schedule.', 'Also check short-circuit withstand (Cable page) and the breaker/overload protection.', v.sys === 'dc' ? 'DC: both conductors included in the drop; keep 24 V systems ≤ 2–3%.' : 'Power input is converted with PF and efficiency above.'] };
+            notes: ['Ampacity table is indicative (Cu, tray in air, IEC 60364-5-52 method E: 3 loaded conductors for 3-phase, 2 for single-phase/DC; Al ≈ 0.78×). Marine cables (IEC 60092-353/-354) have their own tables at 45 °C – confirm with the vessel cable schedule.', 'Also check short-circuit withstand (Cable page) and the breaker/overload protection.', v.sys === 'dc' ? 'DC: both conductors included in the drop; keep 24 V systems ≤ 2–3%.' : 'Power input is converted with PF and efficiency above.'] };
         }
       },
       {
@@ -134,7 +138,7 @@
           { k: 'tamb', l: 'Actual ambient', u: '°C', v: 55 }
         ],
         run: v => {
-          if (v.tamb >= v.tmax) throw new Error('Ambient must be below conductor temperature');
+          if (v.tamb >= v.tmax || v.tref >= v.tmax) throw new Error('Ambient and reference ambient must both be below the conductor maximum temperature');
           const rows = [30, 35, 40, 45, 50, 55, 60, 65, 70].filter(t => t < v.tmax).map(t => [t + ' °C', ct(v.tmax, v.tref, t), v.it * ct(v.tmax, v.tref, t)]);
           const c = ct(v.tmax, v.tref, v.tamb);
           return { results: [R('Correction factor', c, '', 3, null, true), R('Derated rating', v.it * c, 'A', 1)], tables: [{ title: 'Ambient table', head: ['Ambient', 'Factor', 'Rating (A)'], rows }] };

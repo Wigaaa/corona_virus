@@ -25,8 +25,9 @@
             case 'kvapf': s = v.kva; p = s * v.pf; q = Math.sqrt(s * s - p * p); break;
             default: s = v.kva; q = v.kvar; if (q > s) throw new Error('kVAR cannot exceed kVA'); p = Math.sqrt(s * s - q * q);
           }
+          if (!(s > 0)) throw new Error('Enter non-zero power values');
           const pf = p / s;
-          return { results: [R('Power factor', pf, '', 3, lvl(1 - pf, 0.15, 0.25), true), R('Active power P', p, 'kW'), R('Reactive power Q', q, 'kVAR'), R('Apparent power S', s, 'kVA'), R('Angle φ', deg(Math.acos(pf)), '°', 1), R('tan φ', q / p, '', 3)] };
+          return { results: [R('Power factor', pf, '', 3, lvl(1 - pf, 0.15, 0.25), true), R('Active power P', p, 'kW'), R('Reactive power Q', q, 'kVAR'), R('Apparent power S', s, 'kVA'), R('Angle φ', deg(Math.acos(pf)), '°', 1), R('tan φ', p > 0 ? q / p : 'n/a', '', 3)] };
         }
       },
       {
@@ -66,6 +67,7 @@
           let p = 0, q = 0;
           const rows = v.tbl.map(r => { const pf = Math.min(1, Math.max(0.01, r.pf)); const qq = r.kw * Math.tan(Math.acos(pf)); p += r.kw; q += qq; return [ETO.esc(r.n), r.kw, pf, qq, r.kw / pf]; });
           const s = Math.hypot(p, q);
+          if (s <= 0) throw new Error('Enter at least one load');
           return { results: [R('Total kW', p, 'kW', 1), R('Total kVAR', q, 'kVAR', 1), R('Total kVA', s, 'kVA', 1), R('Overall PF', p / s, '', 3, null, true)],
             tables: [{ title: 'Breakdown', head: ['Load', 'kW', 'PF', 'kVAR', 'kVA'], rows }] };
         }
