@@ -16,13 +16,6 @@
         ['Operator interface', 'Mimic / matrix, alarm list, inhibit & override handling', 'F&G HMI in CCR, repeater on bridge / ECR'],
         ['Outputs / final elements', 'Protective actions', 'PA/GA alarm, beacons & sounders, ESD trips, HVAC dampers & fans, deluge valves, fire-pump start, gaseous release, ignition-source isolation'],
         ['Power supply', 'Uninterruptible supply from main + emergency source', 'Dual UPS / 24 V DC with battery back-up']]) +
-      H('Interfaces the ETO must understand') + L([
-        '<b>ESD system</b> – confirmed gas or fire initiates the defined ESD level (e.g. process shutdown, ESD of the area, abandon-platform level).',
-        '<b>HVAC</b> – gas at an air inlet trips fans and closes fire / gas-tight dampers; fire in a room closes its dampers.',
-        '<b>Electrical / PMS</b> – <b>ignition-source control</b>: confirmed gas trips non-Ex / non-essential electrical equipment in the affected area (and sometimes the whole unit), leaving only equipment certified for operation during a gas emergency.',
-        '<b>Fire-water</b> – fire pumps start, deluge / water-mist valves open in the affected fire area.',
-        '<b>PA/GA &amp; beacons</b> – general alarm, muster, abandon signals.',
-        '<b>DP / marine systems</b> – on mobile units, gas detection at engine-room air intakes and around generators matters for position keeping (generator shutdowns).']) +
       H('Key standards & rules') + L([
         '<b>IMO MODU Code</b> (fire safety, gas detection, ventilation) and <b>SOLAS II-2 / FSS Code</b> (fire detection & alarm systems).',
         '<b>IEC 61508 / IEC 61511</b> – functional safety, SIL of F&amp;G functions, proof testing.',
@@ -30,6 +23,15 @@
         '<b>IEC 60079-29-1 / -29-2</b> – flammable gas detector performance and selection, installation, use and maintenance; <b>IEC 60079-14 / -17</b> for Ex installation and inspection.',
         '<b>EN 54</b> – fire detection components and panels; <b>API RP 14C</b> / ISO 10418 – safety analysis of process systems.',
         'Class society rules (DNV, ABS, BV, LR…) and the field operator’s own technical requirements.']) + NOTE
+    ],
+    ['iface', '🔗', 'Interfaces the ETO must understand', () =>
+      `<p>The F&amp;G system does not act alone – its value is in the actions it triggers in other systems. Knowing each interface tells you what will happen on board when a detector goes into alarm, and what to isolate before testing.</p>` + L([
+        '<b>ESD system</b> – confirmed gas or fire initiates the defined ESD level (e.g. process shutdown, ESD of the area, abandon-platform level).',
+        '<b>HVAC</b> – gas at an air inlet trips fans and closes fire / gas-tight dampers; fire in a room closes its dampers.',
+        '<b>Electrical / PMS</b> – <b>ignition-source control</b>: confirmed gas trips non-Ex / non-essential electrical equipment in the affected area (and sometimes the whole unit), leaving only equipment certified for operation during a gas emergency.',
+        '<b>Fire-water</b> – fire pumps start, deluge / water-mist valves open in the affected fire area.',
+        '<b>PA/GA &amp; beacons</b> – general alarm, muster, abandon signals.',
+        '<b>DP / marine systems</b> – on mobile units, gas detection at engine-room air intakes and around generators matters for position keeping (generator shutdowns).']) + NOTE
     ],
     ['fire', '🚨', 'Fire detection devices', () =>
       TB(['Detector', 'Principle', 'Where used', 'Watch-outs'], [
@@ -127,16 +129,20 @@
         ['6-monthly', 'Calibration of gas detectors (zero & span) – catalytic more often if drift seen; toxic sensors check; ultrasonic detector self-test / verification'],
         ['Yearly', 'Full C&E function test per area (inputs → logic → outputs incl. ESD, HVAC, deluge, PA/GA); UPS battery discharge test; Ex inspection sample'],
         ['Per SIL proof-test interval', 'Documented proof test of each SIF, end-to-end, as specified in the SRS'],
-        ['2–3 years / on failure', 'Replace electrochemical and catalytic sensors; replace detectors at end of maker life']]) +
-      H('Gas detector calibration steps') + L([
+        ['2–3 years / on failure', 'Replace electrochemical and catalytic sensors; replace detectors at end of maker life']]) + NOTE
+    ],
+    ['cal', '🧪', 'Gas detector calibration steps', () =>
+      L([
         'Obtain permit; inform control room; <b>inhibit</b> the detector (and its executive actions).',
         'Check calibration-gas cylinder: correct gas, concentration, certificate and expiry date.',
         'Apply <b>zero gas</b> (clean air / N₂ for O₂-independent sensors) and set zero.',
         'Apply <b>span gas</b> at the maker’s flow rate through the correct adapter; wait for a stable reading; adjust span.',
         'Record as-found and as-left values; investigate large drift (poisoning, contamination).',
         'Allow reading to return to zero, confirm the 4–20 mA at the logic solver and HMI.',
-        'Remove the inhibit, confirm healthy status, close the permit.']) +
-      H('Fire detector test steps') + L([
+        'Remove the inhibit, confirm healthy status, close the permit.']) + NOTE
+    ],
+    ['firetest', '🔦', 'Fire detector test steps', () =>
+      L([
         'Inhibit the zone / outputs as per procedure (avoid deluge or gaseous release!).',
         'Smoke: approved test aerosol through a test cup. Heat: heat tool, never an open flame. Flame: maker’s flame simulator at stated distance.',
         'Confirm the alarm at the panel / HMI and the correct address / tag; reset and restore.',
