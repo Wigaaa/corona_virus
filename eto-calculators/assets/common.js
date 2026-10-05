@@ -78,6 +78,7 @@
 <div class="layout"><nav class="tabs" id="tabs"></nav><main class="panel" id="panel"></main></div>
 <footer><div class="nav">${prev ? `<a href="${href(prev.f)}">◀ ${esc(prev.n)}</a>` : ''}</div>
   <div class="nav">${next ? `<a href="${href(next.f)}">${esc(next.n)} ▶</a>` : ''}</div>
+  <div class="nav"><a href="${href('about.html')}">ℹ️ About / Credits</a></div>
   <div class="disc">⚠ Calculation aid only. Always verify against the vessel's electrical drawings, equipment nameplates, manufacturer data and class / flag rules before acting on any result.</div></footer>`;
   }
 
@@ -287,11 +288,18 @@
 
   // single-file bundle router
   function start() {
-    const iv = document.getElementById('indexView'), app = document.getElementById('app');
+    const iv = document.getElementById('indexView'), app = document.getElementById('app'), av = document.getElementById('aboutView');
     let cur = null;
     const route = () => {
       const [f, id] = location.hash.slice(1).split(':');
       const cfg = REG[f];
+      if (f === 'about.html') {
+        iv.style.display = 'none'; app.style.display = 'none'; av.style.display = ''; cur = null; window.scrollTo(0, 0);
+        document.title = 'About & Credits';
+        document.documentElement.style.setProperty('--accent', '#2563eb');
+        return;
+      }
+      av.style.display = 'none';
       if (!cfg) {
         iv.style.display = ''; app.style.display = 'none'; cur = null;
         document.title = 'ETO Toolkit – Electrical Calculators';

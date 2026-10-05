@@ -109,3 +109,21 @@ footer .disc{flex-basis:100%}
   .hero{background:#fff!important;color:#000;padding:8px 0}.hero .ico{display:none}
   .layout{display:block}
 }
+/* about page */
+.ab-hero{display:flex;gap:22px;align-items:center;padding:34px 20px;color:#fff;background:linear-gradient(135deg,#1d4ed8,#7c3aed 55%,#db2777)}
+.ab-av{flex:none;width:96px;height:96px;border-radius:50%;display:grid;place-items:center;font-size:36px;font-weight:800;background:rgba(255,255,255,.2);border:3px solid rgba(255,255,255,.55)}
+.ab-hero h1{margin:0;font-size:28px;line-height:1.2}
+.ab-hero p{margin:4px 0 0;opacity:.95;font-size:17px}
+.ab-wrap{max-width:1000px;margin:0 auto;padding:20px 16px 50px}
+.ab-btns{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-bottom:18px}
+.ab-btn{display:flex;gap:12px;align-items:center;text-decoration:none;color:#fff;border-radius:14px;padding:14px 16px;font-weight:700;box-shadow:var(--shadow)}
+.ab-btn span.i{font-size:26px}.ab-btn small{display:block;font-weight:500;opacity:.9;font-size:12.5px;word-break:break-all}
+.ab-btn.call{background:#16a34a}.ab-btn.wa{background:#22c55e}.ab-btn.mail{background:#ea580c}.ab-btn.in{background:#0a66c2}.ab-btn.loc{background:#475569}.ab-btn.vc{background:#7c3aed;border:0;font:inherit;font-weight:700;cursor:pointer;text-align:left}
+.ab-cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.tl{list-style:none;margin:10px 0 0;padding:0 0 0 18px;border-left:3px solid var(--accent)}
+.tl li{margin:0 0 14px;position:relative}
+.tl li:before{content:"";position:absolute;left:-26px;top:5px;width:11px;height:11px;border-radius:50%;background:var(--accent)}
+.tl b{display:block}.tl span{color:var(--mut);font-size:13px}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.tag{background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);border-radius:99px;padding:3px 12px;font-size:13px;font-weight:600}
+@media (max-width:760px){.ab-cols{grid-template-columns:1fr}.ab-hero{padding:22px 16px}.ab-hero h1{font-size:22px}.ab-av{width:72px;height:72px;font-size:26px}}

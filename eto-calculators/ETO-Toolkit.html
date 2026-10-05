@@ -116,13 +116,31 @@ footer .disc{flex-basis:100%}
   .hero{background:#fff!important;color:#000;padding:8px 0}.hero .ico{display:none}
   .layout{display:block}
 }
+/* about page */
+.ab-hero{display:flex;gap:22px;align-items:center;padding:34px 20px;color:#fff;background:linear-gradient(135deg,#1d4ed8,#7c3aed 55%,#db2777)}
+.ab-av{flex:none;width:96px;height:96px;border-radius:50%;display:grid;place-items:center;font-size:36px;font-weight:800;background:rgba(255,255,255,.2);border:3px solid rgba(255,255,255,.55)}
+.ab-hero h1{margin:0;font-size:28px;line-height:1.2}
+.ab-hero p{margin:4px 0 0;opacity:.95;font-size:17px}
+.ab-wrap{max-width:1000px;margin:0 auto;padding:20px 16px 50px}
+.ab-btns{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-bottom:18px}
+.ab-btn{display:flex;gap:12px;align-items:center;text-decoration:none;color:#fff;border-radius:14px;padding:14px 16px;font-weight:700;box-shadow:var(--shadow)}
+.ab-btn span.i{font-size:26px}.ab-btn small{display:block;font-weight:500;opacity:.9;font-size:12.5px;word-break:break-all}
+.ab-btn.call{background:#16a34a}.ab-btn.wa{background:#22c55e}.ab-btn.mail{background:#ea580c}.ab-btn.in{background:#0a66c2}.ab-btn.loc{background:#475569}.ab-btn.vc{background:#7c3aed;border:0;font:inherit;font-weight:700;cursor:pointer;text-align:left}
+.ab-cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.tl{list-style:none;margin:10px 0 0;padding:0 0 0 18px;border-left:3px solid var(--accent)}
+.tl li{margin:0 0 14px;position:relative}
+.tl li:before{content:"";position:absolute;left:-26px;top:5px;width:11px;height:11px;border-radius:50%;background:var(--accent)}
+.tl b{display:block}.tl span{color:var(--mut);font-size:13px}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.tag{background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);border-radius:99px;padding:3px 12px;font-size:13px;font-weight:600}
+@media (max-width:760px){.ab-cols{grid-template-columns:1fr}.ab-hero{padding:22px 16px}.ab-hero h1{font-size:22px}.ab-av{width:72px;height:72px;font-size:26px}}
 
 :root{--accent:#2563eb}
 </style>
 </head>
 <body>
 <div id="indexView">
-<header class="top"><a class="home" href="#">⚡ ETO Toolkit</a><button class="btn" id="theme0" style="margin-left:auto">🌓</button></header>
+<header class="top"><a class="home" href="#">⚡ ETO Toolkit</a><a class="btn" href="#about.html" style="margin-left:auto;text-decoration:none">ℹ️ About / Credits</a><button class="btn" id="theme0">🌓</button></header>
 <section class="hero" style="background:linear-gradient(135deg,#1d4ed8,#7c3aed 55%,#db2777)">
   <div class="ico">⚡</div>
   <div><h1>ETO Toolkit – Electrical Calculators for a Jack-up Barge</h1>
@@ -132,6 +150,7 @@ footer .disc{flex-basis:100%}
 <div class="wrap">
   <input class="search" id="q" type="search" placeholder="🔍 Search calculators (e.g. voltage drop, PI, thruster, UPS)…">
   <div id="lists"></div>
+  <a class="pc" style="--c:#7c3aed;margin-top:30px;max-width:520px" href="#about.html"><div class="ic">👷</div><b>About / Credits – Wagdy Mohamed Abdel Aziz, ETO</b><p>Contact details, LinkedIn, WhatsApp, experience and qualifications of the developer.</p><span class="num">Open →</span></a>
   <div class="card" style="margin-top:30px">
     <h2>📘 Quick tips</h2>
     <ul class="notes" style="background:transparent">
@@ -142,6 +161,54 @@ footer .disc{flex-basis:100%}
       <li>Cable / breaker tables and class rules differ by vessel: the vessel's design documents and class society rules are always the authority.</li>
     </ul>
   </div>
+</div>
+</div>
+<div id="aboutView" style="display:none">
+<header class="top"><a class="home" href="#">◀ ETO Toolkit</a><button class="btn theme-btn" style="margin-left:auto">🌓</button></header>
+<section class="ab-hero">
+  <div class="ab-av">WM</div>
+  <div><h1>Wagdy Mohamed Abdel Aziz</h1><p>Electrical Technical Officer (ETO) · ZMI · Jack-up barges</p></div>
+</section>
+<div class="ab-wrap">
+  <div class="ab-btns">
+    <a class="ab-btn call" href="tel:+201067686499"><span class="i">📞</span><div>Call<small>+20 106 768 6499</small></div></a>
+    <a class="ab-btn wa" href="https://wa.me/201067686499" target="_blank" rel="noopener"><span class="i">💬</span><div>WhatsApp<small>+20 106 768 6499</small></div></a>
+    <a class="ab-btn mail" href="mailto:eto.wagdy@gmail.com"><span class="i">✉️</span><div>Email<small>eto.wagdy@gmail.com</small></div></a>
+    <a class="ab-btn in" href="https://www.linkedin.com/in/eto-wagdy" target="_blank" rel="noopener"><span class="i">🔗</span><div>LinkedIn<small>linkedin.com/in/eto-wagdy</small></div></a>
+    <div class="ab-btn loc"><span class="i">📍</span><div>Based in<small>Alexandria, Egypt</small></div></div>
+    <button class="ab-btn vc" id="vcard" type="button"><span class="i">📇</span><div>Save contact<small>Download .vcf card</small></div></button>
+  </div>
+
+  <div class="card">
+    <h2>👷 Profile</h2>
+    <p class="desc" style="margin:8px 0 0">Electro-Technical Officer with marine electrical experience since 2012: DP2 offshore support vessels (Petrobras Brazil, Petrobel Egypt) and, since July 2022, jack-up barges with ZMI in the Abu Dhabi region. Holder of an Electro-Technical Officer Certificate of Competency, with a B.Sc. in Electrical Power Systems &amp; Automatic Control Engineering (Alexandria University, 2008). Marlins English test 96%.</p>
+  </div>
+
+  <div class="ab-cols">
+    <div class="card">
+      <h2>🚢 Sea & shore experience</h2>
+      <ul class="tl">
+        <li><b>ETO – Jack-up barges, ZMI</b><span>Jul 2022 – present · QMS Gloria, QMS Marwa (DP2), Senyar (DP2) · Dammam / Abu Dhabi</span></li>
+        <li><b>Electrical Port Engineer – Maridive &amp; Oil Services</b><span>Mar 2022 – Jul 2022 · Head office: vessel equipment support, PMS, spare-parts approval, electrical workshop</span></li>
+        <li><b>ETO – Maridive 602 (PSV, DP2)</b><span>Mar 2016 – Apr 2022 · Petrobras Brazil, Petrobel Egypt</span></li>
+        <li><b>Electrical Engineer – Maridive 602 (PSV, DP2)</b><span>Jul 2012 – Oct 2015 · Petrobras Brazil</span></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>🎓 Qualifications & training</h2>
+      <div class="tags">
+        <span class="tag">ETO Certificate of Competency</span><span class="tag">B.Sc. Electrical Power &amp; Control</span><span class="tag">DP Maintenance (Kongsberg)</span><span class="tag">High Voltage Operation &amp; Maintenance</span><span class="tag">ETO Competence Course</span><span class="tag">Advanced Fire Fighting</span><span class="tag">Survival Craft &amp; Rescue Boats</span><span class="tag">Medical First Aid</span><span class="tag">Security Awareness (SSO duties)</span><span class="tag">Confined Space Entry</span><span class="tag">Working at Height</span><span class="tag">Welding Safety</span><span class="tag">Basic H2S (OPITO)</span><span class="tag">Helicopter Underwater Escape (HUET)</span>
+      </div>
+      <h2 style="margin-top:18px">🗣 Languages</h2>
+      <div class="tags"><span class="tag">Arabic – native</span><span class="tag">English – excellent</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>⚡ About this toolkit</h2>
+    <p class="desc" style="margin:8px 0 0">ETO Toolkit is a free set of 130+ electrical calculators for marine ETOs – power, cables, motors, generators, protection, drives, harmonics, jacking, cranes, thrusters and power-plant analysis – built for daily work on a jack-up barge. It runs offline in any browser. Calculations follow commonly used IEC / IEEE / IACS practice and are <b>aids only</b>: always verify against the vessel's drawings, equipment nameplates, manufacturer data and class / flag rules. Feedback and suggestions are welcome by email or WhatsApp.</p>
+  </div>
+  <p style="text-align:center;color:var(--mut);font-size:13px">Developed by Wagdy Mohamed Abdel Aziz – Electrical Technical Officer, ZMI · © 2026 · Built with the help of Claude (Anthropic)</p>
 </div>
 </div>
 <div id="app" style="display:none"></div>
@@ -227,6 +294,7 @@ footer .disc{flex-basis:100%}
 <div class="layout"><nav class="tabs" id="tabs"></nav><main class="panel" id="panel"></main></div>
 <footer><div class="nav">${prev ? `<a href="${href(prev.f)}">◀ ${esc(prev.n)}</a>` : ''}</div>
   <div class="nav">${next ? `<a href="${href(next.f)}">${esc(next.n)} ▶</a>` : ''}</div>
+  <div class="nav"><a href="${href('about.html')}">ℹ️ About / Credits</a></div>
   <div class="disc">⚠ Calculation aid only. Always verify against the vessel's electrical drawings, equipment nameplates, manufacturer data and class / flag rules before acting on any result.</div></footer>`;
   }
 
@@ -436,11 +504,18 @@ footer .disc{flex-basis:100%}
 
   // single-file bundle router
   function start() {
-    const iv = document.getElementById('indexView'), app = document.getElementById('app');
+    const iv = document.getElementById('indexView'), app = document.getElementById('app'), av = document.getElementById('aboutView');
     let cur = null;
     const route = () => {
       const [f, id] = location.hash.slice(1).split(':');
       const cfg = REG[f];
+      if (f === 'about.html') {
+        iv.style.display = 'none'; app.style.display = 'none'; av.style.display = ''; cur = null; window.scrollTo(0, 0);
+        document.title = 'About & Credits';
+        document.documentElement.style.setProperty('--accent', '#2563eb');
+        return;
+      }
+      av.style.display = 'none';
       if (!cfg) {
         iv.style.display = ''; app.style.display = 'none'; cur = null;
         document.title = 'ETO Toolkit – Electrical Calculators';
@@ -2255,6 +2330,17 @@ footer .disc{flex-basis:100%}
       }
     ]
   });
+})();
+
+</script>
+<script>
+(function(){
+  document.querySelectorAll('.theme-btn').forEach(function(b){b.onclick=function(){var r=document.documentElement;var d=getComputedStyle(r).getPropertyValue('--bg').trim()==='#0b1220';r.setAttribute('data-theme',d?'light':'dark');try{localStorage.setItem('eto:theme',d?'light':'dark')}catch(e){}};});
+  var vc=document.getElementById('vcard');
+  if(vc)vc.onclick=function(){
+    var s=['BEGIN:VCARD','VERSION:3.0','N:Abdel Aziz;Wagdy Mohamed;;;','FN:Wagdy Mohamed Abdel Aziz','TITLE:Electrical Technical Officer','ORG:ZMI','TEL;TYPE=CELL:+201067686499','EMAIL:eto.wagdy@gmail.com','URL:https://www.linkedin.com/in/eto-wagdy','ADR;TYPE=HOME:;;;Alexandria;;;Egypt','END:VCARD'].join('\r\n');
+    var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([s],{type:'text/vcard'}));a.download='Wagdy-Mohamed-ETO.vcf';document.body.appendChild(a);a.click();a.remove();
+  };
 })();
 
 </script>
