@@ -130,3 +130,27 @@ footer .disc{flex-basis:100%}
 
 .fld textarea{font:inherit;font-size:15px;color:var(--ink);background:var(--field);border:1.5px solid var(--line);border-radius:10px;padding:9px 10px;width:100%;resize:vertical;outline:0}
 .fld textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+
+/* raw html output, reports, charts */
+.ro{margin-top:14px}
+.chart{width:100%;height:auto;background:var(--card);border:1px solid var(--line);border-radius:12px}
+.chart .gl{stroke:var(--line);stroke-width:1}.chart .frame{fill:none;stroke:var(--mut);stroke-width:1}
+.chart .tk{font-size:11px;fill:var(--mut)}.chart .ax{font-size:12px;fill:var(--ink);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin:8px 0 0;font-size:13px;color:var(--mut)}
+.legend i{display:inline-block;width:14px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.rep-head{border:2px solid var(--accent);border-radius:12px;padding:12px 16px;margin-bottom:12px;background:var(--card)}
+.rep-title{font-size:20px;font-weight:800;color:var(--accent);margin-bottom:6px}
+.rep-meta{border-collapse:collapse;font-size:13.5px}.rep-meta th{text-align:left;color:var(--mut);padding:2px 14px 2px 0;font-weight:600;white-space:nowrap}.rep-meta td{padding:2px 0}
+.sign{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;margin-top:26px;font-size:13px;color:var(--mut)}
+.sign div{border-top:1px solid var(--ink);padding-top:6px}
+.kb{display:block;white-space:normal;min-width:220px;max-width:520px}
+.rt td.wrap{white-space:normal;min-width:180px}
+.steps{margin:6px 0 0;padding-left:22px}.steps li{margin:5px 0}
+.quick{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:18px 0 6px}
+.quick a{display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:#fff;border-radius:14px;padding:14px 8px;font-weight:700;font-size:13.5px;text-align:center;box-shadow:var(--shadow)}
+.quick a span{font-size:26px}
+@media print{
+  body.print-report .card>h2,body.print-report .card>.desc,body.print-report .card>.formula,body.print-report .card>.grid,body.print-report .card>.actions,body.print-report .hero,body.print-report footer{display:none!important}
+  body.print-report .card{border:0;padding:0}
+  .rt{display:table}.rt td,.rt th{white-space:normal}
+}

@@ -97,6 +97,16 @@
           const In = v.s * 1000 / (S3 * v.vs), zs = v.ssc > 0 ? v.s / (v.ssc * 1000) : 0, isc = In / (v.uk / 100 + zs);
           return { results: [R('Prospective Isc', isc / 1000, 'kA', 2, null, true), R('Rated current', In, 'A', 1), R('Peak (κ≈1.7)', 1.7 * Math.SQRT2 * isc / 1000, 'kA', 1)], notes: ['Add motor contribution (≈4–6× running motor FLC) and check breaker Icu.'] };
         }
+      },
+
+      {
+        id: 'inrush', icon: '🌊', title: 'Inrush current on energising', desc: 'Magnetising inrush peak and its effect on breaker instantaneous settings and generator voltage.',
+        formula: 'Î_inrush = k × In (peak)     breaker: Ii × √2 > Î_inrush (no nuisance trip)',
+        inputs: [{ k: 's', l: 'Rating', u: 'kVA', v: 400, min: 1 }, { k: 'v', l: 'Energised winding voltage', u: 'V', v: 690, min: 1 }, { k: 'k', l: 'Inrush peak multiple k', opts: [[14, '14× (small dry < 100 kVA)'], [12, '12× (dry 100–500 kVA)'], [10, '10× (dry / oil 0.5–2 MVA)'], [8, '8× (> 2 MVA)']], v: 12 }, { k: 'ii', l: 'Upstream breaker instantaneous Ii (rms)', u: 'A', v: 4000, min: 1 }, { k: 'sg', l: 'Generators online (for dip)', u: 'kVA', v: 2500, min: 1 }, { k: 'xd', l: 'X″d (pu)', v: 0.16, min: 0.05, step: 0.01 }],
+        run: v => {
+          const In = v.s * 1000 / (Math.sqrt(3) * v.v), pk = v.k * In, ok = v.ii * Math.SQRT2 > pk, srms = Math.sqrt(3) * v.v * pk / Math.SQRT2 / 1000, dip = srms / (srms + v.sg / v.xd) * 100;
+          return { results: [R('Rated current', In, 'A', 0), R('Inrush peak', pk, 'A', 0, null, true), R('Breaker Ii peak', v.ii * Math.SQRT2, 'A', 0, ok ? 'ok' : 'bad'), R('Approx. generator dip on energising', dip, '%', 1, lvl(dip, 15, 20))], verdict: { s: ok ? 'ok' : 'bad', t: ok ? 'Instantaneous setting rides through inrush.' : 'Risk of nuisance trip on energising – raise Ii (within fault-level limits) or use a short delay / point-on-wave / pre-magnetising.' }, notes: ['Typical multiples – the transformer maker\'s inrush data govern. Inrush decays in ≈ 0.1–0.5 s (longer for large units).'] };
+        }
       }
     ]
   });

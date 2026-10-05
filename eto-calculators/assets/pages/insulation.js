@@ -68,6 +68,16 @@
 <p></p><table><tr><th>Reading trend</th><th>Meaning</th></tr>
 <tr><td>Rising steadily (high PI)</td><td>Clean, dry insulation</td></tr><tr><td>Flat / low</td><td>Moisture or contamination – dry out</td></tr><tr><td>Rising then falling</td><td>Possible puncture / weak spot developing</td></tr><tr><td>Erratic</td><td>Cracked insulation or surface tracking</td></tr></table>
 <ul class="notes"><li>Isolate VFDs, AVRs, surge arresters, electronic modules before testing. Test cables with all cores strapped to earth in turn.</li><li>Record winding temperature and humidity – IR halves for every ≈10 °C rise.</li><li>Safety: discharge the winding for at least 4× the test time after the test.</li></ul>`
+      },
+
+      {
+        id: 'ngr', icon: '⏚', title: 'Neutral grounding resistor (HRG) sizing', desc: 'High-resistance earthing of a generator / transformer neutral: resistor current must exceed the system charging current to limit transient over-voltages.',
+        formula: 'I_C = 3·ω·C·U0     I_R ≥ I_C     R = U0 / I_R     I_fault = √(I_R² + I_C²)',
+        inputs: [{ k: 'v', l: 'System voltage (line)', u: 'V', v: 690, min: 1 }, { k: 'f', l: 'Frequency', u: 'Hz', v: 60, min: 1 }, { k: 'c', l: 'Total capacitance to earth per phase', u: 'µF', v: 2, min: 0, step: 0.01 }, { k: 'ir', l: 'Chosen resistor current', u: 'A', v: 5, min: 0.1 }, { k: 'tr', l: 'Resistor time rating', opts: [[10, '10 s (tripping system)'], [60, '60 s'], [0, 'Continuous (alarm only)']], v: 10 }],
+        run: v => {
+          const u0 = v.v / Math.sqrt(3), ic = 3 * 2 * Math.PI * v.f * v.c * 1e-6 * u0, ok = v.ir >= ic, R0 = u0 / v.ir;
+          return { results: [R('System charging current I_C', ic, 'A', 2), R('Resistor current I_R', v.ir, 'A', 1, ok ? 'ok' : 'bad', true), R('Resistance', R0, 'Ω', 1, null, true), R('Resistor power', u0 * v.ir / 1000, 'kW', 2), R('Total earth-fault current', Math.hypot(v.ir, ic), 'A', 2), R('Time rating', +v.tr ? v.tr + ' s' : 'continuous', '', 0)], verdict: { s: ok ? 'ok' : 'bad', t: ok ? 'I_R ≥ I_C – transient over-voltage limited (≈ 2.5 pu).' : 'I_R below charging current – risk of arcing-ground over-voltages; increase resistor current.' }, notes: ['Alarm-only systems usually keep the earth-fault current ≤ 5–10 A so the faulted feeder can run until located. Class rules govern the choice.'] };
+        }
       }
     ]
   });

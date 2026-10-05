@@ -152,6 +152,17 @@
           const kgh = v.kw * v.sf / 1000, lh = kgh / v.d;
           return { results: [R('Fuel flow', kgh, 'kg/h', 1), R('Fuel flow', lh, 'L/h', 0, null, true), R('Per day', lh * 24 / 1000, 'm³/day', 2), R('Endurance', v.tank * 1000 / lh, 'h', 0), R('Endurance', v.tank * 1000 / lh / 24, 'days', 1)] };
         }
+      },
+
+      {
+        id: 'multi', icon: '🚀', title: 'Several motors starting together', desc: 'Total starting kVA and generator voltage dip when more than one motor starts at once (e.g. after blackout restart or sequential start too fast).',
+        formula: 'S_start = Σ (P/(η·PF) × Ilr/In × starter factor)     dip = S_start / (S_start + S_gen/X″d)',
+        inputs: [{ k: 'sg', l: 'Generators online', u: 'kVA', v: 2500, min: 1 }, { k: 'xd', l: 'X″d (pu)', v: 0.16, min: 0.05, step: 0.01 }, { k: 'lim', l: 'Allowed dip', u: '%', v: 15, min: 1 },
+          { k: 'tbl', t: 'table', l: 'Motors starting simultaneously', v: [{ n: 'Fire pump', kw: 90, lr: 6.5, f: 1 }, { n: 'Ballast pump', kw: 55, lr: 6.5, f: 1 }, { n: 'Compressor', kw: 45, lr: 7, f: 0.33 }], cols: [{ k: 'n', l: 'Motor', t: 'text', d: 'Motor' }, { k: 'kw', l: 'kW', t: 'num', d: 0 }, { k: 'lr', l: 'Ilr / In', t: 'num', d: 6.5 }, { k: 'f', l: 'Starter factor', t: 'sel', opts: [[1, 'DOL 1.0'], [0.33, 'Star-delta 0.33'], [0.5, 'Soft starter ≈0.5'], [0.17, 'VFD ≈0.17']], d: 1 }] }],
+        run: v => {
+          const rows = v.tbl.map(m => { const s = m.kw / (0.92 * 0.86) * m.lr * m.f; return [ETO.esc(m.n), m.kw, s]; }), S = rows.reduce((a, r) => a + r[2], 0), ssc = v.sg / v.xd, dip = S / (S + ssc) * 100, st = lvl(dip, v.lim, v.lim * 1.3);
+          return { results: [R('Total starting kVA', S, 'kVA', 0), R('Voltage dip', dip, '%', 1, st, true)], tables: [{ title: 'Starting kVA per motor (η 0.92, PF 0.86 assumed)', head: ['Motor', 'kW', 'Start kVA'], rows }], verdict: { s: st, t: st === 'ok' ? 'Acceptable dip.' : 'Too large – stagger the starts (sequential restart delays) or start more generators first.' } };
+        }
       }
     ]
   });

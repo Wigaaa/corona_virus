@@ -112,6 +112,53 @@
           const rows = [['Thermal overload', (1.0 * v.flc).toFixed(1) + ' – ' + (1.05 * v.flc).toFixed(1) + ' A', 'Class 10 / 20 per start time'], ['Magnetic / short-circuit', (Math.max(10, 1.5 * v.lrc) * v.flc).toFixed(0) + ' A (' + Math.max(10, 1.5 * v.lrc).toFixed(1) + '×FLC)', 'Above peak inrush'], ['Earth fault', Math.max(0.5, 0.1 * v.flc).toFixed(1) + ' – ' + (0.3 * v.flc).toFixed(1) + ' A', 'Residual CT, 0.1–0.3 s'], ['Stall / locked rotor', (Math.min(0.8 * v.tst, v.tsr * 1.5)).toFixed(1) + ' s at ' + (v.lrc * v.flc * 0.8).toFixed(0) + ' A', 'Trip before hot-stall time'], ['Under-voltage', '70–80% Un, 1–3 s', 'Restart philosophy dependent'], ['PTC / PT100', 'Class F ≈ 140 °C alarm / 155 °C trip', 'Per datasheet']];
           return { results: [R('Thermal overload setting', v.flc, 'A', 1, null, true), R('Instantaneous (typical)', Math.max(10, 1.5 * v.lrc) * v.flc, 'A', 0)], tables: [{ title: 'Typical starting settings', head: ['Function', 'Setting', 'Comment'], rows }], notes: ['Final values come from the protection co-ordination study of the vessel.'] };
         }
+      },
+
+      {
+        id: 'coord', icon: '📈', title: 'Protection coordination & time-current chart', report: true,
+        desc: 'Enter the breakers from the load side (first row) up to the generator (last row) with their LSI settings. The chart draws each curve; the table checks grading margins at the chosen fault current.',
+        formula: 'Long-time: t = tr × (6·Ir / I)²  (I > 1.05·Ir)     Short-time: t = tsd (I ≥ Isd)     Instantaneous: t ≈ 0.03 s (I ≥ Ii)',
+        inputs: [
+          { k: 'tbl', t: 'table', l: 'Devices – downstream first', v: [{ n: 'Motor MCCB 250 A', ir: 160, tr: 5, isd: 0, tsd: 0, ii: 2000 }, { n: 'MCC feeder ACB 800 A', ir: 630, tr: 10, isd: 3780, tsd: 0.2, ii: 0 }, { n: 'Generator ACB 2500 A', ir: 2100, tr: 15, isd: 6300, tsd: 0.4, ii: 0 }],
+            cols: [{ k: 'n', l: 'Device', t: 'text', d: 'Breaker', w: 170 }, { k: 'ir', l: 'Ir (A)', t: 'num', d: 100 }, { k: 'tr', l: 'tr @ 6·Ir (s)', t: 'num', d: 10, w: 70 }, { k: 'isd', l: 'Isd (A, 0 = off)', t: 'num', d: 0 }, { k: 'tsd', l: 'tsd (s)', t: 'num', d: 0.1, w: 60 }, { k: 'ii', l: 'Ii (A, 0 = off)', t: 'num', d: 0 }] },
+          { k: 'if', l: 'Fault current at the downstream device', u: 'A', v: 3000, min: 1 },
+          { k: 'mg', l: 'Required grading margin', u: 's', v: 0.1, min: 0, step: 0.01 }
+        ],
+        run: v => {
+          if (v.tbl.length < 1 || v.tbl.some(d => d.ir <= 0)) throw new Error('Every device needs Ir > 0');
+          const tt = (d, I) => (d.ii > 0 && I >= d.ii ? 0.03 : d.isd > 0 && I >= d.isd ? Math.max(d.tsd, 0.03) : I > 1.05 * d.ir ? d.tr * (6 * d.ir / I) ** 2 : Infinity);
+          const cols = ['#16a34a', '#2563eb', '#ea580c', '#7c3aed', '#dc2626', '#0d9488'];
+          const lo = Math.min(...v.tbl.map(d => d.ir)), hi = Math.max(v.if * 3, ...v.tbl.map(d => Math.max(d.ii, d.isd) * 2));
+          const series = v.tbl.map((d, k) => { const pts = []; for (let i = 0; i <= 240; i++) { const I = 1.06 * lo * (hi / (1.06 * lo)) ** (i / 240), t = tt(d, I); if (isFinite(t)) pts.push([I, Math.min(t, 1e4)]); } return { name: d.n, color: cols[k % cols.length], pts }; });
+          series.push({ name: 'Fault current', color: '#64748b', pts: [[v.if, 0.01], [v.if, 1e4]], dash: true });
+          const times = v.tbl.map(d => tt(d, v.if)), rows = [], states = [];
+          for (let k = 0; k < v.tbl.length - 1; k++) {
+            const a = times[k], b = times[k + 1], ok = isFinite(a) && (b === Infinity || b - a >= v.mg) && !(a <= 0.03 && b <= 0.03);
+            rows.push([esc(v.tbl[k].n) + ' → ' + esc(v.tbl[k + 1].n), isFinite(a) ? ETO.fmt(a, 3) : 'no trip', isFinite(b) ? ETO.fmt(b, 3) : 'no trip', isFinite(a) && isFinite(b) ? ETO.fmt(b - a, 3) : '—', ok ? '✅ selective' : '⛔ not selective']); states.push(ok ? 'ok' : 'bad');
+          }
+          const allok = states.every(s => s === 'ok');
+          const chart = ETO.chart(series, { logx: true, logy: true, xl: 'Current (A)', yl: 'Time (s)', xmin: lo, xmax: hi, ymin: 0.01, ymax: 1e4, title: 'Time-current curves' });
+          return { head: '<span></span>', results: [R('Downstream trip time at fault', times[0], 's', 3, isFinite(times[0]) ? 'ok' : 'bad', true)], tables: [{ title: `Grading at ${ETO.fmt(v.if, 0)} A`, head: ['Pair (down → up)', 'Downstream t (s)', 'Upstream t (s)', 'Margin (s)', 'Result'], rows, states }], verdict: { s: allok ? 'ok' : 'bad', t: allok ? 'Time-current selective at this fault level.' : 'Not selective – increase upstream short-time delay / Isd, or use manufacturer energy-based selectivity tables (instantaneous zones overlap).' }, html: ETO.reportHead('Protection coordination', [['Fault current', ETO.fmt(v.if, 0) + ' A']]) + chart, notes: ['Simplified generic LSI curves (I²t long-time). Real curves have tolerance bands – confirm with the manufacturer software / selectivity tables and the vessel coordination study.'] };
+        }
+      },
+      {
+        id: 'idmt', icon: '⏲️', title: 'IDMT relay (IEC 60255 curves)', desc: 'Operating time of an inverse-time overcurrent relay and the TMS needed for a target time.',
+        formula: 'SI: t = TMS·0.14/(M^0.02 − 1)   VI: 13.5/(M − 1)   EI: 80/(M² − 1)   LTI: 120/(M − 1)   M = I / Is',
+        inputs: [{ k: 'c', l: 'Curve', opts: [['si', 'Standard inverse (SI)'], ['vi', 'Very inverse (VI)'], ['ei', 'Extremely inverse (EI)'], ['lti', 'Long-time inverse (LTI)']], v: 'si' }, { k: 'is', l: 'Pick-up current Is (primary)', u: 'A', v: 1000, min: 0.001 }, { k: 'tms', l: 'Time multiplier (TMS)', v: 0.2, min: 0.01, step: 0.01 }, { k: 'i', l: 'Fault current', u: 'A', v: 6000, min: 0.001 }, { k: 'tt', l: 'Target operating time (for TMS calc)', u: 's', v: 0.5, min: 0.01 }],
+        run: v => {
+          const K = { si: [0.14, 0.02], vi: [13.5, 1], ei: [80, 2], lti: [120, 1] }[v.c], f = M => K[0] / (M ** K[1] - 1), M = v.i / v.is;
+          if (M <= 1) return { results: [R('Multiple of setting M', M, '', 2, 'warn', true)], verdict: { s: 'warn', t: 'Current below pick-up – relay does not operate.' } };
+          return { results: [R('Multiple of setting M', M, '', 2), R('Operating time', v.tms * f(M), 's', 3, null, true), R('TMS for target time', v.tt / f(M), '', 3)], tables: [{ title: 'Operating time at TMS = ' + v.tms, head: ['M', '2', '5', '10', '20'], rows: [['t (s)'].concat([2, 5, 10, 20].map(m => ETO.fmt(v.tms * f(m), 3)))] }] };
+        }
+      },
+      {
+        id: 'ct', icon: '🧲', title: 'CT burden & accuracy-limit factor', desc: 'Is the protection CT big enough for the connected burden (relay + leads) and the maximum fault current?',
+        formula: 'S_actual = I_sn²·(R_leads + R_relay)     ALF′ = ALF × (S_ct + S_rated)/(S_ct + S_actual)     S_ct = I_sn²·R_ct',
+        inputs: [{ k: 'ip', l: 'CT primary', u: 'A', v: 1000, min: 1 }, { k: 'is', l: 'CT secondary', opts: [[1, '1 A'], [5, '5 A']], v: 5 }, { k: 'va', l: 'Rated burden', u: 'VA', v: 15, min: 0.1 }, { k: 'alf', l: 'Accuracy-limit factor (e.g. 5P10 → 10)', v: 10, min: 1 }, { k: 'rct', l: 'CT secondary winding resistance', u: 'Ω', v: 0.3, min: 0 }, { k: 'rel', l: 'Relay burden', u: 'VA', v: 0.5, min: 0 }, { k: 'l', l: 'Lead length (one way)', u: 'm', v: 30, min: 0 }, { k: 's', l: 'Lead size', u: 'mm²', v: 2.5, min: 0.5 }, { k: 'if', l: 'Maximum fault current (primary)', u: 'A', v: 25000, min: 0 }],
+        run: v => {
+          const i2 = v.is ** 2, rl = 2 * v.l * ETO.res('Cu', v.s, 75), sact = i2 * (rl + v.rel / i2), sct = i2 * v.rct, alf2 = sct + sact > 0 ? v.alf * (sct + v.va) / (sct + sact) : v.alf, lim = alf2 * v.ip, ok1 = sact <= v.va, ok2 = lim >= v.if;
+          return { results: [R('Lead loop resistance', rl, 'Ω', 3), R('Actual burden', sact, 'VA', 2, ok1 ? 'ok' : 'bad', true), R('Effective ALF', alf2, '', 1), R('Accurate up to (primary)', lim / 1000, 'kA', 1, ok2 ? 'ok' : 'warn', true)], verdict: { s: ok1 && ok2 ? 'ok' : ok1 ? 'warn' : 'bad', t: !ok1 ? 'Burden exceeds CT rating – larger leads, 1 A CTs or higher-VA CT.' : !ok2 ? 'CT saturates below the maximum fault current – acceptable only if the relay is instantaneous-only / per relay maker; otherwise larger CT.' : 'CT adequate.' }, notes: ['5 A CTs suffer 25× the lead burden of 1 A CTs – a common reason to choose 1 A secondaries for long leads.'] };
+        }
       }
     ]
   });

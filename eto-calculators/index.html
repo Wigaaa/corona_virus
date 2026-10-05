@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ETO Toolkit – Electrical Calculators</title>
+<title>ETO Toolkit – Marine Electrical Engineering & Troubleshooting</title>
 <link rel="stylesheet" href="assets/style.css">
 <style>:root{--accent:#2563eb}</style>
 </head>
@@ -11,11 +11,23 @@
 <header class="top"><a class="home" href="index.html">⚡ ETO Toolkit</a><a class="btn" href="about.html" style="margin-left:auto;text-decoration:none">ℹ️ About / Credits</a><button class="btn" id="theme">🌓</button></header>
 <section class="hero" style="background:linear-gradient(135deg,#1d4ed8,#7c3aed 55%,#db2777)">
   <div class="ico">⚡</div>
-  <div><h1>ETO Toolkit – Electrical Calculators for a Jack-up Barge</h1>
-  <p>22 calculator pages · 220+ calculations · 4 levels · IEC / IEEE / IACS based · works offline in any browser, on phone or laptop. Inputs are remembered between visits.</p>
-  <div class="chips"><span class="chip">IEC 60092</span><span class="chip">IEC 60364</span><span class="chip">IEC 60909</span><span class="chip">IEC 60947</span><span class="chip">IEEE 43</span><span class="chip">IEEE 519</span><span class="chip">IACS UR E</span><span class="chip">SOLAS II-1</span></div></div>
+  <div><h1>ETO Toolkit – Marine Electrical Engineering &amp; Troubleshooting</h1>
+  <p>Calculate · Test · Diagnose · Maintain · Document · Procure — 39 pages for ETOs on any vessel or offshore unit (OSV, DP, jack-up, drillship, tanker, passenger…). Works offline in any browser; your inputs, logs and spares stay on your device.</p>
+  <div class="chips"><span class="chip">IEC 60092</span><span class="chip">IEC 60364</span><span class="chip">IEC 60909</span><span class="chip">IEC 60947</span><span class="chip">IEEE 43</span><span class="chip">IEEE 519</span><span class="chip">IACS UR E</span><span class="chip">SOLAS II-1</span><span class="chip">IEC 60079</span><span class="chip">COLREG</span></div></div>
 </section>
 <div class="wrap">
+  <div class="quick">
+    <a href="troubleshoot.html" style="background:#dc2626"><span>🩺</span>Troubleshoot</a>
+    <a href="testing.html" style="background:#0369a1"><span>🔬</span>Test &amp; verify</a>
+    <a href="records.html" style="background:#7c3aed"><span>🧾</span>Reports</a>
+    <a href="maintenance.html" style="background:#16a34a"><span>🛠️</span>Maintenance</a>
+    <a href="faultlog.html" style="background:#475569"><span>🗂️</span>Fault log</a>
+    <a href="spares.html" style="background:#ca8a04"><span>📦</span>Spares &amp; RQ</a>
+    <a href="pmssim.html" style="background:#be123c"><span>🔄</span>PMS / DP sim</a>
+    <a href="signals.html" style="background:#0d9488"><span>📶</span>4–20 mA</a>
+    <a href="hazardous.html" style="background:#ea580c"><span>💥</span>Ex areas</a>
+    <a href="safety.html" style="background:#b91c1c"><span>🦺</span>Safe isolation</a>
+  </div>
   <input class="search" id="q" type="search" placeholder="🔍 Search calculators (e.g. voltage drop, PI, thruster, UPS)…">
   <div id="lists"></div>
   <a class="pc" style="--c:#7c3aed;margin-top:30px;max-width:520px" href="about.html"><div class="ic">👷</div><b>About / Credits – Wagdy Mohamed Abdel Aziz, ETO</b><p>Contact details, LinkedIn, WhatsApp, experience and qualifications of the developer.</p><span class="num">Open →</span></a>
@@ -26,6 +38,8 @@
       <li>Fields marked with a table (load lists, DG sharing, blackout steps) can have rows added or removed.</li>
       <li>Use <b>📋 Copy results</b> to paste into a requisition / report, or <b>🖨 Print</b> for a PDF record.</li>
       <li>Default values are typical examples (440 V / 60 Hz marine system) – replace them with your vessel's nameplate data.</li>
+      <li>Set your <b>vessel &amp; ETO profile</b> once on the <a href="records.html">Test Records</a> page – it is printed on every report, checklist and troubleshooting record.</li>
+      <li>Fault log, spares list and checklists are stored only in this browser – use <b>Copy results</b> regularly as a backup.</li>
       <li>Cable / breaker tables and class rules differ by vessel: the vessel's design documents and class society rules are always the authority.</li>
     </ul>
   </div>
@@ -33,11 +47,11 @@
 <script src="assets/common.js"></script>
 <script>
 (function(){
-  const L={1:['Level 1 – Daily ETO calculations','Everyday sizing, loading and checking'],2:['Level 2 – Professional troubleshooting','Protection, drives, harmonics, insulation, lighting'],3:['Level 3 – Jack-up specialist','Jacking, cranes, thrusters, power-plant analysis'],4:['Level 4 – Mathematics & engineering conversions','Unit converters, maths, geometry, circuit theory, mechanical & thermal']};
+  const L={1:['Level 1 – Daily ETO calculations','Everyday sizing, loading and checking'],2:['Level 2 – Professional troubleshooting','Protection, drives, harmonics, insulation, lighting'],3:['Level 3 – Specialist systems','Jacking (jack-up), cranes, thrusters, power-plant & load balance'],4:['Level 4 – Mathematics & engineering conversions','Unit converters, maths, geometry, circuit theory, mechanical & thermal'],5:['Level 5 – ETO Operations','Test → diagnose → maintain → document → procure'],6:['Level 6 – Instrumentation & Control','Signals & loops, temperature sensors, process measurement, calibration'],7:['Level 7 – Systems, Safety & Marine','PMS / DP simulation, Ex areas, safe isolation, shore power & navigation, networks']};
   const root=document.getElementById('lists');
   function draw(q){
     q=(q||'').toLowerCase();root.innerHTML='';
-    [1,2,3,4].forEach(l=>{
+    [5,1,2,3,6,7,4].forEach(l=>{
       const ps=ETO.PAGES.filter(p=>p.lvl===l&&(!q||(p.n+' '+p.d).toLowerCase().includes(q)));
       if(!ps.length)return;
       root.insertAdjacentHTML('beforeend',`<div class="lvl"><h2>${L[l][0]}</h2><span>${L[l][1]}</span></div><div class="cards">`+

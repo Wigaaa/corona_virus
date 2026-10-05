@@ -24,7 +24,22 @@
     { f: 'mathbasic.html', n: 'Mathematics', i: '🧮', c: '#e11d48', lvl: 4, d: 'Percentages, ratio, interpolation, quadratic, simultaneous equations, triangles, trigonometry, complex numbers, statistics, number bases, logs' },
     { f: 'geometry.html', n: 'Geometry & Tanks', i: '🔺', c: '#0891b2', lvl: 4, d: 'Areas, volumes, circle segments, horizontal / vertical tank partial volume, pipe volume & weight, slope, distance' },
     { f: 'circuits.html', n: 'Circuit Theory Formulas', i: '〰️', c: '#d97706', lvl: 4, d: 'Ohm / power, series & parallel, dividers, RC / RL, RLC & resonance, star-delta, per-unit, line / phase, energy & cost' },
-    { f: 'mechthermal.html', n: 'Mechanical, Fluid & Thermal', i: '🔧', c: '#65a30d', lvl: 4, d: 'Power-torque-speed, gears, belts, shaft stress, sling load, pump power, pipe flow, heater sizing, expansion, fuel efficiency, ventilation' }
+    { f: 'mechthermal.html', n: 'Mechanical, Fluid & Thermal', i: '🔧', c: '#65a30d', lvl: 4, d: 'Power-torque-speed, gears, belts, shaft stress, sling load, pump power, pipe flow, heater sizing, expansion, fuel efficiency, ventilation' },
+    { f: 'troubleshoot.html', n: 'Troubleshooting Assistant', i: '🩺', c: '#dc2626', lvl: 5, d: 'Equipment → symptom → likely causes → ordered checks → measurements → corrective action, for motors, generators, VFDs, UPS, switchboards, batteries, earth faults' },
+    { f: 'testing.html', n: 'Testing & Commissioning', i: '🔬', c: '#0369a1', lvl: 5, d: 'Winding resistance balance, 3-phase IR, earth electrode, loop / PFC, RCD timing, TTR ratio, breaker contact resistance, battery internal resistance, symmetrical components' },
+    { f: 'records.html', n: 'Test Records & Reports', i: '🧾', c: '#7c3aed', lvl: 5, d: 'Printable motor / generator / transformer / battery / IR test records, breakdown & daily reports, handover, toolbox talk – with vessel profile' },
+    { f: 'maintenance.html', n: 'Maintenance & Condition Monitoring', i: '🛠️', c: '#16a34a', lvl: 5, d: 'Interactive PM checklists, recommended intervals, trend analysis with chart and projected limit date' },
+    { f: 'faultlog.html', n: 'Fault Log & Knowledge Base', i: '🗂️', c: '#475569', lvl: 5, d: 'Your own searchable fault-code / failure database, generic VFD & controller fault families, alarm response guide' },
+    { f: 'spares.html', n: 'Spares & Requisitions', i: '📦', c: '#ca8a04', lvl: 5, d: 'Critical spares stock with reorder & criticality, professional requisition text generator, lead-time risk' },
+    { f: 'signals.html', n: 'Signals & Loops', i: '📶', c: '#0d9488', lvl: 6, d: '4–20 mA ↔ % ↔ engineering units, NAMUR NE43 status, 0–10 V / 1–5 V, PLC raw counts, loop power budget & max cable length, shunt resistor, HART' },
+    { f: 'tempsensors.html', n: 'Temperature Sensors', i: '🌡️', c: '#e11d48', lvl: 6, d: 'Pt100 / Pt1000 (IEC 60751) Ω ↔ °C, RTD 2/3/4-wire lead error, thermocouple type K & J mV ↔ °C with cold-junction compensation, PTC thermistor check' },
+    { f: 'process.html', n: 'Process Measurement', i: '🧭', c: '#2563eb', lvl: 6, d: 'DP flow (√ extraction), hydrostatic & DP level ranging (wet / dry leg), pressure units & gauge/abs, transmitter range & turndown, accuracy budget' },
+    { f: 'calibration.html', n: 'Calibration & Loop Check', i: '✅', c: '#16a34a', lvl: 6, d: '5-point calibration record (as-found / as-left) with error % span & pass/fail, switch set/reset (deadband) test, loop-check sheet – printable' },
+    { f: 'pmssim.html', n: 'PMS / DP / Blackout Simulator', i: '🔄', c: '#be123c', lvl: 7, d: '“What happens if DG1 trips” timeline, spinning reserve, DP split-bus worst-case failure, emergency generator sequence, generator ROCOF' },
+    { f: 'hazardous.html', n: 'Ex / Hazardous Area', i: '💥', c: '#ea580c', lvl: 7, d: 'Zone → EPL → protection concepts, gas group & T-class selector, Ex marking decoder, intrinsic-safety entity check, inspection checklist' },
+    { f: 'safety.html', n: 'Electrical Safety & Isolation', i: '🦺', c: '#b91c1c', lvl: 7, d: 'LOTO & HV isolation checklists, prove-test-prove, capacitor discharge time, touch voltage, permit checklist' },
+    { f: 'marine.html', n: 'Marine Systems & Shore Power', i: '⚓', c: '#1e40af', lvl: 7, d: 'Shore connection compatibility & sizing, COLREG navigation lights, GMDSS reserve battery, starting batteries, battery room hydrogen ventilation' },
+    { f: 'network.html', n: 'Communications & Networks', i: '🌐', c: '#4f46e5', lvl: 7, d: 'IPv4 subnet, fibre optic power budget, Modbus addressing, serial timing, NMEA 0183 checksum, CAN bus length, PoE budget' }
   ];
 
   const S3 = Math.sqrt(3);
@@ -106,6 +121,47 @@
     };
   }
 
+  // vessel / ETO profile (edited on the Test Records page) used in report headers
+  function profile() {
+    let p = {};
+    try { p = JSON.parse(localStorage.getItem('eto:records.html:profile') || '{}') || {}; } catch (e) { /* ignore */ }
+    return Object.assign({ vessel: '', vtype: '', imo: '', company: '', eto: '', rank: 'Electrical Technical Officer' }, p);
+  }
+  function reportHead(title, rows) {
+    const p = profile();
+    const base = [['Vessel', p.vessel], ['Vessel type', p.vtype], ['IMO / ID', p.imo], ['Company', p.company], ['Prepared by', [p.eto, p.rank].filter(Boolean).join(' – ')]].filter(x => x[1]);
+    const all = base.concat(rows || []).filter(x => x[1] !== '' && x[1] != null);
+    return `<div class="rep-head"><div class="rep-title">${esc(title)}</div><table class="rep-meta">${all.map(x => `<tr><th>${esc(x[0])}</th><td>${esc(x[1])}</td></tr>`).join('')}</table></div>`;
+  }
+  // minimal SVG line / scatter chart. series: [{name, color, pts:[[x,y]...], dash}]; opts: {logx, logy, xl, yl, xmin, xmax, ymin, ymax, hlines:[{y,label,color}]}
+  function chart(series, o) {
+    o = o || {};
+    const W = 640, H = 300, L = 58, Rm = 14, T = 14, B = 40;
+    const all = series.flatMap(s => s.pts).concat((o.hlines || []).map(h => [NaN, h.y]));
+    const xs = all.map(p => p[0]).filter(isFinite), ys = all.map(p => p[1]).filter(isFinite);
+    const tx = o.logx ? Math.log10 : x => x, ty = o.logy ? Math.log10 : y => y;
+    let x0 = o.xmin != null ? o.xmin : Math.min(...xs), x1 = o.xmax != null ? o.xmax : Math.max(...xs), y0 = o.ymin != null ? o.ymin : Math.min(...ys), y1 = o.ymax != null ? o.ymax : Math.max(...ys);
+    if (x0 === x1) { x0 -= 1; x1 += 1; } if (y0 === y1) { y0 -= 1; y1 += 1; }
+    if (!o.logy && o.ymin == null) { const pad = (y1 - y0) * 0.08; y0 -= pad; y1 += pad; }
+    const X = x => L + (tx(x) - tx(x0)) / (tx(x1) - tx(x0)) * (W - L - Rm), Y = y => T + (1 - (ty(y) - ty(y0)) / (ty(y1) - ty(y0))) * (H - T - B);
+    const ticks = (a, b, log) => { if (log) { const t = []; for (let e = Math.floor(Math.log10(a)); e <= Math.ceil(Math.log10(b)); e++) { const v = 10 ** e; if (v >= a * 0.999 && v <= b * 1.001) t.push(v); } return t; } const st = 10 ** Math.floor(Math.log10((b - a) / 5 || 1)); const m = [1, 2, 5, 10].find(k => (b - a) / (k * st) <= 6) * st; const t = []; for (let v = Math.ceil(a / m) * m; v <= b + 1e-9; v += m) t.push(+v.toPrecision(10)); return t; };
+    const lab = o.xfmt || (v => fmtAuto(v)), labY = o.yfmt || (v => fmtAuto(v));
+    let g = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.title || 'chart')}">`;
+    ticks(x0, x1, o.logx).forEach(v => { g += `<line x1="${X(v)}" y1="${T}" x2="${X(v)}" y2="${H - B}" class="gl"/><text x="${X(v)}" y="${H - B + 16}" class="tk" text-anchor="middle">${esc(lab(v))}</text>`; });
+    ticks(y0, y1, o.logy).forEach(v => { g += `<line x1="${L}" y1="${Y(v)}" x2="${W - Rm}" y2="${Y(v)}" class="gl"/><text x="${L - 6}" y="${Y(v) + 4}" class="tk" text-anchor="end">${esc(labY(v))}</text>`; });
+    g += `<rect x="${L}" y="${T}" width="${W - L - Rm}" height="${H - T - B}" class="frame"/>`;
+    (o.hlines || []).forEach(h => { g += `<line x1="${L}" y1="${Y(h.y)}" x2="${W - Rm}" y2="${Y(h.y)}" stroke="${h.color || '#dc2626'}" stroke-dasharray="6 4" stroke-width="1.5"/><text x="${W - Rm - 4}" y="${Y(h.y) - 4}" text-anchor="end" class="tk" fill="${h.color || '#dc2626'}">${esc(h.label || '')}</text>`; });
+    series.forEach(s => {
+      const pts = s.pts.filter(p => isFinite(p[0]) && isFinite(p[1]) && (!o.logx || p[0] > 0) && (!o.logy || p[1] > 0));
+      if (!pts.length) return;
+      g += `<polyline fill="none" stroke="${s.color}" stroke-width="2.4" ${s.dash ? 'stroke-dasharray="5 4"' : ''} points="${pts.map(p => X(Math.min(Math.max(p[0], x0), x1)).toFixed(1) + ',' + Y(Math.min(Math.max(p[1], y0), y1)).toFixed(1)).join(' ')}"/>`;
+      if (s.dots) pts.forEach(p => { g += `<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="3.5" fill="${s.color}"/>`; });
+    });
+    g += `<text x="${(L + W - Rm) / 2}" y="${H - 6}" text-anchor="middle" class="ax">${esc(o.xl || '')}</text><text x="14" y="${(T + H - B) / 2}" transform="rotate(-90 14 ${(T + H - B) / 2})" text-anchor="middle" class="ax">${esc(o.yl || '')}</text></svg>`;
+    g += `<div class="legend">${series.map(s => `<span><i style="background:${s.color}"></i>${esc(s.name)}</span>`).join('')}</div>`;
+    return g;
+  }
+
   function skeleton(cfg) {
     const me = PAGES.find(p => p.f === cfg.file) || {};
     const k = PAGES.indexOf(me);
@@ -157,7 +213,7 @@
     const typeOf = i => i.t || (i.opts ? 'sel' : 'num');
     const defaults = c => {
       const v = {};
-      c.inputs.forEach(i => { v[i.k] = typeOf(i) === 'table' ? JSON.parse(JSON.stringify(i.v)) : i.v; });
+      c.inputs.forEach(i => { v[i.k] = typeOf(i) === 'table' ? JSON.parse(JSON.stringify(i.v)) : typeOf(i) === 'date' && !i.v ? new Date().toISOString().slice(0, 10) : i.v; });
       return v;
     };
     const load = c => {
@@ -191,8 +247,8 @@
           let h = `<span>${esc(i.l)}</span>`;
           if (t === 'sel') {
             h += `<select>${i.opts.map(o => `<option value="${esc(o[0])}">${esc(o[1])}</option>`).join('')}</select>`;
-          } else if (t === 'text') {
-            h += '<div class="inp"><input type="text" autocomplete="off" spellcheck="false"></div>';
+          } else if (t === 'text' || t === 'date') {
+            h += `<div class="inp"><input type="${t}" autocomplete="off" spellcheck="false"></div>`;
           } else if (t === 'area') {
             h += `<textarea rows="${i.rows || 5}" spellcheck="false"></textarea>`; f.style.gridColumn = '1/-1';
           } else {
@@ -204,7 +260,7 @@
           inp.value = vals[i.k];
           inp.addEventListener('input', () => {
             if (t === 'sel') { const o = i.opts.find(o => String(o[0]) === inp.value); vals[i.k] = o ? o[0] : inp.value; }
-            else if (t === 'text' || t === 'area') vals[i.k] = inp.value;
+            else if (t === 'text' || t === 'area' || t === 'date') vals[i.k] = inp.value;
             else vals[i.k] = inp.value === '' ? NaN : parseFloat(inp.value);
             recompute();
           });
@@ -221,6 +277,11 @@
         const cb = el('button', { class: 'btn', type: 'button' }, '📋 Copy results');
         cb.onclick = () => copyText(c, vals, cb);
         act.append(rb, cb);
+        if (c.report) {
+          const pb = el('button', { class: 'btn pri', type: 'button' }, '🖨 Print / save PDF report');
+          pb.onclick = () => { document.body.classList.add('print-report'); window.print(); setTimeout(() => document.body.classList.remove('print-report'), 500); };
+          act.append(pb);
+        }
         card.appendChild(act);
       }
       const out = el('div', { class: 'out' });
@@ -257,7 +318,7 @@
     }
 
     function renderOut(out, r, c) {
-      let h = '<h3>Results</h3>';
+      let h = r.head ? r.head : '<h3>Results</h3>';
       if (r.results && r.results.length) {
         h += '<div class="tiles">' + r.results.map(x =>
           `<div class="tile ${x.s ? 's-' + x.s : ''} ${x.big ? 'big' : ''}"><div class="l">${esc(x.l)}</div><div class="v">${esc(fmt(x.v, x.d))}${x.u ? `<small>${esc(x.u)}</small>` : ''}</div></div>`).join('') + '</div>';
@@ -267,6 +328,7 @@
         h += `<table class="rt">${t.title ? `<caption>${esc(t.title)}</caption>` : ''}<thead><tr>${t.head.map(x => `<th>${x}</th>`).join('')}</tr></thead><tbody>` +
           t.rows.map((row, ri) => `<tr class="${t.states && t.states[ri] ? 's-' + t.states[ri] : ''}">${row.map(x => `<td>${typeof x === 'number' ? fmt(x, 2) : x}</td>`).join('')}</tr>`).join('') + '</tbody></table>';
       });
+      if (r.html) h += `<div class="ro">${r.html}</div>`;
       const notes = (r.notes || []).concat(c.notes || []);
       if (notes.length) h += '<ul class="notes">' + notes.map(n => `<li>${n}</li>`).join('') + '</ul>';
       out.innerHTML = h;
@@ -285,6 +347,8 @@
         s += '\nRESULTS\n';
         (r.results || []).forEach(x => { s += `${x.l}: ${fmt(x.v, x.d)}${x.u ? ' ' + x.u : ''}\n`; });
         if (r.verdict) s += '\n' + r.verdict.t.replace(/<[^>]+>/g, '') + '\n';
+        if (r.copy) s += '\n' + r.copy + '\n';
+        if (r.html && !r.copy) s += '\n' + r.html.replace(/<(br|\/tr|\/p|\/li|\/h3|\/div)[^>]*>/g, '\n').replace(/<\/t[dh]>/g, ' | ').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/\n\s*\n+/g, '\n') + '\n';
         (r.tables || []).forEach(t => {
           s += `\n${t.title || ''}\n${t.head.map(x => x.replace(/<[^>]+>/g, '')).join(' | ')}\n`;
           t.rows.forEach(row => { s += row.map(x => typeof x === 'number' ? fmt(x, 2) : String(x).replace(/<[^>]+>/g, '')).join(' | ') + '\n'; });
@@ -365,5 +429,5 @@
   // theme restore
   try { const t = localStorage.getItem('eto:theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) { /* ignore */ }
 
-  window.ETO = { PAGES, S3, STD_SIZES, STD_BREAKERS, STD_FUSES, esc, fmt, R, lvl, std, rho, res, interp, vdrop, units, fmtAuto, page, start };
+  window.ETO = { PAGES, S3, STD_SIZES, STD_BREAKERS, STD_FUSES, esc, fmt, R, lvl, std, rho, res, interp, vdrop, units, fmtAuto, profile, reportHead, chart, page, start };
 })();
