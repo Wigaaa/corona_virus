@@ -44,6 +44,7 @@
     { f: 'workshop.html', n: 'Workshop Tools for ETO', i: '🔧', c: '#64748b', lvl: 8, d: 'Hand tools, crimping & terminating, soldering bench, power tools, cable & gland tools, test bench, consumables, workshop organisation' },
     { f: 'handover.html', n: 'Handover & Documentation Tips', i: '📝', c: '#7c3aed', lvl: 8, d: 'Good handover note, drawing mark-ups, electrical log, records, labelling & cable numbering, digital backups' },
     { f: 'survey.html', n: 'Survey, Audit & Class Tips', i: '🧾', c: '#0f766e', lvl: 8, d: 'Survey types, what inspectors check, records to have ready, common findings, pre-survey checklist, survey day' },
+    { f: 'interview.html', n: 'ETO Interview Preparation (Offshore)', i: '🎯', c: '#e11d48', lvl: 8, d: 'Offshore interview stages, CV & certificates, junior / senior Q&A with model answers (electrical, generators & PMS, drives, automation, navigation, safety & HV, DP & jack-up / drilling), troubleshooting scenarios, behavioural questions, final tips' },
   ];
 
   const S3 = Math.sqrt(3);
