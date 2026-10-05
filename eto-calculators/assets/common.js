@@ -414,7 +414,7 @@
       av.style.display = 'none';
       if (!cfg) {
         iv.style.display = ''; app.style.display = 'none'; cur = null;
-        document.title = 'ETO Toolkit – Electrical Calculators';
+        document.title = 'ETO Toolkit – Marine Electrical Engineering & Troubleshooting';
         document.documentElement.style.setProperty('--accent', '#2563eb');
         return;
       }
