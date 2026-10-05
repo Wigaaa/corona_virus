@@ -75,7 +75,7 @@
       }
     },
     vfd: {
-      name: 'VFD / drive (maker-independent fault families)', icon: '🎛️', s: SAFE_VFD,
+      name: 'VFD / drive (incl. fault families)', icon: '🎛️', s: SAFE_VFD,
       sym: {
         oc: { t: 'Overcurrent trip', c: ['Acceleration ramp too short or high inertia', 'Mechanical jam / brake not released', 'Short circuit or earth fault in motor cable / motor', 'Wrong motor data / poorly tuned current controller', 'Output contactor opening / closing while running', 'Failed IGBT / current sensor'],
           k: ['Note: at start, during acceleration, at constant speed or decel?', 'Disconnect motor cable at drive and megger cable + motor (NOT the drive)', 'Check brake release and mechanical freedom', 'Check motor parameters and run motor identification', 'Check output contactor interlock'],
@@ -193,7 +193,9 @@
     ['Pre-charge / DC charge fault', 'DC link failed to charge in time', 'Pre-charge resistor/contactor, input supply', 'Measure DC rise on power-up, check pre-charge circuit']
   ];
   const list = arr => '<ol class="steps">' + arr.map(x => `<li>${esc(x)}</li>`).join('') + '</ol>';
-  const calcs = Object.keys(KB).map(id => {
+  const FAMHTML = `<h3>5 · Drive fault families (maker-independent)</h3><p>Almost every drive maker uses the same fault families under different codes. Find the family from the fault text in the drive manual, then use these causes and first checks.</p><table class="rt"><thead><tr><th>Fault family</th><th>Meaning</th><th>Common causes</th><th>First checks</th></tr></thead><tbody>${FAM.map(r => `<tr><td><b>${esc(r[0])}</b></td>${r.slice(1).map(x => `<td><span class="kb">${esc(x)}</span></td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  // order follows the power flow on board: generator → switchboard → motor → drive → UPS → battery → IT earth fault
+  const calcs = ['gen', 'swbd', 'motor', 'vfd', 'ups', 'batt', 'earth'].map(id => {
     const e = KB[id];
     const keys = Object.keys(e.sym);
     return {
@@ -208,15 +210,10 @@
         h += `<h3>1 · Most likely causes</h3>${list(s.c)}<h3>2 · Check sequence</h3>${list(s.k)}`;
         h += `<h3>3 · Measurements & expected values</h3><table class="rt"><thead><tr><th>Measurement</th><th>Expected / healthy</th></tr></thead><tbody>${s.m.map(r => `<tr><td><span class="kb">${esc(r[0])}</span></td><td><span class="kb">${esc(r[1])}</span></td></tr>`).join('')}</tbody></table>`;
         h += `<h3>4 · Corrective actions</h3>${list(s.a)}`;
+        if (id === 'vfd') h += FAMHTML;
         return { head: '<span></span>', verdict: { s: 'warn', t: '🦺 ' + esc(e.s) }, html: h, notes: ['Generic guidance – always follow the equipment manual, the vessel\'s safety management system and permit-to-work.'] };
       }
     };
-  });
-  calcs.push({
-    id: 'fam', icon: '📟', title: 'Drive fault families (maker-independent)', noActions: true,
-    desc: 'Almost every drive maker uses the same fault families under different codes. Find the family from the fault text in the drive manual, then use these causes and first checks.',
-    inputs: [],
-    run: () => ({ head: '<span></span>', verdict: { s: 'warn', t: '🦺 VFD DC link stays charged after isolation – wait the time on the drive label and measure DC+ / DC− < 50 V before working.' }, html: `<table class="rt"><thead><tr><th>Fault family</th><th>Meaning</th><th>Common causes</th><th>First checks</th></tr></thead><tbody>${FAM.map(r => `<tr><td><b>${esc(r[0])}</b></td>${r.slice(1).map(x => `<td><span class="kb">${esc(x)}</span></td>`).join('')}</tr>`).join('')}</tbody></table>` })
   });
   ETO.page({
     title: 'Troubleshooting Assistant', icon: '🩺', accent: '#dc2626',

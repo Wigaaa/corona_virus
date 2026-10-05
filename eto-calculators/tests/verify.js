@@ -138,7 +138,7 @@ TT('PMS / DP / Blackout Simulator', 'trip', { load: 2300 }, 'Outcome', 'BLACKOUT
 TT('PMS / DP / Blackout Simulator', 'reserve', {}, 'Loading after largest DG lost', 90.625, 1e-6);
 TT('PMS / DP / Blackout Simulator', 'dp', {}, 'Bus A lost → available on B', 2700);
 TT('PMS / DP / Blackout Simulator', 'rocof', {}, 'Initial ROCOF', 6);
-TT('Marine Systems & Shore Power', 'h2', {}, 'Required air flow', 0.96, 1e-9);
+TT('Battery & UPS Calculations', 'h2', {}, 'Required air flow', 0.96, 1e-9);
 TT('Communications & Networks', 'subnet', {}, 'Network', '192.168.10.0/24');
 TT('Communications & Networks', 'subnet', { ip: '10.4.17.200', p: 20 }, 'Broadcast', '10.4.31.255');
 TT('Communications & Networks', 'nmea', {}, 'Checksums valid', '4 / 4');

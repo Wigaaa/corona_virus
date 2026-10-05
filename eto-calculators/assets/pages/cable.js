@@ -160,21 +160,6 @@
         }
       },
       {
-        id: 'earth', icon: '⏚', title: 'Earth (protective) conductor size', desc: 'Minimum protective conductor by adiabatic method and by IEC table.',
-        formula: 'S_pe = √(I²·t) / k      Table: S ≤ 16 → S; 16 < S ≤ 35 → 16; S > 35 → S/2',
-        inputs: [
-          { k: 'sp', l: 'Phase conductor size', u: 'mm²', v: 95, min: 0.5 },
-          { k: 'if', l: 'Earth fault current', u: 'kA', v: 10, min: 0.001 },
-          { k: 't', l: 'Disconnection time', u: 's', v: 0.4, min: 0.001 },
-          { k: 'k', l: 'Material (k)', opts: KFAC.map(x => [x[0], x[1]]), v: 143 }
-        ],
-        run: v => {
-          const sa = v.if * 1000 * Math.sqrt(v.t) / v.k, st = v.sp <= 16 ? v.sp : v.sp <= 35 ? 16 : v.sp / 2;
-          return { results: [R('Adiabatic minimum', sa, 'mm²', 1), R('Table minimum (same metal)', st, 'mm²', 1), R('Recommended (larger of both)', std(STD_SIZES, Math.max(sa, st)) || '> 630 mm² – parallel / special', 'mm²', 1, std(STD_SIZES, Math.max(sa, st)) ? 'ok' : 'warn', true)],
-            notes: ['Class rules (IEC 60092-352) may require the earth conductor to be at least as large as shown even for single-core cable armour / screens.'] };
-        }
-      },
-      {
         id: 'len', icon: '↔️', title: 'Cable length effect', desc: 'Maximum cable length for an allowed voltage drop (AC or DC) and how the drop grows with length.',
         formula: 'L_max = Vd_allow / (k × I × (R·cosφ + X·sinφ))     DC: L_max = Vd_allow / (2·I·R)',
         inputs: loadInputs({ i: 80, p: 50 }).concat([

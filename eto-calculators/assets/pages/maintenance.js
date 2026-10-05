@@ -100,7 +100,8 @@
       ['12-monthly', 'Earthing & bonding', 'Bonding straps and earth connections of deck equipment and cable armour.'],
       ['Per IEC 60079-17', 'Ex equipment', 'Visual / close / detailed inspection of Ex equipment in hazardous areas.']]]
   };
-  const calcs = Object.keys(PM).map(id => {
+  // same order as the Troubleshooting Assistant – following the power flow on board
+  const calcs = ['gen', 'egen', 'swbd', 'trf', 'motor', 'vfd', 'ups', 'batt', 'light', 'cable'].map(id => {
     const [icon, title, safe, rows] = PM[id];
     return {
       id, icon, title, noActions: true, inputs: [],

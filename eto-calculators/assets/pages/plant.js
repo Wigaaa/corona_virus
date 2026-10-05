@@ -1,10 +1,10 @@
 (function () {
-  const { R, lvl, S3, esc } = ETO;
+  const { R, lvl, S3, esc, std, STD_BREAKERS } = ETO;
   const CAT = [[1, '1 – Vital (safety / blackout recovery)'], [2, '2 – Essential (operation)'], [3, '3 – Non-essential (preferential trip)']];
   ETO.page({
     title: 'Power Plant & Load Balance', icon: '🏭', accent: '#be123c',
-    subtitle: 'Jack-up specialist: vessel electrical load balance, PMS thresholds, critical-load analysis, blackout recovery and emergency generator capacity.',
-    refs: ['IEC 60092-301', 'SOLAS II-1 Part D', 'IACS UR E', 'Class – PMS / blackout'],
+    subtitle: 'Jack-up specialist: vessel electrical load balance, PMS thresholds, critical-load analysis, blackout recovery, emergency generator capacity and shore power.',
+    refs: ['IEC 60092-301', 'SOLAS II-1 Part D', 'IACS UR E', 'Class – PMS / blackout', 'IEC 80005-3'],
     calcs: [
       {
         id: 'balance', icon: '🧮', title: 'Complete vessel load balance', desc: 'Consumers × operating mode → total demand per mode, DGs needed and N+1 check.',
@@ -84,6 +84,16 @@
           const kg = tot * v.sf / 1000 * v.hrs, l = kg / 0.85;
           return { results: [R('Emergency load', tot, 'kW', 0, null, true), R('Generator loading', ld, '%', 0, st), R('Minimum gen rating', tot / 0.8, 'kW @ 80% loading', 0), R('Largest-motor start dip', dip, '%', 1, sd), R('Fuel for endurance', l, 'L', 0), R('Fuel for endurance', l / 1000, 'm³', 2)],
             tables: [{ title: 'Loads', head: ['Load', 'kW', 'Demand %', 'Demand kW'], rows: v.tbl.map(r => [esc(r.n), r.kw, r.d, r.kw * r.d / 100]) }], verdict: { s: st === 'bad' || sd === 'bad' ? 'bad' : st === 'warn' || sd === 'warn' ? 'warn' : 'ok', t: st === 'ok' && sd === 'ok' ? 'Emergency generator adequate.' : 'Check generator rating / motor-starting sequence.' }, notes: ['Check sequential starting of emergency loads and that fuel for the endurance is available in the emergency generator service tank.'] };
+        }
+      },
+      {
+        id: 'shore', icon: '🔌', title: 'Shore power compatibility & sizing', desc: 'Check the shore supply against the vessel system and size the connection.',
+        formula: 'I = P / (√3 · V · PF)     breaker ≥ I     cables in parallel = ⌈I / cable rating⌉',
+        inputs: [{ k: 'sv', l: 'Shore voltage', u: 'V', v: 400, min: 1 }, { k: 'sf', l: 'Shore frequency', opts: [[50, '50 Hz'], [60, '60 Hz']], v: 50 }, { k: 'sk', l: 'Shore supply available', u: 'kVA', v: 630, min: 1 }, { k: 'se', l: 'Shore earthing system', opts: [['tn', 'TN (neutral earthed)'], ['it', 'IT (insulated)']], v: 'tn' }, { k: 'vv', l: 'Vessel voltage', u: 'V', v: 440, min: 1 }, { k: 'vf', l: 'Vessel frequency', opts: [[50, '50 Hz'], [60, '60 Hz']], v: 60 }, { k: 've', l: 'Vessel earthing system', opts: [['it', 'IT (insulated)'], ['tn', 'TN']], v: 'it' }, { k: 'kw', l: 'Vessel load on shore power', u: 'kW', v: 350, min: 0 }, { k: 'pf', l: 'Power factor', v: 0.85, min: 0.3, max: 1, step: 0.01 }, { k: 'cr', l: 'Rating of one shore cable', u: 'A', v: 250, min: 1 }],
+        run: v => {
+          const s = v.kw / v.pf, i = s * 1000 / (S3 * v.vv), dv = (v.sv - v.vv) / v.vv * 100, fOk = +v.sf === +v.vf, vOk = Math.abs(dv) <= 6, kOk = s <= v.sk, eOk = v.se === v.ve, nc = Math.ceil(i / v.cr);
+          const issues = [!fOk && `Frequency mismatch ${v.sf} Hz shore vs ${v.vf} Hz vessel – motors run ${v.sf < v.vf ? 'slower' : 'faster'} by ${Math.abs(v.sf / v.vf - 1) * 100 | 0} % and transformers/ballasts may overheat; a frequency converter is required.`, !vOk && `Voltage differs ${dv.toFixed(1)} % – use a transformer / converter.`, !kOk && 'Shore capacity too small for the load – shed load or request higher capacity.', !eOk && 'Different earthing systems – use an isolation transformer so the vessel IT system is not earthed by the shore supply.'].filter(Boolean);
+          return { results: [R('Shore current at vessel voltage', i, 'A', 0, null, true), R('Apparent power', s, 'kVA', 0, kOk ? 'ok' : 'bad'), R('Voltage difference', dv, '%', 1, vOk ? 'ok' : 'bad'), R('Frequency', fOk ? 'match' : 'MISMATCH', '', 0, fOk ? 'ok' : 'bad'), R('Shore cables needed', nc, '', 0), R('Shore breaker (std ≥ I)', std(STD_BREAKERS, i) || '> 5000 A – select from catalogue', 'A', 0)], verdict: issues.length ? { s: 'bad', t: issues.join(' ') } : { s: 'ok', t: 'Shore supply compatible.' }, notes: ['Before closing: check phase sequence (phase-sequence relay / meter), insulation of shore cables, earth / bonding connection first, interlock with generator breakers (no paralleling unless designed).'] };
         }
       }
     ]

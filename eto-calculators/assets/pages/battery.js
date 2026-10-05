@@ -1,9 +1,9 @@
 (function () {
-  const { R, lvl, S3, esc, res, STD_SIZES } = ETO;
+  const { R, lvl, S3, esc, res, STD_SIZES, std, STD_BREAKERS } = ETO;
   ETO.page({
     title: 'Battery & UPS Calculations', icon: '🔋', accent: '#ca8a04',
-    subtitle: 'Battery sizing, autonomy with Peukert, charger rating, UPS loading / runtime and DC voltage drop.',
-    refs: ['IEEE 485', 'IEC 60896 / 61427', 'IEC 62040 (UPS)', 'SOLAS II-1/42-43'],
+    subtitle: 'Battery sizing, autonomy with Peukert, charger rating, UPS loading / runtime, DC voltage drop, emergency-generator starting battery, battery-room ventilation and DC fault current.',
+    refs: ['IEEE 485', 'IEC 60896 / 61427', 'IEC 62040 (UPS)', 'SOLAS II-1/42-44', 'IEC 62485-2'],
     calcs: [
       {
         id: 'load', icon: '🔌', title: 'Battery load (DC)', desc: 'Total DC load from a list of consumers.',
@@ -95,6 +95,24 @@
         formula: 'C-rate = I / C    hours rate = C / I',
         inputs: [{ k: 'c', l: 'Capacity', u: 'Ah', v: 200, min: 1 }, { k: 'i', l: 'Discharge current', u: 'A', v: 50, min: 0.001 }],
         run: v => ({ results: [R('C-rate', v.i / v.c, 'C', 3, lvl(v.i / v.c, 0.2, 0.5), true), R('Nominal run-time (I = C/t)', v.c / v.i, 'h', 2), R('Equivalent', `C${(v.c / v.i).toFixed(1)}`, '')], notes: ['Capacity at high C-rates (UPS: 5–15 min rates) is far below nameplate capacity.'] })
+      },
+      {
+        id: 'start', icon: '🔋', title: 'Emergency generator starting battery', desc: 'Capacity for consecutive cranking attempts (SOLAS II-1/44: stored energy for at least three consecutive starts).',
+        formula: 'Ah = I_crank × t_crank × N / 3600 × factor',
+        inputs: [{ k: 'i', l: 'Cranking current', u: 'A', v: 450, min: 1 }, { k: 't', l: 'Cranking time per attempt', u: 's', v: 10, min: 1 }, { k: 'n', l: 'Consecutive starts required', v: 3, min: 1, step: 1 }, { k: 'f', l: 'Low-temperature / ageing factor', v: 2.0, min: 1, step: 0.1, hint: 'Cold starts and high-rate discharge reduce usable capacity strongly' }, { k: 'cca', l: 'Battery CCA rating', u: 'A', v: 640, min: 0 }],
+        run: v => { const ah = v.i * v.t * v.n / 3600 * v.f, ok = v.cca >= v.i * 1.25; return { results: [R('Energy per series of starts', v.i * v.t * v.n / 3600, 'Ah', 2), R('Minimum capacity (with factor)', ah, 'Ah', 1, null, true), R('CCA vs cranking current', v.cca / v.i, '×', 2, ok ? 'ok' : 'warn')], verdict: { s: ok ? 'ok' : 'warn', t: ok ? 'CCA rating has margin over cranking current.' : 'CCA rating close to / below cranking current – starting at low temperature may fail.' }, notes: ['In practice high-rate (CCA) capability, not Ah, decides the starting battery – select per engine maker.'] }; }
+      },
+      {
+        id: 'h2', icon: '💨', title: 'Battery room hydrogen ventilation (IEC 62485-2)', desc: 'Air flow needed to keep hydrogen below the safe concentration while charging.',
+        formula: 'Q = 0.05 × n × I_gas × C_rt × 10⁻³  (m³/h)     natural ventilation opening A ≥ 28 × Q (cm²)',
+        inputs: [{ k: 'n', l: 'Number of cells', v: 12, min: 1, step: 1 }, { k: 'c', l: 'Capacity C_rt (10 h rate)', u: 'Ah', v: 200, min: 1 }, { k: 'ty', l: 'Battery type & charge mode (I_gas, mA/Ah)', opts: [[1, 'VRLA – float (1)'], [8, 'VRLA – boost (8)'], [5, 'Vented lead-acid – float (5)'], [20, 'Vented lead-acid – boost (20)'], [50, 'Vented NiCd – boost (50)']], v: 8 }],
+        run: v => { const q = 0.05 * v.n * v.ty * v.c * 1e-3; return { results: [R('Required air flow', q, 'm³/h', 3, null, true), R('Natural ventilation opening (inlet & outlet each)', 28 * q, 'cm²', 0)], notes: ['Formula includes the dilution factor (24), gas volume per Ah and safety factor 5 of IEC 62485-2. Inlet low, outlet high; never recirculate. Ex-rated fans if the fan is in the air stream.'] }; }
+      },
+      {
+        id: 'dcsc', icon: '⚡', title: 'DC battery short-circuit current', desc: 'Prospective fault current of a battery through its connections – check fuse / breaker DC breaking capacity.',
+        formula: 'I_sc ≈ V_oc / (n × R_cell + R_links + R_cable)',
+        inputs: [{ k: 'n', l: 'Cells / blocks in series', v: 2, min: 1, step: 1 }, { k: 'voc', l: 'Open-circuit voltage per cell / block', u: 'V', v: 12.8, min: 0.1 }, { k: 'ri', l: 'Internal resistance per cell / block', u: 'mΩ', v: 4.2, min: 0.001 }, { k: 'rl', l: 'Inter-cell links total', u: 'mΩ', v: 0.5, min: 0 }, { k: 'l', l: 'Cable length (one way)', u: 'm', v: 3, min: 0 }, { k: 's', l: 'Cable size', u: 'mm²', v: 50, min: 1 }, { k: 'icu', l: 'Fuse / breaker DC breaking capacity', u: 'kA', v: 10, min: 0.1 }],
+        run: v => { const rc = 2 * v.l * ETO.res('Cu', v.s, 20), rt = v.n * v.ri / 1000 + v.rl / 1000 + rc, isc = v.n * v.voc / rt, ok = isc / 1000 <= v.icu; return { results: [R('Prospective DC fault current', isc / 1000, 'kA', 2, ok ? 'ok' : 'bad', true), R('Total circuit resistance', rt * 1000, 'mΩ', 2), R('Cable share', rc / rt * 100, '%', 0)], verdict: { s: ok ? 'ok' : 'bad', t: ok ? 'Protective device can interrupt the DC fault.' : 'Fault current exceeds the device\'s DC rating – use a DC-rated fuse / breaker with higher capacity, as close to the battery as possible.' }, notes: ['Use the maker\'s short-circuit current figure if available (often quoted per cell). Check the device is DC-rated at the full battery voltage.'] }; }
       }
     ]
   });

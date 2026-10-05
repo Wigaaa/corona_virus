@@ -46,10 +46,19 @@
         }
       },
       {
-        id: 'pc', icon: '⏚', title: 'Protective conductor size', desc: 'Adiabatic protective earth conductor selection.',
-        formula: 'S = √(I² t) / k',
-        inputs: [{ k: 'i', l: 'Earth fault current', u: 'kA', v: 8, min: 0.001 }, { k: 't', l: 'Disconnection time', u: 's', v: 0.5, min: 0.001 }, { k: 'k', l: 'k factor', opts: [[143, 'Cu XLPE/EPR (143)'], [115, 'Cu PVC (115)'], [159, 'Cu bare/bolted (159)'], [94, 'Al XLPE (94)']], v: 143 }],
-        run: v => { const s = v.i * 1000 * Math.sqrt(v.t) / v.k; return { results: [R('Minimum area', s, 'mm²', 1), R('Next standard', std(STD_SIZES, s) || '> 630 mm²', 'mm²', 0, std(STD_SIZES, s) ? 'ok' : 'warn', true)] }; }
+        id: 'pc', icon: '⏚', title: 'Earth (protective) conductor size', desc: 'Minimum protective conductor by adiabatic method and by IEC table.',
+        formula: 'S_pe = √(I²·t) / k      Table: S ≤ 16 → S; 16 < S ≤ 35 → 16; S > 35 → S/2',
+        inputs: [
+          { k: 'sp', l: 'Phase conductor size', u: 'mm²', v: 95, min: 0.5 },
+          { k: 'if', l: 'Earth fault current', u: 'kA', v: 10, min: 0.001 },
+          { k: 't', l: 'Disconnection time', u: 's', v: 0.4, min: 0.001 },
+          { k: 'k', l: 'Material (k)', opts: [[143, 'Cu – XLPE / EPR (k=143)'], [115, 'Cu – PVC (k=115)'], [94, 'Al – XLPE / EPR (k=94)'], [76, 'Al – PVC (k=76)']], v: 143 }
+        ],
+        run: v => {
+          const sa = v.if * 1000 * Math.sqrt(v.t) / v.k, st = v.sp <= 16 ? v.sp : v.sp <= 35 ? 16 : v.sp / 2;
+          return { results: [R('Adiabatic minimum', sa, 'mm²', 1), R('Table minimum (same metal)', st, 'mm²', 1), R('Recommended (larger of both)', std(STD_SIZES, Math.max(sa, st)) || '> 630 mm² – parallel / special', 'mm²', 1, std(STD_SIZES, Math.max(sa, st)) ? 'ok' : 'warn', true)],
+            notes: ['Class rules (IEC 60092-352) may require the earth conductor to be at least as large as shown even for single-core cable armour / screens.'] };
+        }
       },
       {
         id: 'bond', icon: '🔗', title: 'Continuity / bonding test', desc: 'Compare measured bonding / earth continuity resistance with the calculated value.',
