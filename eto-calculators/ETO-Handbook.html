@@ -369,6 +369,18 @@ footer .disc{flex-basis:100%;padding:12px 16px;border-radius:var(--r);background
 @media (max-width:400px){.top .btn .em{display:none}}
 @media (max-width:340px){.top{gap:4px;padding:8px}.top .btn{padding:6px 7px;font-size:12px}}
 
+/* ---------- compact developer credit strip (home page bottom) ---------- */
+.credit{margin:36px auto 0;max-width:900px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 18px;padding:12px 16px;background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-sm)}
+.cr-who{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink);min-width:0}
+.cr-who b{display:block;font-size:14.5px;line-height:1.3}
+.cr-who small{display:block;font-size:12.5px;color:var(--mut);font-weight:500}
+.cr-who:hover small{color:var(--accent-ink)}
+.cr-av{flex:none;display:grid;place-items:center;width:42px;height:42px;border-radius:50%;font-weight:800;font-size:15px;color:#fff;background:linear-gradient(135deg,var(--brand),var(--brand-2));box-shadow:0 6px 14px -6px var(--brand)}
+.cr-links{display:flex;flex-wrap:wrap;gap:6px}
+.cr-links a{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:99px;font-size:12.5px;font-weight:650;text-decoration:none;color:var(--ink-2);background:var(--field);border:1px solid var(--line);transition:border-color .15s,color .15s,transform .15s var(--ease)}
+.cr-links a:hover{border-color:var(--brand);color:var(--ink);transform:translateY(-1px)}
+@media (max-width:560px){.credit{justify-content:center;text-align:left}.cr-links{justify-content:center}.cr-links a span{display:none}.cr-links a{padding:8px 12px;font-size:15px}}
+
 :root{--accent:#4f46e5}
 </style>
 </head>
@@ -387,7 +399,15 @@ footer .disc{flex-basis:100%;padding:12px 16px;border-radius:var(--r);background
 <main class="wrap">
   <div class="searchbar"><label class="sr-only" for="q">Search pages</label><input class="search" id="q" type="search" placeholder="Search pages – e.g. voltage drop, PI, thruster, DP, megger, interview…" autocomplete="off"></div>
   <div id="lists"></div>
-  <a class="pc about" style="--c:#7c3aed" href="#about.html"><div class="ic" aria-hidden="true">👷</div><b>About / Credits – Wagdy Mohamed Abdel Aziz, ETO</b><p>Contact details, LinkedIn, WhatsApp, experience and qualifications of the developer.</p><span class="num">Open</span></a>
+  <footer class="credit" aria-label="Developer">
+    <a class="cr-who" href="#about.html"><span class="cr-av" aria-hidden="true">WM</span><span><b>Wagdy Mohamed Abdel Aziz</b><small>ETO · Developer · About / Credits →</small></span></a>
+    <nav class="cr-links" aria-label="Contact">
+      <a href="https://wa.me/201067686499" target="_blank" rel="noopener" aria-label="WhatsApp">💬<span>WhatsApp</span></a>
+      <a href="tel:+201067686499" aria-label="Call">📞<span>Call</span></a>
+      <a href="mailto:eto.wagdy@gmail.com" aria-label="Email">✉️<span>Email</span></a>
+      <a href="https://www.linkedin.com/in/eto-wagdy" target="_blank" rel="noopener" aria-label="LinkedIn">🔗<span>LinkedIn</span></a>
+    </nav>
+  </footer>
 </main>
 </div>
 <div id="aboutView" style="display:none">
