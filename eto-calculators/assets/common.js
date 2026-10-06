@@ -33,6 +33,14 @@
     { f: 'safety.html', n: 'Electrical Safety & Isolation Guide', i: '🦺', c: '#b91c1c', lvl: 6, d: 'Knowledge guide for ETOs: electrical hazards, safe isolation, LOTO, prove-test-prove, HV safety, stored energy, PPE & live working, permit to work, emergency response' },
     { f: 'hazardous.html', n: 'Ex / Hazardous Area Guide', i: '💥', c: '#ea580c', lvl: 6, d: 'Knowledge guide: zones, gas groups & T-classes, EPL & ATEX categories, all Ex protection types, reading Ex markings, installation, intrinsic safety, inspection & maintenance, marine areas' },
     { f: 'firegas.html', n: 'Fire & Gas System (Offshore)', i: '🧯', c: '#dc2626', lvl: 6, d: 'F&G architecture, interfaces, fire & gas detectors, set-points, voting & Cause and Effect, inhibits, suppression & protective actions, ETO know-how, maintenance, gas calibration, fire detector tests & troubleshooting' },
+    { f: 'thrusterguide.html', n: 'Thruster Systems (Guide)', i: '🌀', c: '#1e40af', lvl: 3, d: 'Tunnel, azimuth & retractable thrusters, FP / CP, drive train, auxiliaries, readiness chain, protection, DP interface, maintenance & troubleshooting' },
+    { f: 'jackingguide.html', n: 'Jacking Systems (Guide)', i: '🏗️', c: '#0284c7', lvl: 3, d: 'Electric rack-and-pinion and hydraulic jacking, drives & brakes, RPD & load monitoring, preload, maintenance & troubleshooting' },
+    { f: 'dieselgen.html', n: 'Diesel Generators (Guide)', i: '🛢️', c: '#ea580c', lvl: 3, d: 'Engine control & governor, alternator & AVR, synchronising & load sharing, protection, emergency generator, maintenance & troubleshooting' },
+    { f: 'switchboards.html', n: 'MSB & ESB (Guide)', i: '🔌', c: '#475569', lvl: 3, d: 'Main & emergency switchboards, breakers & interlocks, ESB changeover, distribution, protection & IMD, shore connection, troubleshooting' },
+    { f: 'esd.html', n: 'Emergency Shutdown (ESD) System', i: '🛑', c: '#b91c1c', lvl: 6, d: 'ESD levels, logic solver, initiators & executive actions, ignition-source control, SOLAS emergency stops, C&E, bypasses, proof testing' },
+    { f: 'pumps.html', n: 'Pumps (Guide)', i: '💧', c: '#0891b2', lvl: 3, d: 'Pump types & services, motors & starters, duty / standby & auto start, protection, VFD energy saving, maintenance & troubleshooting' },
+    { f: 'craneguide.html', n: 'Cranes (Guide)', i: '🏋️', c: '#a16207', lvl: 3, d: 'Electric-motor vs diesel prime movers, electro / diesel-hydraulic & all-electric cranes, AOPS / MOPS, limits, certification, troubleshooting' },
+    { f: 'chiller.html', n: 'Chiller & Refrigeration Plant (Guide)', i: '❄️', c: '#0ea5e9', lvl: 3, d: 'Refrigeration cycle, refrigerants, HVAC chillers, provision plant & defrost, compressor starting, controls & safety switches, troubleshooting' },
     { f: 'instruments.html', n: 'ETO Instruments & How to Use Them', i: '🧰', c: '#0d9488', lvl: 7, d: 'Multimeter, megger, Ductor, earth leakage / RCD tester, phase rotation, PQ analyser, oscilloscope, loop & temperature calibrators, thermal camera, battery & cable testers, network tester, minimum kit' },
     { f: 'metertricks.html', n: 'Multimeter & Clamp-Meter Tricks', i: '🔎', c: '#ca8a04', lvl: 7, d: 'Ghost voltages & LoZ, true-RMS vs average, measuring VFDs, testing diodes, IGBTs, contactor coils & capacitors, clamp tricks, common mistakes' },
     { f: 'workshop.html', n: 'Workshop Tools for ETO', i: '🔧', c: '#64748b', lvl: 7, d: 'Hand tools, crimping & terminating, soldering bench, power tools, cable & gland tools, test bench, consumables, workshop organisation' },
@@ -60,7 +68,7 @@
   };
 
   // page type: knowledge guides vs calculators (badge + home filter)
-  const GUIDES = ['dpsystem', 'firegas', 'indcomms', 'troubleshoot', 'maintenance', 'safety', 'hazardous', 'instruments', 'metertricks', 'workshop', 'handover', 'survey', 'interview'];
+  const GUIDES = ['dpsystem', 'thrusterguide', 'jackingguide', 'dieselgen', 'switchboards', 'esd', 'pumps', 'craneguide', 'chiller', 'firegas', 'indcomms', 'troubleshoot', 'maintenance', 'safety', 'hazardous', 'instruments', 'metertricks', 'workshop', 'handover', 'survey', 'interview'];
   PAGES.forEach(p => { p.t = GUIDES.includes(p.f.slice(0, -5)) ? 'guide' : 'calc'; });
 
   // home layout: 'A' = two sections (Calculators | Guides) with groups (chosen); 'B' = 8 levels
@@ -73,7 +81,7 @@
     ['calc', 'E', 'Instrumentation & Networks', 'Signals & loops, sensors, process, calibration, network calculators', '#0d9488', 'signals tempsensors process calibration network'],
     ['calc', 'F', 'Testing & Commissioning', 'Field test evaluation', '#0369a1', 'testing'],
     ['calc', 'G', 'Maths & Conversions', 'Unit converters, maths, geometry & tanks, circuit theory, mechanical / thermal', '#db2777', 'unitsmech unitselec mathbasic geometry circuits mechthermal'],
-    ['guide', '1', 'Systems', 'Dynamic positioning, fire & gas, industrial communications', '#0284c7', 'dpsystem firegas indcomms'],
+    ['guide', '1', 'Systems', 'DP, thrusters, jacking, diesel generators, MSB & ESB, ESD, fire & gas, pumps, cranes, chillers, industrial communications', '#0284c7', 'dpsystem thrusterguide jackingguide dieselgen switchboards esd firegas pumps craneguide chiller indcomms'],
     ['guide', '2', 'Operations', 'Troubleshooting assistant, preventive maintenance', '#16a34a', 'troubleshoot maintenance'],
     ['guide', '3', 'Safety & Hazardous Areas', 'Electrical safety & isolation, Ex / hazardous areas', '#ea580c', 'safety hazardous'],
     ['guide', '4', 'Tips & Tricks for ETO', 'Instruments, meter tricks, workshop, handover, surveys, interview', '#7c3aed', 'instruments metertricks workshop handover survey interview']

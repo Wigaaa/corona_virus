@@ -4,7 +4,7 @@
 
 Open `ETO-Handbook.html` (single file) or `index.html` (multi-page) in any browser – phone, tablet or laptop. No install, works offline.
 
-**42 pages · 29 calculator pages + 13 guides**
+**50 pages · 29 calculator pages + 21 guides**
 
 ### 🧮 Calculators
 | Group | Pages |
@@ -20,7 +20,7 @@ Open `ETO-Handbook.html` (single file) or `index.html` (multi-page) in any brows
 ### 📘 Guides & Knowledge
 | Group | Pages |
 |---|---|
-| 1 – Systems | Dynamic positioning (DP), offshore fire & gas, industrial communications |
+| 1 – Systems | Dynamic positioning (DP), thrusters, jacking systems, diesel generators, MSB & ESB, emergency shutdown (ESD), offshore fire & gas, pumps, cranes, chiller & refrigeration plant, industrial communications |
 | 2 – Operations | Troubleshooting assistant, preventive maintenance guide |
 | 3 – Safety & Hazardous Areas | Electrical safety & isolation, Ex / hazardous area guide |
 | 4 – Tips & Tricks for ETO | Instruments, meter tricks, workshop tools, handover & documentation, survey / audit / class tips, offshore interview preparation |
