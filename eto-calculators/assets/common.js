@@ -273,6 +273,8 @@
       r.setAttribute('data-theme', dark ? 'light' : 'dark');
       try { localStorage.setItem('eto:theme', dark ? 'light' : 'dark'); } catch (e) { /* ignore */ }
     };
+    const QZ = window.ETO_QUIZ && window.ETO_QUIZ[cfg.file.replace(/\.html$/, '')];
+    if (QZ && !cfg.calcs.some(c => c.id === 'quiz')) cfg.calcs.push(quizCalc(QZ));
     cfg.calcs.forEach(c => {
       const a = el('a', { class: 'tab', href: '#' + (BUNDLE ? cfg.file + ':' : '') + c.id, 'data-id': c.id }, `<span class="ti">${c.icon || '•'}</span><span>${esc(c.title)}</span>`);
       tabs.appendChild(a);
@@ -494,6 +496,53 @@
     };
     window.addEventListener('hashchange', route);
     route();
+  }
+
+  // ---------- quick quiz (last tab of the guides; questions in assets/quiz.js) ----------
+  function quizCalc(qs) {
+    return {
+      id: 'quiz', icon: '📝', title: 'Quick quiz', noActions: true, inputs: [],
+      desc: `Check how well you understand this system – ${qs.length} questions. Tap an answer to see whether it is right and why.`,
+      run: () => ({
+        head: '<span></span>',
+        html: `<div class="quiz">` + qs.map((q, i) => `<fieldset class="qz" data-a="${q[2]}" data-x="${esc(q[3])}"><legend><span class="qn">${i + 1}</span><span>${esc(q[0])}</span></legend><div class="qo">${q[1].map((o, j) => `<button type="button" class="opt" data-i="${j}"><b>${'ABCD'[j]}</b><span>${esc(o)}</span></button>`).join('')}</div><p class="qx" hidden></p></fieldset>`).join('') +
+          `<div class="qscore" aria-live="polite"></div><div class="actions"><button type="button" class="btn qreset">↺ Try again</button></div></div>`
+      })
+    };
+  }
+  function quizScore(z) {
+    const f = [...z.querySelectorAll('.qz')], done = f.filter(x => x.dataset.done), ok = done.filter(x => x.classList.contains('ok')).length, n = f.length, box = z.querySelector('.qscore');
+    if (!done.length) { box.innerHTML = ''; box.className = 'qscore'; return; }
+    if (done.length < n) { box.className = 'qscore'; box.innerHTML = `Answered <b>${done.length} / ${n}</b> · correct so far <b>${ok}</b>`; return; }
+    const pc = Math.round(ok / n * 100), lv = pc >= 90 ? ['ok', '🏆 Excellent – you know this system well.'] : pc >= 70 ? ['ok', '👍 Good – review the questions you missed.'] : pc >= 50 ? ['warn', '📖 Fair – read the guide tabs again and retry.'] : ['bad', '🔁 Needs review – go through the guide, then try again.'];
+    box.className = 'qscore ' + lv[0];
+    box.innerHTML = `<b>Your score: ${ok} / ${n} (${pc} %)</b><span>${lv[1]}</span>`;
+  }
+  if (typeof document !== 'undefined' && document.addEventListener) {
+    document.addEventListener('click', e => {
+      const b = e.target.closest && e.target.closest('.quiz .opt');
+      if (b) {
+        const f = b.closest('.qz');
+        if (f.dataset.done) return;
+        f.dataset.done = '1';
+        const a = +f.dataset.a, i = +b.dataset.i, right = i === a;
+        f.querySelectorAll('.opt').forEach((x, j) => { x.disabled = true; if (j === a) x.classList.add('right'); });
+        if (!right) b.classList.add('wrong');
+        f.classList.add(right ? 'ok' : 'bad');
+        const x = f.querySelector('.qx');
+        x.textContent = (right ? '✅ Correct – ' : '❌ Not quite – the answer is ' + 'ABCD'[a] + '. ') + f.dataset.x;
+        x.hidden = false;
+        quizScore(f.closest('.quiz'));
+        return;
+      }
+      const r = e.target.closest && e.target.closest('.quiz .qreset');
+      if (r) {
+        const z = r.closest('.quiz');
+        z.querySelectorAll('.qz').forEach(f => { delete f.dataset.done; f.classList.remove('ok', 'bad'); f.querySelector('.qx').hidden = true; f.querySelectorAll('.opt').forEach(o => { o.disabled = false; o.classList.remove('right', 'wrong'); }); });
+        quizScore(z);
+        z.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
   }
 
   // integrity check: the author's name and copyright must stay intact
