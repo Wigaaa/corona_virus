@@ -63,8 +63,8 @@
   const GUIDES = ['dpsystem', 'firegas', 'indcomms', 'troubleshoot', 'maintenance', 'safety', 'hazardous', 'instruments', 'metertricks', 'workshop', 'handover', 'survey', 'interview'];
   PAGES.forEach(p => { p.t = GUIDES.includes(p.f.slice(0, -5)) ? 'guide' : 'calc'; });
 
-  // home layout: 'B' = 8 levels + calculator / guide filter, 'A' = two sections (Calculators | Guides) with groups
-  const LAYOUT = 'B';
+  // home layout: 'A' = two sections (Calculators | Guides) with groups (chosen); 'B' = 8 levels
+  const LAYOUT = 'A';
   const GROUPS = [
     ['calc', 'A', 'Power & Distribution', 'Power, PF, cables, generators, transformers, batteries & UPS', '#2563eb', 'power powerfactor cable generator transformer battery'],
     ['calc', 'B', 'Machines & Drives', 'Motors, VFDs, thrusters, jacking, cranes', '#16a34a', 'motor vfd thruster jacking crane'],

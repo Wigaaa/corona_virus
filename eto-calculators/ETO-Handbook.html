@@ -353,13 +353,7 @@ footer .disc{flex-basis:100%;padding:12px 16px;border-radius:var(--r);background
 .qa summary:hover{filter:brightness(.97)}
 .qa .ans{margin-top:10px}.qa .tip{margin-top:8px;font-size:13.5px;color:var(--mut);padding:8px 12px;border-radius:8px;background:var(--field)}
 
-/* ---------- page-type filter, badges, two-section layout ---------- */
-.filter{display:inline-flex;flex-wrap:wrap;gap:4px;margin-top:14px;padding:4px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-sm)}
-.filter button{display:inline-flex;align-items:center;gap:8px;min-height:40px;border:0;background:transparent;color:var(--ink-2);border-radius:10px;padding:8px 16px;font:650 14px var(--font);cursor:pointer;transition:background .15s,color .15s}
-.filter button:hover{background:var(--field);color:var(--ink)}
-.filter button[aria-pressed=true]{background:linear-gradient(135deg,var(--brand),color-mix(in srgb,var(--brand) 70%,#0f172a));color:#fff;box-shadow:0 6px 16px -8px var(--brand)}
-.filter button span{min-width:24px;padding:1px 7px;border-radius:99px;font-size:12px;font-weight:800;background:var(--field);color:var(--mut);text-align:center}
-.filter button[aria-pressed=true] span{background:rgba(255,255,255,.22);color:#fff}
+/* ---------- page-type badges, two-section home layout ---------- */
 .pc .badge{position:absolute;top:16px;right:14px;font-size:11.5px;font-weight:750;padding:3px 9px;border-radius:99px;border:1px solid}
 .pc .badge.calc{background:color-mix(in srgb,var(--brand) 10%,var(--card));color:color-mix(in srgb,var(--brand) 75%,var(--ink));border-color:color-mix(in srgb,var(--brand) 25%,transparent)}
 .pc .badge.guide{background:color-mix(in srgb,var(--brand-2) 12%,var(--card));color:color-mix(in srgb,var(--brand-2) 55%,var(--ink));border-color:color-mix(in srgb,var(--brand-2) 30%,transparent)}
@@ -369,10 +363,6 @@ footer .disc{flex-basis:100%;padding:12px 16px;border-radius:var(--r);background
 .sechead.calc{background:linear-gradient(135deg,#312e81,#4f46e5)}
 .sechead.guide{background:linear-gradient(135deg,#065f46,#0f766e 60%,#0e7490)}
 .sechead+.lvsec .lvl{margin-top:22px}
-.filter[hidden]{display:none}
-@media (max-width:560px){.filter{display:flex;flex-wrap:nowrap}.filter button{flex:1;justify-content:center;padding:8px 8px;gap:5px;font-size:13px}}
-.filter .em{font-style:normal}
-@media (max-width:560px){.filter button{white-space:nowrap}.filter .em{display:none}}
 
 :root{--accent:#4f46e5}
 </style>
@@ -391,7 +381,6 @@ footer .disc{flex-basis:100%;padding:12px 16px;border-radius:var(--r);background
 </section>
 <main class="wrap">
   <div class="searchbar"><label class="sr-only" for="q">Search pages</label><input class="search" id="q" type="search" placeholder="Search pages – e.g. voltage drop, PI, thruster, DP, megger, interview…" autocomplete="off"></div>
-  <div class="filter" id="filter" role="group" aria-label="Show page type"><button type="button" data-t="all" aria-pressed="true">All <span></span></button><button type="button" data-t="calc" aria-pressed="false"><i class="em" aria-hidden="true">🧮</i>Calculators <span></span></button><button type="button" data-t="guide" aria-pressed="false"><i class="em" aria-hidden="true">📘</i>Guides <span></span></button></div>
   <div id="lists"></div>
   <section class="card" style="margin-top:30px" aria-labelledby="tipsh">
     <h2 id="tipsh"><span class="ti" aria-hidden="true">💡</span>Quick tips</h2>
@@ -522,8 +511,8 @@ footer .disc{flex-basis:100%;padding:12px 16px;border-radius:var(--r);background
   const GUIDES = ['dpsystem', 'firegas', 'indcomms', 'troubleshoot', 'maintenance', 'safety', 'hazardous', 'instruments', 'metertricks', 'workshop', 'handover', 'survey', 'interview'];
   PAGES.forEach(p => { p.t = GUIDES.includes(p.f.slice(0, -5)) ? 'guide' : 'calc'; });
 
-  // home layout: 'B' = 8 levels + calculator / guide filter, 'A' = two sections (Calculators | Guides) with groups
-  const LAYOUT = 'B';
+  // home layout: 'A' = two sections (Calculators | Guides) with groups (chosen); 'B' = 8 levels
+  const LAYOUT = 'A';
   const GROUPS = [
     ['calc', 'A', 'Power & Distribution', 'Power, PF, cables, generators, transformers, batteries & UPS', '#2563eb', 'power powerfactor cable generator transformer battery'],
     ['calc', 'B', 'Machines & Drives', 'Motors, VFDs, thrusters, jacking, cranes', '#16a34a', 'motor vfd thruster jacking crane'],
@@ -6041,15 +6030,14 @@ Signed (outgoing): ______   Signed (incoming): ______`) +
 </script>
 <script>
 (function(){
-  const L=ETO.LEVELS, G=ETO.GROUPS, P=ETO.PAGES, root=document.getElementById('lists'), fb=document.getElementById('filter');
+  const L=ETO.LEVELS, G=ETO.GROUPS, P=ETO.PAGES, root=document.getElementById('lists');
   const nC=P.filter(p=>p.t==='calc').length, nG=P.length-nC;
   document.getElementById('nPages').textContent=P.length;document.getElementById('nCalc').textContent=nC;document.getElementById('nGuide').textContent=nG;
-  let type='all';
   const card=p=>`<a class="pc" style="--c:${p.c}" href="#${p.f}"><span class="badge ${p.t}">${p.t==='calc'?'🧮 Calculator':'📘 Guide'}</span><div class="ic" aria-hidden="true">${p.i}</div><b>${p.n}</b><p>${p.d}</p><span class="num">Open</span></a>`;
   const head=(id,badge,title,sub,n,c)=>`<section class="lvsec" id="${id}" style="--c:${c}" aria-labelledby="${id}h"><div class="lvl"><span class="lvn" aria-hidden="true">${badge}</span><div><h2 id="${id}h">${title}</h2><span class="sub">${sub}</span></div><span class="cnt">${n} page${n>1?'s':''}</span></div><div class="cards">`;
   function draw(q){
     q=(q||'').toLowerCase().trim();root.innerHTML='';
-    const ok=p=>(type==='all'||p.t===type)&&(!q||(p.n+' '+p.d).toLowerCase().includes(q));
+    const ok=p=>!q||(p.n+' '+p.d).toLowerCase().includes(q);
     let h='';
     if(ETO.LAYOUT==='A'){
       [['calc','🧮 Calculators','Enter values – get results, verdicts and charts'],['guide','📘 Guides & Knowledge','Systems, operations, safety and field tips']].forEach(([sec,t,sub])=>{
@@ -6061,11 +6049,7 @@ Signed (outgoing): ______   Signed (incoming): ______`) +
       [1,2,3,4,5,6,7,8].forEach(l=>{const ps=P.filter(p=>p.lvl===l&&ok(p));if(!ps.length)return;h+=head('lv'+l,l,`Level ${l} – ${L[l][0]}`,L[l][1],ps.length,L[l][2])+ps.map(card).join('')+'</div></section>';});
     }
     root.innerHTML=h||'<p class="nomatch">No page matches your search. Try another word (e.g. “cable”, “motor”, “Ex”).</p>';
-    const cnt=t=>P.filter(p=>(t==='all'||p.t===t)&&(!q||(p.n+' '+p.d).toLowerCase().includes(q))).length;
-    fb.querySelectorAll('button').forEach(b=>{b.querySelector('span').textContent=cnt(b.dataset.t);});
   }
-  if(ETO.LAYOUT==='A')fb.hidden=true;
-  fb.onclick=e=>{const b=e.target.closest('button');if(!b)return;type=b.dataset.t;fb.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));draw(document.getElementById('q').value);};
   draw();
   document.getElementById('q').oninput=e=>draw(e.target.value);
   document.querySelector('.skip').onclick=e=>{e.preventDefault();document.getElementById('q').focus();};
