@@ -32,13 +32,15 @@
       <a href="https://www.linkedin.com/in/eto-wagdy" target="_blank" rel="noopener" aria-label="LinkedIn">🔗<span>LinkedIn</span></a>
     </nav>
   </footer>
+  <p class="eto-copy" id="etoCopy">© 2026 Wagdy Mohamed Abdel Aziz – ETO Handbook. All rights reserved. Personal use only – copying, editing, selling or redistributing without the author's written permission is prohibited.</p>
 </main>
 <script src="assets/common.js"></script>
 <script>
 (function(){
   const L=ETO.LEVELS, G=ETO.GROUPS, P=ETO.PAGES, root=document.getElementById('lists');
   const nC=P.filter(p=>p.t==='calc').length, nG=P.length-nC;
-  document.getElementById('nPages').textContent=P.length;document.getElementById('nCalc').textContent=nC;document.getElementById('nGuide').textContent=nG;
+  document.getElementById('nPages').textContent=P.length;
+  document.getElementById('etoCopy').textContent=ETO.COPY;document.getElementById('nCalc').textContent=nC;document.getElementById('nGuide').textContent=nG;
   const card=p=>`<a class="pc" style="--c:${p.c}" href="${p.f}"><span class="badge ${p.t}">${p.t==='calc'?'🧮 Calculator':'📘 Guide'}</span><div class="ic" aria-hidden="true">${p.i}</div><b>${p.n}</b><p>${p.d}</p><span class="num">Open</span></a>`;
   const head=(id,badge,title,sub,n,c)=>`<section class="lvsec" id="${id}" style="--c:${c}" aria-labelledby="${id}h"><div class="lvl"><span class="lvn" aria-hidden="true">${badge}</span><div><h2 id="${id}h">${title}</h2><span class="sub">${sub}</span></div><span class="cnt">${n} page${n>1?'s':''}</span></div><div class="cards">`;
   function draw(q){

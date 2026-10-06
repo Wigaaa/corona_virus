@@ -29,6 +29,7 @@ Open `ETO-Handbook.html` (single file) or `index.html` (multi-page) in any brows
 | 7 – Tips & Tricks for ETO | Instruments, meter tricks, workshop tools, handover & documentation, survey / audit / class tips, offshore interview preparation |
 
 - Shared engine `assets/common.js`, styles `assets/style.css`, one file per page in `assets/pages/`.
-- `python3 build_single_file.py` rebuilds `ETO-Handbook.html` after edits.
+- `python3 build_single_file.py` rebuilds `ETO-Handbook.html` after edits. For the release file set `TERSER=/path/to/terser` (or have `terser` on PATH) – the code is then scrambled (minified + mangled). `node tests/bundle.js` checks the built file.
+- © 2026 Wagdy Mohamed Abdel Aziz – all rights reserved, see `LICENSE`. Every page shows the copyright and version, printouts carry a watermark, and the app shows a warning if the author's name is removed or changed.
 - Inputs are remembered in the browser (localStorage).
 - Default values are typical examples. Always verify against vessel drawings, nameplates, maker data and class / flag rules.

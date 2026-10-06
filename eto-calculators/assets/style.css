@@ -383,3 +383,14 @@ footer .disc{flex-basis:100%;padding:12px 16px;border-radius:var(--r);background
 .jumpbar button[hidden]{display:none}
 .sechead{scroll-margin-top:76px}
 @media (max-width:560px){.jumpbar button{flex:1;justify-content:center;padding:9px 10px;font-size:13.5px}}
+
+/* ---------- copyright, tamper warning, print watermark ---------- */
+.eto-copy{flex-basis:100%;margin:14px 0 0;text-align:center;font-size:12px;line-height:1.5;color:var(--mut)}
+.wrap>.eto-copy{max-width:900px;margin:18px auto 0}
+#eto-tamper{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:20px;background:rgba(15,23,42,.92);color:#fff;text-align:center}
+#eto-tamper>div{max-width:520px;padding:26px;border-radius:16px;background:#7f1d1d;border:2px solid #fca5a5;box-shadow:0 20px 50px rgba(0,0,0,.5);font-size:15px}
+#eto-tamper b{font-size:19px}
+@media print{
+  .eto-copy{display:block!important;color:#444;font-size:10px}
+  body::after{content:"ETO Handbook – © Wagdy Mohamed Abdel Aziz";position:fixed;top:45%;left:0;right:0;text-align:center;transform:rotate(-30deg);font-size:46px;font-weight:800;color:rgba(0,0,0,.07);pointer-events:none;z-index:9999}
+}

@@ -1,4 +1,6 @@
-/* ETO Handbook – shared engine */
+/* ETO Handbook – shared engine
+   © 2026 Wagdy Mohamed Abdel Aziz (ETO). All rights reserved.
+   Personal use only – copying, editing, selling or redistributing without the author's written permission is prohibited. */
 (function () {
   'use strict';
 
@@ -101,6 +103,12 @@
     ['guide', '7', 'Tips & Tricks for ETO', 'Instruments, meter tricks, workshop, handover, surveys, interview', '#7c3aed', 'instruments metertricks workshop handover survey interview']
   ].map(g => ({ sec: g[0], key: g[1], name: g[2], sub: g[3], c: g[4], files: g[5].split(' ').map(f => f + '.html') }));
   const ORDERED = LAYOUT === 'A' ? GROUPS.flatMap(g => g.files).map(f => PAGES.find(p => p.f === f)).filter(Boolean) : PAGES;
+
+  // ownership & version (shown on every page, in printouts and checked at start-up)
+  const OWNER = 'Wagdy Mohamed Abdel Aziz';
+  const VERSION = '2026.10';
+  const BUILD = 'dev';
+  const COPY = `© 2026 ${OWNER} – ETO Handbook v${VERSION}${BUILD === 'dev' ? '' : ' (' + BUILD + ')'}. All rights reserved. Personal use only – copying, editing, selling or redistributing without the author's written permission is prohibited.`;
 
   const S3 = Math.sqrt(3);
   const STD_SIZES = [1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240, 300, 400, 500, 630];
@@ -236,6 +244,7 @@
 <footer><div class="nav">${prev ? `<a href="${href(prev.f)}">◀ ${esc(prev.n)}</a>` : ''}</div>
   <div class="nav">${next ? `<a href="${href(next.f)}">${esc(next.n)} ▶</a>` : ''}</div>
   <div class="nav"><a href="${href('about.html')}">ℹ️ About / Credits</a></div>
+  <div class="eto-copy" role="note">${esc(COPY)}</div>
   <div class="disc" role="note">⚠ Calculation aid only. Always verify against the vessel's electrical drawings, equipment nameplates, manufacturer data and class / flag rules before acting on any result.</div></footer>`;
   }
 
@@ -487,8 +496,27 @@
     route();
   }
 
+  // integrity check: the author's name and copyright must stay intact
+  const SIG = 2793908114;
+  const sig = t => { let h = 5381; for (let i = 0; i < t.length; i++) h = ((h << 5) + h + t.charCodeAt(i)) >>> 0; return h; };
+  function guard() {
+    if (typeof document === 'undefined' || !document.body) return;
+    const marks = [...document.querySelectorAll('.eto-copy')];
+    const ok = sig(OWNER) === SIG && marks.length > 0 && marks.every(m => m.textContent.includes(OWNER) && m.textContent.includes('©'));
+    if (ok || document.getElementById('eto-tamper')) return;
+    const d = document.createElement('div');
+    d.id = 'eto-tamper';
+    d.setAttribute('role', 'alertdialog');
+    d.innerHTML = '<div><b>⚠ This copy of ETO Handbook has been modified.</b><p>The author\'s name or copyright notice was removed or changed, so this copy is not genuine and may contain wrong values.</p><p>Please get the original from the author: Wagdy Mohamed Abdel Aziz – eto.wagdy@gmail.com</p></div>';
+    document.body.appendChild(d);
+  }
+  if (typeof document !== 'undefined' && document.addEventListener) {
+    document.addEventListener('DOMContentLoaded', guard);
+    window.addEventListener('hashchange', () => setTimeout(guard, 0));
+  }
+
   // theme restore
   try { const t = localStorage.getItem('eto:theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) { /* ignore */ }
 
-  window.ETO = { PAGES, LEVELS, GROUPS, LAYOUT, S3, STD_SIZES, STD_BREAKERS, STD_FUSES, esc, fmt, R, lvl, std, rho, res, interp, vdrop, units, fmtAuto, reportHead, chart, page, start };
+  window.ETO = { OWNER, VERSION, BUILD, COPY, PAGES, LEVELS, GROUPS, LAYOUT, S3, STD_SIZES, STD_BREAKERS, STD_FUSES, esc, fmt, R, lvl, std, rho, res, interp, vdrop, units, fmtAuto, reportHead, chart, page, start };
 })();
