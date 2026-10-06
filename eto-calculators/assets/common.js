@@ -41,6 +41,17 @@
     { f: 'pumps.html', n: 'Pumps (Guide)', i: '💧', c: '#0891b2', lvl: 3, d: 'Pump types & services, motors & starters, duty / standby & auto start, protection, VFD energy saving, maintenance & troubleshooting' },
     { f: 'craneguide.html', n: 'Cranes (Guide)', i: '🏋️', c: '#a16207', lvl: 3, d: 'Electric-motor vs diesel prime movers, electro / diesel-hydraulic & all-electric cranes, AOPS / MOPS, limits, certification, troubleshooting' },
     { f: 'chiller.html', n: 'Chiller & Refrigeration Plant (Guide)', i: '❄️', c: '#0ea5e9', lvl: 3, d: 'Refrigeration cycle, refrigerants, HVAC chillers, provision plant & defrost, compressor starting, controls & safety switches, troubleshooting' },
+    { f: 'pmsguide.html', n: 'Power Management System (Guide)', i: '🧠', c: '#be123c', lvl: 3, d: 'Auto start / stop, standby, synchronising & load sharing, load shedding, heavy consumers, blackout prevention & recovery, bus-ties, troubleshooting' },
+    { f: 'upsguide.html', n: 'Battery & UPS Systems (Guide)', i: '🔋', c: '#ca8a04', lvl: 3, d: 'Battery types, chargers & DC distribution, UPS topologies & bypass, battery rooms & Li-ion safety, critical consumers, testing & troubleshooting' },
+    { f: 'lightingguide.html', n: 'Lighting Systems (Guide)', i: '💡', c: '#65a30d', lvl: 3, d: 'Main, emergency & battery lighting, navigation / helideck / obstruction lights, Ex lighting, LED retrofits, tests & troubleshooting' },
+    { f: 'rawwater.html', n: 'Raw Water Pumps – Jack-ups (Guide)', i: '🌊', c: '#0e7490', lvl: 3, d: 'Submersible & lineshaft pumps in caissons, cables & starters, insulation monitoring, fire-water role, marine growth, troubleshooting' },
+    { f: 'jetting.html', n: 'Jetting System – Jack-ups (Guide)', i: '💦', c: '#0891b2', lvl: 3, d: 'Spud-can jetting for leg extraction: pumps, manifold & leg piping, controls, coordination with jacking, power loading, troubleshooting' },
+    { f: 'valves.html', n: 'Remote Control Valve Systems (Guide)', i: '🚰', c: '#0f766e', lvl: 3, d: 'Electric, hydraulic & pneumatic actuators, position feedback, control system, fail-safe & emergency operation, troubleshooting' },
+    { f: 'aircomp.html', n: 'Air Compressors & Air System (Guide)', i: '🌬️', c: '#64748b', lvl: 3, d: 'Starting, service & instrument air, compressor types, dryers, starters & sequencing, emergency compressor, troubleshooting' },
+    { f: 'fuelpurifier.html', n: 'Fuel Oil System & Purifiers (Guide)', i: '⛽', c: '#b45309', lvl: 3, d: 'Tanks & transfer, quick-closing valves & remote stops, purifier principle & control unit, heaters, alarms, troubleshooting' },
+    { f: 'watermaker.html', n: 'Fresh Water Maker (Guide)', i: '🚿', c: '#0284c7', lvl: 3, d: 'Reverse osmosis & evaporator plants, pre / post-treatment, UV, salinometer & dump valve, controls, troubleshooting' },
+    { f: 'sewage.html', n: 'Sewage Treatment Plant (Guide)', i: '🚽', c: '#65a30d', lvl: 3, d: 'MARPOL Annex IV basics, biological / MBR / electrochemical plants, vacuum toilets, blowers & controls, troubleshooting' },
+    { f: 'bwms.html', n: 'Ballast Water Management System (Guide)', i: '🌊', c: '#0369a1', lvl: 3, d: 'BWM Convention, UV & electro-chlorination systems, filters & backflush, power & control, bypass & records, troubleshooting' },
     { f: 'instruments.html', n: 'ETO Instruments & How to Use Them', i: '🧰', c: '#0d9488', lvl: 7, d: 'Multimeter, megger, Ductor, earth leakage / RCD tester, phase rotation, PQ analyser, oscilloscope, loop & temperature calibrators, thermal camera, battery & cable testers, network tester, minimum kit' },
     { f: 'metertricks.html', n: 'Multimeter & Clamp-Meter Tricks', i: '🔎', c: '#ca8a04', lvl: 7, d: 'Ghost voltages & LoZ, true-RMS vs average, measuring VFDs, testing diodes, IGBTs, contactor coils & capacitors, clamp tricks, common mistakes' },
     { f: 'workshop.html', n: 'Workshop Tools for ETO', i: '🔧', c: '#64748b', lvl: 7, d: 'Hand tools, crimping & terminating, soldering bench, power tools, cable & gland tools, test bench, consumables, workshop organisation' },
@@ -68,7 +79,7 @@
   };
 
   // page type: knowledge guides vs calculators (badge + home filter)
-  const GUIDES = ['dpsystem', 'thrusterguide', 'jackingguide', 'dieselgen', 'switchboards', 'esd', 'pumps', 'craneguide', 'chiller', 'firegas', 'indcomms', 'troubleshoot', 'maintenance', 'safety', 'hazardous', 'instruments', 'metertricks', 'workshop', 'handover', 'survey', 'interview'];
+  const GUIDES = ['pmsguide', 'upsguide', 'lightingguide', 'rawwater', 'jetting', 'valves', 'aircomp', 'fuelpurifier', 'watermaker', 'sewage', 'bwms', 'dpsystem', 'thrusterguide', 'jackingguide', 'dieselgen', 'switchboards', 'esd', 'pumps', 'craneguide', 'chiller', 'firegas', 'indcomms', 'troubleshoot', 'maintenance', 'safety', 'hazardous', 'instruments', 'metertricks', 'workshop', 'handover', 'survey', 'interview'];
   PAGES.forEach(p => { p.t = GUIDES.includes(p.f.slice(0, -5)) ? 'guide' : 'calc'; });
 
   // home layout: 'A' = two sections (Calculators | Guides) with groups (chosen); 'B' = 8 levels
@@ -81,10 +92,13 @@
     ['calc', 'E', 'Instrumentation & Networks', 'Signals & loops, sensors, process, calibration, network calculators', '#0d9488', 'signals tempsensors process calibration network'],
     ['calc', 'F', 'Testing & Commissioning', 'Field test evaluation', '#0369a1', 'testing'],
     ['calc', 'G', 'Maths & Conversions', 'Unit converters, maths, geometry & tanks, circuit theory, mechanical / thermal', '#db2777', 'unitsmech unitselec mathbasic geometry circuits mechthermal'],
-    ['guide', '1', 'Systems', 'DP, thrusters, jacking, diesel generators, MSB & ESB, ESD, fire & gas, pumps, cranes, chillers, industrial communications', '#0284c7', 'dpsystem thrusterguide jackingguide dieselgen switchboards esd firegas pumps craneguide chiller indcomms'],
-    ['guide', '2', 'Operations', 'Troubleshooting assistant, preventive maintenance', '#16a34a', 'troubleshoot maintenance'],
-    ['guide', '3', 'Safety & Hazardous Areas', 'Electrical safety & isolation, Ex / hazardous areas', '#ea580c', 'safety hazardous'],
-    ['guide', '4', 'Tips & Tricks for ETO', 'Instruments, meter tricks, workshop, handover, surveys, interview', '#7c3aed', 'instruments metertricks workshop handover survey interview']
+    ['guide', '1', 'Power, Electrical & Automation', 'PMS, diesel generators, MSB & ESB, batteries & UPS, lighting, industrial communications', '#be123c', 'pmsguide dieselgen switchboards upsguide lightingguide indcomms'],
+    ['guide', '2', 'DP, Propulsion & Positioning', 'Dynamic positioning and thrusters', '#0284c7', 'dpsystem thrusterguide'],
+    ['guide', '3', 'Jack-up & Offshore Systems', 'Jacking, raw water pumps, jetting, cranes', '#0e7490', 'jackingguide rawwater jetting craneguide'],
+    ['guide', '4', 'Auxiliary & Marine Systems', 'Pumps, remote valves, air, fuel & purifiers, fresh water, sewage, ballast water, chillers', '#0f766e', 'pumps valves aircomp fuelpurifier watermaker sewage bwms chiller'],
+    ['guide', '5', 'Safety Systems & Hazardous Areas', 'ESD, fire & gas, electrical safety & isolation, Ex / hazardous areas', '#ea580c', 'esd firegas safety hazardous'],
+    ['guide', '6', 'Operations', 'Troubleshooting assistant, preventive maintenance', '#16a34a', 'troubleshoot maintenance'],
+    ['guide', '7', 'Tips & Tricks for ETO', 'Instruments, meter tricks, workshop, handover, surveys, interview', '#7c3aed', 'instruments metertricks workshop handover survey interview']
   ].map(g => ({ sec: g[0], key: g[1], name: g[2], sub: g[3], c: g[4], files: g[5].split(' ').map(f => f + '.html') }));
   const ORDERED = LAYOUT === 'A' ? GROUPS.flatMap(g => g.files).map(f => PAGES.find(p => p.f === f)).filter(Boolean) : PAGES;
 

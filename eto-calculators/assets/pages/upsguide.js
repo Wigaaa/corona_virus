@@ -152,7 +152,7 @@
     ['trouble', '🧰', 'Troubleshooting', () =>
       TB(['Symptom', 'Likely causes', 'Checks / actions'], [
         ['UPS on static bypass', 'Inverter fault, overload, over-temperature, manual selection, DC voltage low', 'Check UPS alarm log and load %, reduce load, reset per maker; inform bridge / DPO – load is unprotected'],
-        ['UPS on battery (mains fail alarm)', 'Input breaker tripped, upstream supply lost, rectifier fault', 'Check input breaker and supply section, rectifier alarms; monitor remaining autonomy'],
+        ['UPS on battery (mains fail alarm)', 'Input breaker tripped, upstream supply lost, rectifier fault', 'Check the input breaker and supply section, rectifier alarms; monitor remaining autonomy'],
         ['Battery not charging', 'Charger fault, battery breaker / fuse open, wrong mode, charger in current limit, temperature sensor fault', 'Measure charger output and battery current, check breaker / fuse, settings and sensor'],
         ['Short autonomy', 'Aged or sulphated cells, one weak block, battery not fully charged, load increased, high temperature', 'Internal resistance and block voltages under discharge, check load, capacity test'],
         ['DC earth fault alarm', 'Damaged cable, moisture in junction box, faulty equipment, sensor in wet area', 'Read monitor (+ or − pole), section circuits with permission, use DC earth-fault locator'],
