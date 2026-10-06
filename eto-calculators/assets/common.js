@@ -59,6 +59,27 @@
     8: ['Mathematics & Engineering Conversions', 'Reference: unit converters, maths, geometry & tanks, circuit theory, mechanical / fluid / thermal', '#db2777']
   };
 
+  // page type: knowledge guides vs calculators (badge + home filter)
+  const GUIDES = ['dpsystem', 'firegas', 'indcomms', 'troubleshoot', 'maintenance', 'safety', 'hazardous', 'instruments', 'metertricks', 'workshop', 'handover', 'survey', 'interview'];
+  PAGES.forEach(p => { p.t = GUIDES.includes(p.f.slice(0, -5)) ? 'guide' : 'calc'; });
+
+  // home layout: 'B' = 8 levels + calculator / guide filter, 'A' = two sections (Calculators | Guides) with groups
+  const LAYOUT = 'B';
+  const GROUPS = [
+    ['calc', 'A', 'Power & Distribution', 'Power, PF, cables, generators, transformers, batteries & UPS', '#2563eb', 'power powerfactor cable generator transformer battery'],
+    ['calc', 'B', 'Machines & Drives', 'Motors, VFDs, thrusters, jacking, cranes', '#16a34a', 'motor vfd thruster jacking crane'],
+    ['calc', 'C', 'Protection & Power Quality', 'Short-circuit & protection, earthing & insulation, harmonics, lighting', '#dc2626', 'protection insulation harmonics lighting'],
+    ['calc', 'D', 'Power Plant & DP', 'Load balance, PMS, shore power, blackout & DP simulator', '#be123c', 'plant pmssim'],
+    ['calc', 'E', 'Instrumentation & Networks', 'Signals & loops, sensors, process, calibration, network calculators', '#0d9488', 'signals tempsensors process calibration network'],
+    ['calc', 'F', 'Testing & Commissioning', 'Field test evaluation', '#0369a1', 'testing'],
+    ['calc', 'G', 'Maths & Conversions', 'Unit converters, maths, geometry & tanks, circuit theory, mechanical / thermal', '#db2777', 'unitsmech unitselec mathbasic geometry circuits mechthermal'],
+    ['guide', '1', 'Systems', 'Dynamic positioning, fire & gas, industrial communications', '#0284c7', 'dpsystem firegas indcomms'],
+    ['guide', '2', 'Operations', 'Troubleshooting assistant, preventive maintenance', '#16a34a', 'troubleshoot maintenance'],
+    ['guide', '3', 'Safety & Hazardous Areas', 'Electrical safety & isolation, Ex / hazardous areas', '#ea580c', 'safety hazardous'],
+    ['guide', '4', 'Tips & Tricks for ETO', 'Instruments, meter tricks, workshop, handover, surveys, interview', '#7c3aed', 'instruments metertricks workshop handover survey interview']
+  ].map(g => ({ sec: g[0], key: g[1], name: g[2], sub: g[3], c: g[4], files: g[5].split(' ').map(f => f + '.html') }));
+  const ORDERED = LAYOUT === 'A' ? GROUPS.flatMap(g => g.files).map(f => PAGES.find(p => p.f === f)).filter(Boolean) : PAGES;
+
   const S3 = Math.sqrt(3);
   const STD_SIZES = [1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240, 300, 400, 500, 630];
   const STD_BREAKERS = [16, 20, 25, 32, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3200, 4000, 5000];
@@ -175,17 +196,19 @@
 
   function skeleton(cfg) {
     const me = PAGES.find(p => p.f === cfg.file) || {};
-    const k = PAGES.indexOf(me);
-    const prev = PAGES[k - 1], next = PAGES[k + 1];
-    const opts = PAGES.map(p => `<option value="${p.f}" ${p.f === cfg.file ? 'selected' : ''}>${p.i}  ${esc(p.n)}</option>`).join('');
+    const k = ORDERED.indexOf(me);
+    const prev = ORDERED[k - 1], next = ORDERED[k + 1];
+    const opts = ORDERED.map(p => `<option value="${p.f}" ${p.f === cfg.file ? 'selected' : ''}>${p.i}  ${esc(p.n)}</option>`).join('');
     const lv = LEVELS[me.lvl];
+    const grp = GROUPS.find(g => g.files.includes(cfg.file));
+    const crumb = LAYOUT === 'A' && grp ? `<div class="crumb"><b>${grp.sec === 'calc' ? '🧮 Calculators' : '📘 Guides'}</b>${esc(grp.name)}</div>` : lv ? `<div class="crumb"><b>Level ${me.lvl}</b>${esc(lv[0])}</div>` : '';
     return `
 <a class="skip" href="#panel">Skip to content</a>
 <header class="top"><a class="home" href="${href('index.html')}" aria-label="ETO Handbook – home"><span class="back" aria-hidden="true">◀</span><span class="logo" aria-hidden="true">📘</span><span class="txt">ETO Handbook</span></a>
   <label class="sr-only" for="jump">Jump to page</label><select class="jump" id="jump">${opts}</select>
   <button class="btn" id="theme" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">🌓</button>
   <button class="btn" id="print" type="button" aria-label="Print this page" title="Print">🖨<span class="txt"> Print</span></button></header>
-<section class="hero"><div class="ico" aria-hidden="true">${cfg.icon}</div><div>${lv ? `<div class="crumb"><b>Level ${me.lvl}</b>${esc(lv[0])}</div>` : ''}<h1>${esc(cfg.title)}</h1><p>${esc(cfg.subtitle)}</p>
+<section class="hero"><div class="ico" aria-hidden="true">${cfg.icon}</div><div>${crumb}<h1>${esc(cfg.title)}</h1><p>${esc(cfg.subtitle)}</p>
   <div class="chips">${(cfg.refs || []).map(r => `<span class="chip">${esc(r)}</span>`).join('')}</div></div></section>
 <div class="layout"><nav class="tabs" id="tabs" aria-label="Sections of this page"><div class="tabs-h"><span>Sections</span><span>${cfg.calcs.length}</span></div></nav><main class="panel" id="panel" tabindex="-1"></main></div>
 <footer><div class="nav">${prev ? `<a href="${href(prev.f)}">◀ ${esc(prev.n)}</a>` : ''}</div>
@@ -445,5 +468,5 @@
   // theme restore
   try { const t = localStorage.getItem('eto:theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) { /* ignore */ }
 
-  window.ETO = { PAGES, LEVELS, S3, STD_SIZES, STD_BREAKERS, STD_FUSES, esc, fmt, R, lvl, std, rho, res, interp, vdrop, units, fmtAuto, reportHead, chart, page, start };
+  window.ETO = { PAGES, LEVELS, GROUPS, LAYOUT, S3, STD_SIZES, STD_BREAKERS, STD_FUSES, esc, fmt, R, lvl, std, rho, res, interp, vdrop, units, fmtAuto, reportHead, chart, page, start };
 })();

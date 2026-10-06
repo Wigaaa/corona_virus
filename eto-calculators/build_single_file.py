@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Bundle the multi-file handbook into one self-contained ETO-Handbook.html"""
-import re, pathlib
+import re, pathlib, sys
+layout = (sys.argv[1] if len(sys.argv) > 1 else 'B').upper()  # B = levels + filter (default), A = Calculators | Guides sections
+outname = 'ETO-Handbook.html' if layout == 'B' else 'ETO-Handbook-OptionA.html'
 root = pathlib.Path(__file__).parent
 rd = lambda p: (root / p).read_text(encoding='utf-8')
 idx = rd('index.html')
@@ -19,11 +21,11 @@ about_body = re.sub(r'href="([a-z0-9]+\.html)"', r'href="#\1"', about_body)
 body = body.replace('id="theme"', 'id="theme0"')
 idx_script = idx_script.replace('href="${p.f}"', 'href="#${p.f}"').replace("getElementById('theme')", "getElementById('theme0')")
 pages = [m for m in re.findall(r"\{ f: '([a-z]+\.html)'", rd('assets/common.js'))]
-out = ['<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>ETO Handbook – Marine Electrical Engineering, Guides &amp; Tools</title>\n<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">\n<style>\n', css, '\n', extra_style, '\n</style>\n</head>\n<body>\n<div id="indexView">', body, '</div>\n<div id="aboutView" style="display:none">', about_body, '</div>\n<div id="app" style="display:none"></div>\n<script>window.ETO_BUNDLE=true;</script>\n<script>\n', rd('assets/common.js'), '\n</script>\n']
+out = ['<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>ETO Handbook – Marine Electrical Engineering, Guides &amp; Tools</title>\n<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">\n<style>\n', css, '\n', extra_style, '\n</style>\n</head>\n<body>\n<div id="indexView">', body, '</div>\n<div id="aboutView" style="display:none">', about_body, '</div>\n<div id="app" style="display:none"></div>\n<script>window.ETO_BUNDLE=true;</script>\n<script>\n', rd('assets/common.js').replace("const LAYOUT = 'B';", "const LAYOUT = '%s';" % layout), '\n</script>\n']
 for f in pages:
     js = rd('assets/pages/%s.js' % f[:-5])
     assert '</script' not in js
     out.append("<script>window.ETO_FILE='%s';</script>\n<script>\n%s\n</script>\n" % (f, js))
 out.append('<script>\n' + about_script + '\n</script>\n<script>\n' + idx_script + '\n</script>\n<script>ETO.start();</script>\n</body>\n</html>\n')
-(root / 'ETO-Handbook.html').write_text(''.join(out), encoding='utf-8')
-print('written', len(''.join(out)) // 1024, 'KB')
+(root / outname).write_text(''.join(out), encoding='utf-8')
+print(outname, 'written', len(''.join(out)) // 1024, 'KB')
