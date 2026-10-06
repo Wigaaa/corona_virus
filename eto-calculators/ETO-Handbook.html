@@ -381,6 +381,17 @@ footer .disc{flex-basis:100%;padding:12px 16px;border-radius:var(--r);background
 .cr-links a:hover{border-color:var(--brand);color:var(--ink);transform:translateY(-1px)}
 @media (max-width:560px){.credit{justify-content:center;text-align:left}.cr-links{justify-content:center}.cr-links a span{display:none}.cr-links a{padding:8px 12px;font-size:15px}}
 
+/* ---------- home: jump to Calculators / Guides ---------- */
+.jumpbar{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.jumpbar button{display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:9px 18px;border-radius:12px;border:0;color:#fff;font:700 14px var(--font);cursor:pointer;box-shadow:var(--shadow-sm);transition:transform .15s var(--ease),box-shadow .2s,filter .2s}
+.jumpbar button:hover{transform:translateY(-1px);box-shadow:var(--shadow);filter:brightness(1.08)}
+.jumpbar button:active{transform:translateY(0) scale(.98)}
+.jumpbar .calc{background:linear-gradient(135deg,#312e81,#4f46e5)}
+.jumpbar .guide{background:linear-gradient(135deg,#065f46,#0f766e 60%,#0e7490)}
+.jumpbar button[hidden]{display:none}
+.sechead{scroll-margin-top:76px}
+@media (max-width:560px){.jumpbar button{flex:1;justify-content:center;padding:9px 10px;font-size:13.5px}}
+
 :root{--accent:#4f46e5}
 </style>
 </head>
@@ -398,6 +409,7 @@ footer .disc{flex-basis:100%;padding:12px 16px;border-radius:var(--r);background
 </section>
 <main class="wrap">
   <div class="searchbar"><label class="sr-only" for="q">Search pages</label><input class="search" id="q" type="search" placeholder="Search pages – e.g. voltage drop, PI, thruster, DP, megger, interview…" autocomplete="off"></div>
+  <nav class="jumpbar" id="jumpbar" aria-label="Jump to section"><button type="button" data-to="sec-calc" class="calc">🧮 Calculators</button><button type="button" data-to="sec-guide" class="guide">📘 Guides &amp; Knowledge</button></nav>
   <div id="lists"></div>
   <footer class="credit" aria-label="Developer">
     <a class="cr-who" href="#about.html"><span class="cr-av" aria-hidden="true">WM</span><span><b>Wagdy Mohamed Abdel Aziz</b><small>ETO · Developer · About / Credits →</small></span></a>
@@ -10139,15 +10151,18 @@ Signed (outgoing): ______   Signed (incoming): ______`) +
       [['calc','🧮 Calculators','Enter values – get results, verdicts and charts'],['guide','📘 Guides & Knowledge','Systems, operations, safety and field tips']].forEach(([sec,t,sub])=>{
         let part='',n=0;
         G.filter(g=>g.sec===sec).forEach(g=>{const ps=g.files.map(f=>P.find(p=>p.f===f)).filter(p=>p&&ok(p));if(!ps.length)return;n+=ps.length;part+=head('g'+g.key,g.key,g.name,g.sub,ps.length,g.c)+ps.map(card).join('')+'</div></section>';});
-        if(part)h+=`<div class="sechead ${sec}"><h2>${t}</h2><span>${sub} · ${n} pages</span></div>`+part;
+        if(part)h+=`<div class="sechead ${sec}" id="sec-${sec}"><h2>${t}</h2><span>${sub} · ${n} pages</span></div>`+part;
       });
     }else{
       [1,2,3,4,5,6,7,8].forEach(l=>{const ps=P.filter(p=>p.lvl===l&&ok(p));if(!ps.length)return;h+=head('lv'+l,l,`Level ${l} – ${L[l][0]}`,L[l][1],ps.length,L[l][2])+ps.map(card).join('')+'</div></section>';});
     }
     root.innerHTML=h||'<p class="nomatch">No page matches your search. Try another word (e.g. “cable”, “motor”, “Ex”).</p>';
   }
-  draw();
-  document.getElementById('q').oninput=e=>draw(e.target.value);
+  const jb=document.getElementById('jumpbar');
+  jb.onclick=e=>{const b=e.target.closest('button');if(!b)return;const t=document.getElementById(b.dataset.to);if(t)t.scrollIntoView({behavior:'smooth',block:'start'});};
+  const syncJump=()=>jb.querySelectorAll('button').forEach(b=>{b.hidden=!document.getElementById(b.dataset.to);});
+  draw();syncJump();
+  document.getElementById('q').oninput=e=>{draw(e.target.value);syncJump();};
   document.querySelector('.skip').onclick=e=>{e.preventDefault();document.getElementById('q').focus();};
   document.getElementById('theme0').onclick=()=>{const r=document.documentElement;const d=getComputedStyle(r).getPropertyValue('--bg').trim()==='#0b1220';r.setAttribute('data-theme',d?'light':'dark');try{localStorage.setItem('eto:theme',d?'light':'dark')}catch(e){}};
 })();
