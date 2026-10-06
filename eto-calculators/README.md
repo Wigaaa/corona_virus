@@ -18,6 +18,8 @@ Open `ETO-Handbook.html` (single file) or `index.html` (multi-page) in any brows
 | G – Maths & Conversions | Unit converters, mathematics, geometry & tanks, circuit theory, mechanical / fluid / thermal |
 
 ### 📘 Guides & Knowledge
+Guides in groups 1–5 end with a **📝 Quick quiz** tab (8 questions each, instant feedback and score). Questions live in `assets/quiz.js`.
+
 | Group | Pages |
 |---|---|
 | 1 – Power, Electrical & Automation | Power management system, diesel generators, MSB & ESB, battery & UPS, lighting, industrial communications |
