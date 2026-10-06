@@ -363,6 +363,11 @@ footer .disc{flex-basis:100%;padding:12px 16px;border-radius:var(--r);background
 .sechead.calc{background:linear-gradient(135deg,#312e81,#4f46e5)}
 .sechead.guide{background:linear-gradient(135deg,#065f46,#0f766e 60%,#0e7490)}
 .sechead+.lvsec .lvl{margin-top:22px}
+.top .btn{white-space:nowrap}
+@media (max-width:560px){.top .btn{padding:8px 10px;font-size:13px}}
+.top .btn .em{font-style:normal}
+@media (max-width:400px){.top .btn .em{display:none}}
+@media (max-width:340px){.top{gap:4px;padding:8px}.top .btn{padding:6px 7px;font-size:12px}}
 
 :root{--accent:#4f46e5}
 </style>
@@ -370,7 +375,7 @@ footer .disc{flex-basis:100%;padding:12px 16px;border-radius:var(--r);background
 <body>
 <div id="indexView">
 <a class="skip" href="#q">Skip to search</a>
-<header class="top"><a class="home" href="#" aria-label="ETO Handbook – home"><span class="logo" aria-hidden="true">📘</span><span class="txt">ETO Handbook</span></a><a class="btn" href="#about.html" style="margin-left:auto">ℹ️<span class="txt"> About / Credits</span></a><button class="btn" id="theme0" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">🌓</button></header>
+<header class="top"><a class="home" href="#" aria-label="ETO Handbook – home"><span class="logo" aria-hidden="true">📘</span><span class="txt">ETO Handbook</span></a><a class="btn" href="#tips.html" style="margin-left:auto"><i class="em" aria-hidden="true">💡</i><span class="txt">Quick tips</span></a><a class="btn" href="#about.html"><i class="em" aria-hidden="true">ℹ️</i><span class="txt">About / Credits</span></a><button class="btn" id="theme0" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">🌓</button></header>
 <section class="hero home">
   <div class="ico" aria-hidden="true">📘</div>
   <div><h1>ETO Handbook – Marine Electrical Engineering, Guides &amp; Tools</h1>
@@ -382,16 +387,6 @@ footer .disc{flex-basis:100%;padding:12px 16px;border-radius:var(--r);background
 <main class="wrap">
   <div class="searchbar"><label class="sr-only" for="q">Search pages</label><input class="search" id="q" type="search" placeholder="Search pages – e.g. voltage drop, PI, thruster, DP, megger, interview…" autocomplete="off"></div>
   <div id="lists"></div>
-  <section class="card" style="margin-top:30px" aria-labelledby="tipsh">
-    <h2 id="tipsh"><span class="ti" aria-hidden="true">💡</span>Quick tips</h2>
-    <ul class="steps">
-      <li>Every calculator shows the <b>formula used</b>. Green / amber / red tiles flag acceptable, borderline and unacceptable values.</li>
-      <li>Fields marked with a table (load lists, DG sharing, blackout steps) can have rows added or removed.</li>
-      <li>Use <b>📋 Copy results</b> to paste into a requisition / report, or <b>🖨 Print</b> for a PDF record.</li>
-      <li>Default values are typical examples (440 V / 60 Hz marine system) – replace them with your vessel's nameplate data.</li>
-      <li>Cable / breaker tables and class rules differ by vessel: the vessel's design documents and class society rules are always the authority.</li>
-    </ul>
-  </section>
   <a class="pc about" style="--c:#7c3aed" href="#about.html"><div class="ic" aria-hidden="true">👷</div><b>About / Credits – Wagdy Mohamed Abdel Aziz, ETO</b><p>Contact details, LinkedIn, WhatsApp, experience and qualifications of the developer.</p><span class="num">Open</span></a>
 </main>
 </div>
@@ -645,8 +640,8 @@ footer .disc{flex-basis:100%;padding:12px 16px;border-radius:var(--r);background
   function skeleton(cfg) {
     const me = PAGES.find(p => p.f === cfg.file) || {};
     const k = ORDERED.indexOf(me);
-    const prev = ORDERED[k - 1], next = ORDERED[k + 1];
-    const opts = ORDERED.map(p => `<option value="${p.f}" ${p.f === cfg.file ? 'selected' : ''}>${p.i}  ${esc(p.n)}</option>`).join('');
+    const prev = k > 0 ? ORDERED[k - 1] : null, next = k >= 0 ? ORDERED[k + 1] : null;
+    const opts = (k < 0 ? `<option selected disabled>${cfg.icon}  ${esc(cfg.title)}</option>` : '') + ORDERED.map(p => `<option value="${p.f}" ${p.f === cfg.file ? 'selected' : ''}>${p.i}  ${esc(p.n)}</option>`).join('');
     const lv = LEVELS[me.lvl];
     const grp = GROUPS.find(g => g.files.includes(cfg.file));
     const crumb = LAYOUT === 'A' && grp ? `<div class="crumb"><b>${grp.sec === 'calc' ? '🧮 Calculators' : '📘 Guides'}</b>${esc(grp.name)}</div>` : lv ? `<div class="crumb"><b>Level ${me.lvl}</b>${esc(lv[0])}</div>` : '';
@@ -6013,6 +6008,38 @@ Signed (outgoing): ______   Signed (incoming): ______`) +
         run: v => ({ results: [R('Kinetic energy', 0.5 * v.m * v.v ** 2 / 1000, 'kJ', 'auto', null, true), R('Potential energy', v.m * G * v.h / 1000, 'kJ', 'auto', null, true), R('Potential energy', v.m * G * v.h / 3.6e6, 'kWh', 'auto'), R('Momentum', v.m * v.v, 'kg·m/s', 'auto'), R('Weight force', v.m * G / 1000, 'kN', 'auto')] })
       }
     ]
+  });
+})();
+
+</script>
+<script>window.ETO_FILE='tips.html';</script>
+<script>
+(function () {
+  const { esc } = ETO;
+  const L = arr => `<ul class="steps">${arr.map(x => `<li>${x}</li>`).join('')}</ul>`;
+  const S = [
+    ['use', '💡', 'Using the calculators', () => L([
+      'Every calculator shows the <b>formula used</b>. Green / amber / red tiles flag acceptable, borderline and unacceptable values.',
+      'Fields marked with a table (load lists, DG sharing, blackout steps) can have rows added or removed.',
+      'Use <b>📋 Copy results</b> to paste into a requisition / report, or <b>🖨 Print</b> for a PDF record.',
+      'Default values are typical examples (440 V / 60 Hz marine system) – replace them with your vessel\'s nameplate data.',
+      'Cable / breaker tables and class rules differ by vessel: the vessel\'s design documents and class society rules are always the authority.'])],
+    ['nav', '🧭', 'Finding your way', () => L([
+      'The home page has two sections: <b>🧮 Calculators</b> and <b>📘 Guides &amp; Knowledge</b>, each split into groups.',
+      'Type in the <b>search box</b> on the home page (e.g. “voltage drop”, “megger”, “DP”) to filter all pages instantly.',
+      'Inside a page, use the <b>Sections</b> list to switch between calculators or topics, and the page menu in the top bar to jump to any other page.',
+      'The ◀ ▶ buttons at the bottom of every page step through the handbook in order.'])],
+    ['app', '📱', 'Offline, phone & dark mode', () => L([
+      'The single file <b>ETO-Handbook.html</b> works fully offline – copy it to your phone, laptop or the ship\'s PC.',
+      'Your inputs are remembered on your own device only; nothing is sent anywhere.',
+      'Use the 🌓 button for dark mode – easier on the eyes during night watches.',
+      'On a phone, open the file in the browser and use “Add to Home screen” for one-tap access.'])]
+  ];
+  ETO.page({
+    title: 'Quick Tips', icon: '💡', accent: '#4f46e5',
+    subtitle: 'How to get the most out of the ETO Handbook – calculators, navigation, offline use and dark mode.',
+    refs: [],
+    calcs: S.map(([id, icon, title, html]) => ({ id, icon, title, noActions: true, inputs: [], run: () => ({ head: '<span></span>', html: html() }) }))
   });
 })();
 

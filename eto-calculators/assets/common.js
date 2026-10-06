@@ -197,8 +197,8 @@
   function skeleton(cfg) {
     const me = PAGES.find(p => p.f === cfg.file) || {};
     const k = ORDERED.indexOf(me);
-    const prev = ORDERED[k - 1], next = ORDERED[k + 1];
-    const opts = ORDERED.map(p => `<option value="${p.f}" ${p.f === cfg.file ? 'selected' : ''}>${p.i}  ${esc(p.n)}</option>`).join('');
+    const prev = k > 0 ? ORDERED[k - 1] : null, next = k >= 0 ? ORDERED[k + 1] : null;
+    const opts = (k < 0 ? `<option selected disabled>${cfg.icon}  ${esc(cfg.title)}</option>` : '') + ORDERED.map(p => `<option value="${p.f}" ${p.f === cfg.file ? 'selected' : ''}>${p.i}  ${esc(p.n)}</option>`).join('');
     const lv = LEVELS[me.lvl];
     const grp = GROUPS.find(g => g.files.includes(cfg.file));
     const crumb = LAYOUT === 'A' && grp ? `<div class="crumb"><b>${grp.sec === 'calc' ? '🧮 Calculators' : '📘 Guides'}</b>${esc(grp.name)}</div>` : lv ? `<div class="crumb"><b>Level ${me.lvl}</b>${esc(lv[0])}</div>` : '';

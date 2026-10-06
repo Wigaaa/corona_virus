@@ -20,6 +20,7 @@ about_body = re.sub(r'href="([a-z0-9]+\.html)"', r'href="#\1"', about_body)
 body = body.replace('id="theme"', 'id="theme0"')
 idx_script = idx_script.replace('href="${p.f}"', 'href="#${p.f}"').replace("getElementById('theme')", "getElementById('theme0')")
 pages = [m for m in re.findall(r"\{ f: '([a-z]+\.html)'", rd('assets/common.js'))]
+pages.append('tips.html')  # extra page reached from the top bar, not listed on the home grid
 out = ['<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>ETO Handbook – Marine Electrical Engineering, Guides &amp; Tools</title>\n<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">\n<style>\n', css, '\n', extra_style, '\n</style>\n</head>\n<body>\n<div id="indexView">', body, '</div>\n<div id="aboutView" style="display:none">', about_body, '</div>\n<div id="app" style="display:none"></div>\n<script>window.ETO_BUNDLE=true;</script>\n<script>\n', rd('assets/common.js'), '\n</script>\n']
 for f in pages:
     js = rd('assets/pages/%s.js' % f[:-5])
