@@ -1,8 +1,10 @@
-⚡ Everything an ETO Needs – in one offline handbook
+⚡ Everything an ETO Needs – now online and free
 
-After 12+ years as an Electro-Technical Officer on DP2 offshore vessels and jack-up barges, I kept wishing for one place with the calculations, system knowledge and fault-finding steps we need every day on board – even with no internet.
+After 12+ years as an Electro-Technical Officer on DP2 offshore vessels and jack-up barges, I kept wishing for one place with the calculations, system knowledge and fault-finding steps we need every day on board.
 
 So I built it: 📘 ETO Handbook – Marine Electrical Engineering, Guides & Tools.
+
+🔗 Open it here: https://etohandbook.eto-wagdy-business.workers.dev/
 
 What's inside:
 🧮 29 calculator pages, 400+ calculations – cables, generators, motors, protection, harmonics, transformers, batteries & UPS, thrusters, jacking, PMS / blackout simulator… each with the formula used and a clear ✅ / ⚠️ / ⛔ verdict
@@ -12,12 +14,11 @@ What's inside:
 🦺 Safety & Ex – isolation, LOTO, HV safety and hazardous areas
 🎯 Career tools – instruments, meter tricks, survey tips and offshore interview preparation
 
-📱 One single file – works offline on phone, tablet and PC, with dark mode for night watches.
+📱 Opens in any browser on phone, tablet or PC – no app, no sign-up, free. Tip: on your phone tap "Add to Home Screen" to open it like an app. Dark mode included for night watches.
 
 It is built for ETOs, electricians and marine engineers – juniors learning the systems and seniors who want quick answers.
 
 👉 Swipe through the slides to see it in action.
-💬 Want a copy? Comment "HANDBOOK" or send me a message.
-🤝 This handbook grows with your feedback – anyone is welcome to suggest new ideas or pages, or to report any mistake you find in the file. Every comment helps make it better for all ETOs.
+🤝 This handbook grows with your feedback – anyone is welcome to suggest new ideas or pages, or to report any mistake you find. Every comment helps make it better for all ETOs.
 
 #ETO #MarineEngineering #ElectroTechnicalOfficer #Offshore #DynamicPositioning #JackUp #MarineElectrical #Seafarers #OilAndGas #MaritimeTraining
