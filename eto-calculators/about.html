@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>About & Credits – ETO Handbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+<style>:root{--accent:#4f46e5}</style>
+</head>
+<body>
+<header class="top"><a class="home" href="index.html" aria-label="ETO Handbook – home"><span class="back" aria-hidden="true">◀</span><span class="logo" aria-hidden="true">📘</span><span class="txt">ETO Handbook</span></a><button class="btn theme-btn" type="button" style="margin-left:auto" aria-label="Toggle dark mode" title="Toggle dark mode">🌓</button></header>
+<section class="ab-hero">
+  <div class="ab-av">WM</div>
+  <div><h1>Wagdy Mohamed Abdel Aziz</h1><p>Electrical Technical Officer (ETO) · ZMI · Jack-up barges</p></div>
+</section>
+<div class="ab-wrap">
+  <div class="ab-btns">
+    <a class="ab-btn call" href="tel:+201067686499"><span class="i">📞</span><div>Call<small>+20 106 768 6499</small></div></a>
+    <a class="ab-btn wa" href="https://wa.me/201067686499" target="_blank" rel="noopener"><span class="i">💬</span><div>WhatsApp<small>+20 106 768 6499</small></div></a>
+    <a class="ab-btn mail" href="mailto:eto.wagdy@gmail.com"><span class="i">✉️</span><div>Email<small>eto.wagdy@gmail.com</small></div></a>
+    <a class="ab-btn in" href="https://www.linkedin.com/in/eto-wagdy" target="_blank" rel="noopener"><span class="i">🔗</span><div>LinkedIn<small>linkedin.com/in/eto-wagdy</small></div></a>
+    <div class="ab-btn loc"><span class="i">📍</span><div>Based in<small>Alexandria, Egypt</small></div></div>
+    <button class="ab-btn vc" id="vcard" type="button"><span class="i">📇</span><div>Save contact<small>Download .vcf card</small></div></button>
+  </div>
+
+  <div class="card">
+    <h2>👷 Profile</h2>
+    <p class="desc" style="margin:8px 0 0">Electro-Technical Officer with marine electrical experience since 2012: DP2 offshore support vessels (Petrobras Brazil, Petrobel Egypt) and, since July 2022, jack-up barges with ZMI in the Abu Dhabi region. Holder of an Electro-Technical Officer Certificate of Competency, with a B.Sc. in Electrical Power Systems &amp; Automatic Control Engineering (Alexandria University, 2008). Marlins English test 96%.</p>
+  </div>
+
+  <div class="ab-cols">
+    <div class="card">
+      <h2>🚢 Sea & shore experience</h2>
+      <ul class="tl">
+        <li><b>ETO – Jack-up barges, ZMI</b><span>Jul 2022 – present · QMS Gloria, QMS Marwa (DP2), Senyar (DP2) · Dammam / Abu Dhabi</span></li>
+        <li><b>Electrical Port Engineer – Maridive &amp; Oil Services</b><span>Mar 2022 – Jul 2022 · Head office: vessel equipment support, PMS, spare-parts approval, electrical workshop</span></li>
+        <li><b>ETO – Maridive 602 (PSV, DP2)</b><span>Mar 2016 – Apr 2022 · Petrobras Brazil, Petrobel Egypt</span></li>
+        <li><b>Electrical Engineer – Maridive 602 (PSV, DP2)</b><span>Jul 2012 – Oct 2015 · Petrobras Brazil</span></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>🎓 Qualifications & training</h2>
+      <div class="tags">
+        <span class="tag">ETO Certificate of Competency</span><span class="tag">B.Sc. Electrical Power &amp; Control</span><span class="tag">DP Maintenance (Kongsberg)</span><span class="tag">High Voltage Operation &amp; Maintenance</span><span class="tag">ETO Competence Course</span><span class="tag">Advanced Fire Fighting</span><span class="tag">Survival Craft &amp; Rescue Boats</span><span class="tag">Medical First Aid</span><span class="tag">Security Awareness (SSO duties)</span><span class="tag">Confined Space Entry</span><span class="tag">Working at Height</span><span class="tag">Welding Safety</span><span class="tag">Basic H2S (OPITO)</span><span class="tag">Helicopter Underwater Escape (HUET)</span>
+      </div>
+      <h2 style="margin-top:18px">🗣 Languages</h2>
+      <div class="tags"><span class="tag">Arabic – native</span><span class="tag">English – excellent</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>⚡ About this handbook</h2>
+    <p class="desc" style="margin:8px 0 0">ETO Handbook – Marine Electrical Engineering, Guides &amp; Tools – everything an ETO needs, free: 300+ calculators, troubleshooting guides, preventive-maintenance steps and simulators – power, cables, motors, generators, protection, drives, harmonics, jacking, cranes, thrusters, power-plant analysis, plus unit converters, maths, geometry, circuit theory and mechanical / thermal formulas – built for daily work on a jack-up barge. It runs offline in any browser. Calculations follow commonly used IEC / IEEE / IACS practice and are <b>aids only</b>: always verify against the vessel's drawings, equipment nameplates, manufacturer data and class / flag rules. Feedback and suggestions are welcome by email or WhatsApp.</p>
+  </div>
+  <p style="text-align:center;color:var(--mut);font-size:13px">Developed by Wagdy Mohamed Abdel Aziz – Electrical Technical Officer, ZMI · © 2026</p>
+  <p class="eto-copy">© 2026 Wagdy Mohamed Abdel Aziz – ETO Handbook. All rights reserved. Personal use only – copying, editing, selling or redistributing without the author's written permission is prohibited.</p>
+</div>
+<script>
+(function(){
+  document.querySelectorAll('.theme-btn').forEach(function(b){b.onclick=function(){var r=document.documentElement;var d=getComputedStyle(r).getPropertyValue('--bg').trim()==='#0b1220';r.setAttribute('data-theme',d?'light':'dark');try{localStorage.setItem('eto:theme',d?'light':'dark')}catch(e){}};});
+  var vc=document.getElementById('vcard');
+  if(vc)vc.onclick=function(){
+    var s=['BEGIN:VCARD','VERSION:3.0','N:Abdel Aziz;Wagdy Mohamed;;;','FN:Wagdy Mohamed Abdel Aziz','TITLE:Electrical Technical Officer','ORG:ZMI','TEL;TYPE=CELL:+201067686499','EMAIL:eto.wagdy@gmail.com','URL:https://www.linkedin.com/in/eto-wagdy','ADR;TYPE=HOME:;;;Alexandria;;;Egypt','END:VCARD'].join('\r\n');
+    var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([s],{type:'text/vcard'}));a.download='Wagdy-Mohamed-ETO.vcf';document.body.appendChild(a);a.click();a.remove();
+  };
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ETO Handbook – LinkedIn mock-ups</title>
+<style>
+@font-face{font-family:Inter;font-weight:400;src:url(fonts/inter-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:Inter;font-weight:600;src:url(fonts/inter-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:Inter;font-weight:700;src:url(fonts/inter-latin-700-normal.woff2) format('woff2')}
+@font-face{font-family:Inter;font-weight:800;src:url(fonts/inter-latin-800-normal.woff2) format('woff2')}
+:root{--ink:#fff;--mut:rgba(226,232,240,.82);--indigo:#6366f1;--emerald:#10b981;--sky:#38bdf8}
+*{box-sizing:border-box;margin:0}
+body{background:#111;font-family:Inter,"Noto Color Emoji",sans-serif;color:var(--ink);padding:40px;display:flex;flex-direction:column;gap:40px;align-items:flex-start}
+@page{margin:0}
+/* ---------- canvas ---------- */
+.art{position:relative;overflow:hidden;flex:none;
+  background:
+    radial-gradient(700px 500px at 100% 0,rgba(16,185,129,.30),transparent 65%),
+    radial-gradient(700px 520px at 0 100%,rgba(56,189,248,.24),transparent 65%),
+    linear-gradient(150deg,#0b1020 0%,#1e1b4b 45%,#312e81 100%)}
+.art::before{content:"";position:absolute;inset:0;opacity:.35;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);background-size:40px 40px;
+  -webkit-mask-image:radial-gradient(ellipse at 50% 40%,#000 30%,transparent 80%)}
+.art>*{position:relative}
+.sq{width:1200px;height:1200px}
+.p45{width:1080px;height:1350px}
+/* ---------- text ---------- */
+.brand{display:flex;align-items:center;gap:14px;font-weight:800;font-size:22px;letter-spacing:.14em;text-transform:uppercase;color:#e0e7ff}
+.logo{display:grid;place-items:center;width:52px;height:52px;border-radius:15px;font-size:28px;background:linear-gradient(135deg,var(--indigo),var(--emerald));box-shadow:0 10px 30px -8px rgba(99,102,241,.8)}
+h1{font-weight:800;line-height:1.06;letter-spacing:-.025em}
+.grad{background:linear-gradient(90deg,#a5b4fc,#6ee7b7 55%,#7dd3fc);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tag{font-weight:700;color:#fff}
+.sub{color:var(--mut);font-weight:500;line-height:1.45}
+.by{font-weight:600;color:#c7d2fe;font-size:22px}
+.by b{color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:12px}
+.chip{display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);font-weight:700;font-size:20px;backdrop-filter:blur(4px)}
+.chip i{font-style:normal;font-size:24px}
+/* ---------- devices ---------- */
+.laptop{position:absolute}
+.laptop .scr{border-radius:22px 22px 6px 6px;background:#0a0f1c;padding:16px 16px 22px;box-shadow:0 40px 80px -20px rgba(0,0,0,.7),inset 0 0 0 2px #2b3448}
+.laptop .scr img{display:block;width:100%;border-radius:6px}
+.laptop .base{height:22px;margin:0 -7%;border-radius:0 0 22px 22px;background:linear-gradient(#cbd5e1,#64748b);box-shadow:0 20px 40px -10px rgba(0,0,0,.6)}
+.laptop .base::after{content:"";display:block;width:16%;height:8px;margin:0 auto;border-radius:0 0 10px 10px;background:#475569}
+.phone{position:absolute;border-radius:52px;background:#05070d;padding:13px;box-shadow:0 40px 80px -18px rgba(0,0,0,.75),inset 0 0 0 2px #2b3448,0 0 0 2px #1f2937}
+.phone .scr{position:relative;border-radius:40px;overflow:hidden;aspect-ratio:390/844}
+.phone .scr img{display:block;width:100%;height:100%;object-fit:cover;object-position:top}
+.phone .scr::before{content:"";position:absolute;top:10px;left:50%;transform:translateX(-50%);width:32%;height:24px;border-radius:14px;background:#05070d;z-index:2}
+/* ---------- feature cards ---------- */
+.feats{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.feat{padding:22px 24px;border-radius:20px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16)}
+.feat .i{font-size:34px;line-height:1}
+.feat b{display:block;font-size:24px;margin:10px 0 6px}
+.feat span{color:var(--mut);font-size:18px;line-height:1.4;font-weight:500}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.stat{padding:18px 16px;border-radius:18px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);text-align:center}
+.stat b{display:block;font-size:46px;font-weight:800;line-height:1}
+.stat span{display:block;margin-top:8px;font-size:16px;font-weight:600;color:var(--mut)}
+.list{display:flex;flex-direction:column;gap:12px}
+.li{display:flex;align-items:center;gap:14px;font-size:22px;font-weight:600}
+.li .k{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;font-weight:800;font-size:19px;color:#fff}
+.pg{position:absolute;right:56px;bottom:46px;font-weight:700;font-size:20px;color:rgba(255,255,255,.6)}
+.foot{position:absolute;left:64px;bottom:46px}
+.swipe{display:inline-flex;align-items:center;gap:10px;padding:14px 22px;border-radius:999px;background:#fff;color:#1e1b4b;font-weight:800;font-size:22px}
+</style>
+</head>
+<body>
+
+<!-- ================= 1. DEVICES SHOWCASE (1200 x 1200) ================= -->
+<section class="art sq" id="showcase">
+  <div style="position:absolute;left:70px;top:64px;right:70px">
+    <div class="brand"><span class="logo">📘</span>ETO Handbook</div>
+    <h1 style="font-size:64px;margin-top:26px">Marine Electrical Engineering,<br><span class="grad">Guides &amp; Tools</span></h1>
+    <p class="tag" style="font-size:30px;margin-top:14px">Everything an ETO Needs</p>
+  </div>
+  <div class="laptop" style="left:70px;top:395px;width:880px"><div class="scr"><img src="../shots/d_home.png" alt=""></div><div class="base"></div></div>
+  <div class="phone" style="right:64px;top:430px;width:270px"><div class="scr"><img src="../shots/m_calc.png" alt=""></div></div>
+  <div style="position:absolute;left:70px;right:70px;bottom:118px" class="chips">
+    <div class="chip"><i>🧮</i>29 calculator pages</div>
+    <div class="chip"><i>📘</i>32 system guides</div>
+    <div class="chip"><i>📝</i>192 quiz questions</div>
+    <div class="chip"><i>🌐</i>Free online</div>
+  </div>
+  <p class="by foot" style="left:70px">by: <b>ETO / Wagdy Mohamed</b></p>
+</section>
+
+<!-- ================= 2. FEATURE POSTER (1080 x 1350) ================= -->
+<section class="art p45" id="poster">
+  <div style="position:absolute;left:64px;right:64px;top:60px">
+    <div class="brand"><span class="logo">📘</span>ETO Handbook</div>
+    <h1 style="font-size:60px;margin-top:24px">Everything an <span class="grad">ETO</span> Needs</h1>
+    <p class="sub" style="font-size:24px;margin-top:14px">Marine &amp; offshore electrical engineering – calculators, system guides, troubleshooting and quizzes in one free online handbook.</p>
+    <div class="stats" style="margin-top:34px">
+      <div class="stat"><b>61</b><span>pages</span></div>
+      <div class="stat"><b>29</b><span>calculator pages</span></div>
+      <div class="stat"><b>32</b><span>system guides</span></div>
+      <div class="stat"><b>192</b><span>quiz questions</span></div>
+    </div>
+    <div class="feats" style="margin-top:30px">
+      <div class="feat"><div class="i">🧮</div><b>Calculators</b><span>Cables, generators, motors, protection, harmonics, transformers, batteries &amp; more</span></div>
+      <div class="feat"><div class="i">🛰️</div><b>System guides</b><span>DP, thrusters, jacking, PMS, MSB &amp; ESB, ESD, F&amp;G, cranes, pumps, BWMS…</span></div>
+      <div class="feat"><div class="i">🩺</div><b>Troubleshooting</b><span>Symptom → causes → checks for every system, plus PM steps</span></div>
+      <div class="feat"><div class="i">📝</div><b>Quick quizzes</b><span>8 questions per guide with instant feedback and score</span></div>
+      <div class="feat"><div class="i">🦺</div><b>Safety &amp; Ex</b><span>Isolation, LOTO, HV safety, hazardous areas &amp; Ex protection</span></div>
+      <div class="feat"><div class="i">🎯</div><b>Career tools</b><span>Instruments, meter tricks, surveys &amp; offshore interview prep</span></div>
+    </div>
+  </div>
+  <div class="phone" style="left:64px;bottom:-330px;width:250px"><div class="scr"><img src="../shots/m_calc.png" alt=""></div></div>
+  <div class="phone" style="left:334px;bottom:-280px;width:250px"><div class="scr"><img src="../shots/m_quiz.png" alt=""></div></div>
+  <div style="position:absolute;right:64px;bottom:120px;text-align:right">
+    <p class="sub" style="font-size:22px">🌐 Free online · phone, tablet &amp; PC</p>
+  </div>
+  <p class="by" style="position:absolute;right:64px;bottom:60px">by: <b>ETO / Wagdy Mohamed</b></p>
+</section>
+
+<!-- ================= 3. CAROUSEL (6 x 1080 x 1350) ================= -->
+<section class="art p45 slide" id="s1">
+  <div style="position:absolute;left:64px;right:64px;top:70px">
+    <div class="brand"><span class="logo">📘</span>ETO Handbook</div>
+    <h1 style="font-size:78px;margin-top:40px">Everything<br>an <span class="grad">ETO</span> Needs</h1>
+    <p class="sub" style="font-size:28px;margin-top:22px;max-width:820px">One free online handbook for marine &amp; offshore Electro-Technical Officers.</p>
+  </div>
+  <div class="laptop" style="left:64px;top:600px;width:760px"><div class="scr"><img src="../shots/d_guide.png" alt=""></div><div class="base"></div></div>
+  <div class="phone" style="right:60px;top:560px;width:250px"><div class="scr"><img src="../shots/m_home.png" alt=""></div></div>
+  <div class="foot"><span class="swipe">Swipe →</span></div>
+  <p class="by" style="position:absolute;right:64px;bottom:58px">by: <b>ETO / Wagdy Mohamed</b></p>
+</section>
+
+<section class="art p45 slide" id="s2">
+  <div style="position:absolute;left:64px;right:64px;top:70px">
+    <div class="brand" style="font-size:18px"><span class="logo" style="width:42px;height:42px;font-size:22px">🧮</span>Calculators</div>
+    <h1 style="font-size:60px;margin-top:26px">29 calculator pages,<br><span class="grad">400+ calculations</span></h1>
+    <p class="sub" style="font-size:24px;margin-top:16px">Enter your nameplate data – get results, the formula used and a clear ✅ / ⚠️ / ⛔ verdict.</p>
+  </div>
+  <div class="laptop" style="left:64px;top:450px;width:952px"><div class="scr"><img src="../shots/d_calc.png" alt=""></div><div class="base"></div></div>
+  <div class="chips" style="position:absolute;left:64px;right:64px;top:1125px">
+    <div class="chip">⚡ Power &amp; distribution</div><div class="chip">⚙️ Machines &amp; drives</div><div class="chip">🛡️ Protection &amp; PQ</div>
+    <div class="chip">🏭 Power plant &amp; DP</div><div class="chip">📶 Instrumentation</div><div class="chip">📐 Maths &amp; units</div>
+  </div>
+  <p class="pg">2 / 6</p>
+</section>
+
+<section class="art p45 slide" id="s3">
+  <div style="position:absolute;left:64px;right:64px;top:70px">
+    <div class="brand" style="font-size:18px"><span class="logo" style="width:42px;height:42px;font-size:22px">📘</span>Guides &amp; Knowledge</div>
+    <h1 style="font-size:60px;margin-top:26px">32 system guides<br><span class="grad">written for the ETO</span></h1>
+    <p class="sub" style="font-size:24px;margin-top:16px">Overview · structure · what the ETO should know · maintenance · troubleshooting · lessons.</p>
+  </div>
+  <div class="list" style="position:absolute;left:64px;top:470px;width:560px">
+    <div class="li"><span class="k" style="background:#be123c">1</span>Power, electrical &amp; automation</div>
+    <div class="li"><span class="k" style="background:#0284c7">2</span>DP, propulsion &amp; positioning</div>
+    <div class="li"><span class="k" style="background:#0e7490">3</span>Jack-up &amp; offshore systems</div>
+    <div class="li"><span class="k" style="background:#0f766e">4</span>Auxiliary &amp; marine systems</div>
+    <div class="li"><span class="k" style="background:#ea580c">5</span>Safety systems &amp; Ex areas</div>
+    <div class="li"><span class="k" style="background:#16a34a">6</span>Operations &amp; maintenance</div>
+    <div class="li"><span class="k" style="background:#7c3aed">7</span>Tips &amp; tricks for ETO</div>
+  </div>
+  <div class="phone" style="right:60px;top:450px;width:330px"><div class="scr"><img src="../shots/m_list.png" alt=""></div></div>
+  <p class="sub" style="position:absolute;left:64px;top:1010px;width:560px;font-size:21px">DP · thrusters · jacking · jetting · raw water · PMS · diesel generators · MSB &amp; ESB · UPS · ESD · fire &amp; gas · cranes · pumps · valves · air · fuel &amp; purifiers · water maker · sewage · BWMS · chillers…</p>
+  <p class="pg">3 / 6</p>
+</section>
+
+<section class="art p45 slide" id="s4">
+  <div style="position:absolute;left:64px;right:64px;top:70px">
+    <div class="brand" style="font-size:18px"><span class="logo" style="width:42px;height:42px;font-size:22px">📝</span>Quick quizzes</div>
+    <h1 style="font-size:60px;margin-top:26px">Test yourself –<br><span class="grad">192 quiz questions</span></h1>
+    <p class="sub" style="font-size:24px;margin-top:16px">Every system guide ends with 8 questions. Tap an answer, see why it is right, get your score.</p>
+  </div>
+  <div class="laptop" style="left:64px;top:450px;width:952px"><div class="scr"><img src="../shots/d_quiz.png" alt=""></div><div class="base"></div></div>
+  <div class="chips" style="position:absolute;left:64px;right:64px;top:1130px">
+    <div class="chip">✅ Instant feedback</div><div class="chip">💡 Explanations</div><div class="chip">🏆 Score &amp; rating</div><div class="chip">↺ Try again</div>
+  </div>
+  <p class="pg">4 / 6</p>
+</section>
+
+<section class="art p45 slide" id="s5">
+  <div style="position:absolute;left:64px;right:64px;top:70px">
+    <div class="brand" style="font-size:18px"><span class="logo" style="width:42px;height:42px;font-size:22px">📱</span>Built for life on board</div>
+    <h1 style="font-size:60px;margin-top:26px">Free online –<br><span class="grad">on any device</span></h1>
+  </div>
+  <div class="phone" style="left:64px;top:380px;width:300px"><div class="scr"><img src="../shots/m_home.png" alt=""></div></div>
+  <div class="phone" style="left:300px;top:470px;width:300px"><div class="scr"><img src="../shots/m_dark.png" alt=""></div></div>
+  <div class="list" style="position:absolute;left:650px;right:56px;top:470px;gap:26px">
+    <div class="feat" style="padding:18px 20px"><div class="i">🌐</div><b style="font-size:22px">Free online</b><span>No app, no sign-up, any browser</span></div>
+    <div class="feat" style="padding:18px 20px"><div class="i">📱</div><b style="font-size:22px">Phone · tablet · PC</b><span>Fully responsive design</span></div>
+    <div class="feat" style="padding:18px 20px"><div class="i">🌓</div><b style="font-size:22px">Dark mode</b><span>Easy on the eyes on night watch</span></div>
+    <div class="feat" style="padding:18px 20px"><div class="i">🖨️</div><b style="font-size:22px">Print / PDF</b><span>Results ready for reports</span></div>
+  </div>
+  <p class="pg">5 / 6</p>
+</section>
+
+<section class="art p45 slide" id="s6">
+  <div style="position:absolute;left:64px;right:64px;top:250px;text-align:center">
+    <div style="display:flex;justify-content:center"><span class="logo" style="width:120px;height:120px;font-size:64px;border-radius:32px">📘</span></div>
+    <h1 style="font-size:84px;margin-top:46px">ETO Handbook</h1>
+    <p class="tag" style="font-size:36px;margin-top:16px"><span class="grad">Everything an ETO Needs</span></p>
+    <p class="sub" style="font-size:26px;margin-top:40px;line-height:1.6">61 pages · 29 calculator pages · 32 system guides<br>192 quiz questions · free online on phone, tablet &amp; PC</p>
+    <div style="margin:70px auto 0;display:inline-block;padding:26px 40px;border-radius:24px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2)">
+      <p class="by" style="font-size:30px">by: <b>ETO / Wagdy Mohamed</b></p>
+      <p class="sub" style="font-size:20px;margin-top:10px">Marine &amp; offshore Electro-Technical Officer</p>
+    </div>
+  </div>
+  <p class="pg">6 / 6</p>
+</section>
+
+</body>
+</html>
