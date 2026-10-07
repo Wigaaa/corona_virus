@@ -4,8 +4,6 @@ After 12+ years as an Electro-Technical Officer on DP2 offshore vessels and jack
 
 So I built it: 📘 ETO Handbook – Marine Electrical Engineering, Guides & Tools.
 
-🔗 Open it here: https://etohandbook.eto-wagdy-business.workers.dev/
-
 What's inside:
 🧮 29 calculator pages, 400+ calculations – cables, generators, motors, protection, harmonics, transformers, batteries & UPS, thrusters, jacking, PMS / blackout simulator… each with the formula used and a clear ✅ / ⚠️ / ⛔ verdict
 📘 32 system guides written for the ETO – DP, thrusters, jacking, jetting, raw water, PMS, diesel generators, MSB & ESB, ESD, fire & gas, cranes, pumps, valves, BWMS, chillers and more
@@ -19,6 +17,7 @@ What's inside:
 It is built for ETOs, electricians and marine engineers – juniors learning the systems and seniors who want quick answers.
 
 👉 Swipe through the slides to see it in action.
+💬 Want to use it? Comment "HANDBOOK" or send me a message and I'll share the link with you.
 🤝 This handbook grows with your feedback – anyone is welcome to suggest new ideas or pages, or to report any mistake you find. Every comment helps make it better for all ETOs.
 
 #ETO #MarineEngineering #ElectroTechnicalOfficer #Offshore #DynamicPositioning #JackUp #MarineElectrical #Seafarers #OilAndGas #MaritimeTraining
