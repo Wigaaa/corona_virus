@@ -8,7 +8,7 @@
 
   const S = [
     ['overview', '🛰️', 'DP overview', () =>
-      `<p><b>Dynamic Positioning (DP)</b> keeps a vessel at a fixed position and heading (or on a planned track) using only its own thrusters and propellers. A computer compares the measured position and heading with the set-point, calculates the forces needed against wind, waves and current, and commands the thrusters.</p>` +
+      ETO.promoDP('PRACTISE') + `<p><b>Dynamic Positioning (DP)</b> keeps a vessel at a fixed position and heading (or on a planned track) using only its own thrusters and propellers. A computer compares the measured position and heading with the set-point, calculates the forces needed against wind, waves and current, and commands the thrusters.</p>` +
       H('How it works') + L([
         '<b>Measure</b>: position reference systems (DGNSS, acoustics, laser, radar, taut wire), heading (gyros), motion (MRU) and wind sensors.',
         '<b>Calculate</b>: DP controller with a mathematical vessel model (Kalman filter) estimates position, velocity and the unknown “current” force; wind is fed forward.',
@@ -185,7 +185,8 @@
         'After maintenance, test before returning to DP service.',
         'Keep configuration backups and update the FMEA after changes.',
         'Report near-misses – IMCA publishes station-keeping incident reports and safety flashes worth reading.',
-        'Stay calm in an incident: secure power first, communicate, then investigate.']) + NOTE
+        'Stay calm in an incident: secure power first, communicate, then investigate.']) +
+      H('Go deeper') + ETO.promoDP('NEXT STEP') + NOTE
     ]
   ];
   ETO.page({

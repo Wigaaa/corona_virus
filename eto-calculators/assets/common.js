@@ -106,7 +106,7 @@
 
   // ownership & version (shown on every page, in printouts and checked at start-up)
   const OWNER = 'Wagdy Mohamed Abdel Aziz';
-  const VERSION = '2026.10';
+  const VERSION = '2026.10.2';
   const BUILD = 'dev';
   const COPY = `© 2026 ${OWNER} – ETO Handbook v${VERSION}${BUILD === 'dev' ? '' : ' (' + BUILD + ')'}. All rights reserved. Personal use only – copying, editing, selling or redistributing without the author's written permission is prohibited.`;
 
@@ -498,6 +498,10 @@
     route();
   }
 
+  // ---------- link to the author's DP Training & Simulator (home banner, DP guide, About) ----------
+  const DPSIM_URL = 'https://dp.academy4eto.workers.dev/';
+  const promoDP = (badge = 'NEW') => `<a class="promo" href="https://dp.academy4eto.workers.dev/" target="_blank" rel="noopener"><span class="pi" aria-hidden="true">🛰️</span><span class="pt"><span class="pb">${badge}</span><b>DP Training &amp; Simulator</b><span>Learn Dynamic Positioning step by step – interactive DP training and simulator by the same author.</span></span><span class="po">Open ↗</span></a>`;
+
   // ---------- quick quiz (last tab of the guides; questions in assets/quiz.js) ----------
   function quizCalc(qs) {
     return {
@@ -567,5 +571,5 @@
   // theme restore
   try { const t = localStorage.getItem('eto:theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) { /* ignore */ }
 
-  window.ETO = { OWNER, VERSION, BUILD, COPY, PAGES, LEVELS, GROUPS, LAYOUT, S3, STD_SIZES, STD_BREAKERS, STD_FUSES, esc, fmt, R, lvl, std, rho, res, interp, vdrop, units, fmtAuto, reportHead, chart, page, start };
+  window.ETO = { OWNER, VERSION, DPSIM_URL, promoDP, BUILD, COPY, PAGES, LEVELS, GROUPS, LAYOUT, S3, STD_SIZES, STD_BREAKERS, STD_FUSES, esc, fmt, R, lvl, std, rho, res, interp, vdrop, units, fmtAuto, reportHead, chart, page, start };
 })();

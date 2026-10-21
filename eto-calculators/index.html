@@ -13,7 +13,7 @@
 <header class="top"><a class="home" href="index.html" aria-label="ETO Handbook – home"><span class="logo" aria-hidden="true">📘</span><span class="txt">ETO Handbook</span></a><a class="btn" href="tips.html" style="margin-left:auto"><i class="em" aria-hidden="true">💡</i><span class="txt">Quick tips</span></a><a class="btn" href="about.html"><i class="em" aria-hidden="true">ℹ️</i><span class="txt">About / Credits</span></a><button class="btn" id="theme" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">🌓</button></header>
 <section class="hero home">
   <div class="ico" aria-hidden="true">📘</div>
-  <div><h1>ETO Handbook – Marine Electrical Engineering, Guides &amp; Tools</h1>
+  <div><h1>ETO Handbook – Marine Electrical Engineering, Guides &amp; Tools <span class="ver" id="etoVer">v2026.10.2</span></h1>
   <p class="tagline">Everything an ETO Needs <span class="by">by: <a href="about.html">ETO / Wagdy Mohamed</a></span></p>
   <p>Calculate · Test · Diagnose · Maintain – for ETOs on any vessel or offshore unit (OSV, DP, jack-up, drillship, tanker, passenger…). Works offline in any browser; your inputs stay on your device.</p>
   <div class="stats"><div class="stat"><b id="nPages">42</b><span>pages</span></div><div class="stat"><b id="nCalc">29</b><span>calculator pages</span></div><div class="stat"><b id="nGuide">13</b><span>guides</span></div><div class="stat"><b>400+</b><span>tools &amp; sections</span></div><div class="stat"><b>100%</b><span>offline</span></div></div>
@@ -21,6 +21,7 @@
 </section>
 <main class="wrap">
   <div class="searchbar"><label class="sr-only" for="q">Search pages</label><input class="search" id="q" type="search" placeholder="Search pages – e.g. voltage drop, PI, thruster, DP, megger, interview…" autocomplete="off"></div>
+  <a class="promo" href="https://dp.academy4eto.workers.dev/" target="_blank" rel="noopener"><span class="pi" aria-hidden="true">🛰️</span><span class="pt"><span class="pb">NEW</span><b>DP Training &amp; Simulator</b><span>Learn Dynamic Positioning step by step – interactive DP training and simulator by the same author.</span></span><span class="po">Open ↗</span></a>
   <nav class="jumpbar" id="jumpbar" aria-label="Jump to section"><button type="button" data-to="sec-calc" class="calc">🧮 Calculators</button><button type="button" data-to="sec-guide" class="guide">📘 Guides &amp; Knowledge</button></nav>
   <div id="lists"></div>
   <footer class="credit" aria-label="Developer">
@@ -40,7 +41,8 @@
   const L=ETO.LEVELS, G=ETO.GROUPS, P=ETO.PAGES, root=document.getElementById('lists');
   const nC=P.filter(p=>p.t==='calc').length, nG=P.length-nC;
   document.getElementById('nPages').textContent=P.length;
-  document.getElementById('etoCopy').textContent=ETO.COPY;document.getElementById('nCalc').textContent=nC;document.getElementById('nGuide').textContent=nG;
+  document.getElementById('etoCopy').textContent=ETO.COPY;
+  document.getElementById('etoVer').textContent='v'+ETO.VERSION;document.getElementById('nCalc').textContent=nC;document.getElementById('nGuide').textContent=nG;
   const card=p=>`<a class="pc" style="--c:${p.c}" href="${p.f}"><span class="badge ${p.t}">${p.t==='calc'?'🧮 Calculator':'📘 Guide'}</span><div class="ic" aria-hidden="true">${p.i}</div><b>${p.n}</b><p>${p.d}</p><span class="num">Open</span></a>`;
   const head=(id,badge,title,sub,n,c)=>`<section class="lvsec" id="${id}" style="--c:${c}" aria-labelledby="${id}h"><div class="lvl"><span class="lvn" aria-hidden="true">${badge}</span><div><h2 id="${id}h">${title}</h2><span class="sub">${sub}</span></div><span class="cnt">${n} page${n>1?'s':''}</span></div><div class="cards">`;
   function draw(q){
