@@ -106,7 +106,7 @@
 
   // ownership & version (shown on every page, in printouts and checked at start-up)
   const OWNER = 'Wagdy Mohamed Abdel Aziz';
-  const VERSION = '2026.10.2';
+  const VERSION = '2026.11';
   const BUILD = 'dev';
   const COPY = `© 2026 ${OWNER} – ETO Handbook v${VERSION}${BUILD === 'dev' ? '' : ' (' + BUILD + ')'}. All rights reserved. Personal use only – copying, editing, selling or redistributing without the author's written permission is prohibited.`;
 

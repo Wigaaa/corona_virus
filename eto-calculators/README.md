@@ -32,7 +32,7 @@ Guides in groups 1–5 end with a **📝 Quick quiz** tab (8 questions each, ins
 
 - Shared engine `assets/common.js`, styles `assets/style.css`, one file per page in `assets/pages/`.
 - `python3 build_single_file.py` rebuilds `ETO-Handbook.html` after edits. For the release file set `TERSER=/path/to/terser` (or have `terser` on PATH) – the code is then scrambled (minified + mangled). `node tests/bundle.js` checks the built file.
-- Related project by the same author: **DP Training & Simulator** – https://dp.academy4eto.workers.dev/ (linked from the home page, the DP System guide and the About page).
+- Training & simulators by the same author: DP Training & Simulator (https://dp.academy4eto.workers.dev/), Jacking Training & Simulator (https://jacking-sim.academy4eto.workers.dev/), Encoders Training & Simulator (https://encoders.academy4eto.workers.dev/) – linked from the home page, the Academy menu, the DP guide and the About page.
 - © 2026 Wagdy Mohamed Abdel Aziz – all rights reserved, see `LICENSE`. Every page shows the copyright and version, printouts carry a watermark, and the app shows a warning if the author's name is removed or changed.
 - Inputs are remembered in the browser (localStorage).
 - Default values are typical examples. Always verify against vessel drawings, nameplates, maker data and class / flag rules.
