@@ -466,3 +466,64 @@ footer .disc{flex-basis:100%;padding:12px 16px;border-radius:var(--r);background
 @media (max-width:560px){.acad .txt{display:none}.top{gap:6px}}
 @media (max-width:400px){.top .btn{padding:8px 8px}}
 @media (max-width:340px){.top .btn .txt{font-size:11.5px}}
+
+/* =====================================================================
+   Home hero v2 – "bridge console": chart grid, 3-phase waves, switchboard meters
+   ===================================================================== */
+.hero.home{display:block;padding:clamp(28px,4.5vw,56px) clamp(16px,4vw,48px) clamp(34px,5vw,60px);isolation:isolate;
+  background:
+    radial-gradient(520px 320px at 88% 30%,rgba(56,189,248,.20),transparent 70%),
+    radial-gradient(700px 360px at 6% 110%,rgba(16,185,129,.28),transparent 65%),
+    linear-gradient(150deg,#0b1026 0%,#1e1b4b 42%,#312e81 78%,#0e4f6e 100%)}
+.hero.home::after{opacity:.5;background-size:56px 56px;-webkit-mask-image:radial-gradient(ellipse at 70% 40%,#000 25%,transparent 75%);mask-image:radial-gradient(ellipse at 70% 40%,#000 25%,transparent 75%)}
+.hero.home .hwave{position:absolute;left:0;right:0;bottom:0;width:100%;height:46%;z-index:0;pointer-events:none;opacity:.55}
+.hwave g{animation:hwave 14s linear infinite}
+.hwave path{fill:none;stroke-width:2.2;vector-effect:non-scaling-stroke;stroke-linecap:round}
+.hwave .w0{stroke:#f87171}.hwave .w1{stroke:#fde047}.hwave .w2{stroke:#60a5fa}
+@keyframes hwave{to{transform:translateX(-600px)}}
+.hwrap{position:relative;z-index:1;max-width:1320px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(20px,4vw,56px);align-items:center}
+.heyebrow{display:inline-flex;align-items:center;gap:10px;padding:6px 8px 6px 6px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);
+  font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#e0e7ff;backdrop-filter:blur(6px)}
+.hlogo{width:34px;height:34px;padding:3px;border-radius:50%;color:#e0e7ff;background:linear-gradient(135deg,#4f46e5,#0e7490);box-shadow:0 0 0 3px rgba(255,255,255,.08),0 8px 20px -6px rgba(79,70,229,.8)}
+.heyebrow .ver{margin:0;letter-spacing:.02em;text-transform:none;font-size:12px;padding:3px 10px;border-radius:99px;background:rgba(16,185,129,.22);border:1px solid rgba(110,231,183,.45);color:#d1fae5}
+.hero.home h1{margin:18px 0 8px;font-size:clamp(28px,4.4vw,52px);line-height:1.05;letter-spacing:-.03em;max-width:15ch;text-wrap:balance}
+.hgrad{background:linear-gradient(90deg,#a5b4fc,#6ee7b7 55%,#7dd3fc);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero.home .tagline{margin:0 0 12px;font-size:clamp(17px,2vw,21px)}
+.hero.home .hdesc{max-width:640px;color:rgba(226,232,240,.9);font-size:15.5px;line-height:1.6}
+.hero.home .stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;max-width:720px;margin-top:22px}
+.hero.home .stat{position:relative;min-width:0;padding:12px 14px 10px;border-radius:14px;background:linear-gradient(180deg,rgba(2,6,23,.55),rgba(2,6,23,.35));
+  border:1px solid rgba(148,163,184,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+.hero.home .stat b{display:block;font:700 clamp(20px,2.4vw,26px)/1.1 var(--mono);color:#a7f3d0;letter-spacing:-.02em;text-shadow:0 0 14px rgba(52,211,153,.45)}
+.hero.home .stat span{display:block;margin-top:4px;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(226,232,240,.78)}
+.hero.home .stat .led{position:absolute;top:10px;right:10px;width:7px;height:7px;border-radius:50%;background:#34d399;box-shadow:0 0 8px #34d399}
+.hstd{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:18px}
+.hstd-l{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(226,232,240,.7)}
+.hstd .chips{margin:0}
+.hero.home .chip{font:600 11.5px/1.4 var(--mono);letter-spacing:.02em;padding:3px 9px;border-radius:6px;background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.22);box-shadow:inset 0 -1px 0 rgba(0,0,0,.25)}
+/* decorative analog voltmeter */
+.hmeter{width:clamp(220px,22vw,290px);padding:16px 16px 14px;border-radius:26px;background:linear-gradient(160deg,rgba(15,23,42,.85),rgba(30,27,75,.7));border:1px solid rgba(148,163,184,.3);
+  box-shadow:0 30px 60px -24px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.1)}
+.hmeter svg{display:block;width:100%;height:auto}
+.hmeter .face{fill:#f8fafc;stroke:#cbd5e1;stroke-width:3}
+.hmeter .ticks line{stroke:#0f172a;stroke-width:2;stroke-linecap:round}
+.hmeter .red{fill:none;stroke:#dc2626;stroke-width:6}
+.hmeter .nums text{font:700 11px var(--mono);fill:#334155;text-anchor:middle}
+.hmeter .unit{font:800 12px var(--font);fill:#475569;text-anchor:middle;letter-spacing:.1em}
+.hmeter .needle{transform-box:view-box;transform-origin:100px 100px;transform:rotate(56deg);animation:hneedle 2.4s cubic-bezier(.2,.9,.25,1.25) .3s both}
+.hmeter .needle line{stroke:#dc2626;stroke-width:3;stroke-linecap:round}
+.hmeter .needle circle{fill:#0f172a;stroke:#e2e8f0;stroke-width:2}
+@keyframes hneedle{0%{transform:rotate(-120deg)}70%{transform:rotate(60deg)}85%{transform:rotate(54deg)}100%{transform:rotate(56deg)}}
+.hread{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;padding:8px 10px;border-radius:10px;background:#020617;border:1px solid rgba(52,211,153,.35);
+  font:700 13px var(--mono);color:#a7f3d0}
+.hread span:last-child{font-size:10.5px;letter-spacing:.12em;color:#6ee7b7}
+.hread .led{width:8px;height:8px;border-radius:50%;background:#34d399;box-shadow:0 0 10px #34d399;animation:hled 2.4s ease-in-out infinite}
+@keyframes hled{50%{opacity:.45}}
+@media (max-width:980px){.hwrap{grid-template-columns:1fr}.hmeter{display:none}.hero.home h1{max-width:20ch}}
+@media (max-width:640px){.hero.home .stats{grid-template-columns:repeat(3,minmax(0,1fr))}.hero.home .hwave{height:30%;opacity:.4}}
+@media (max-width:380px){.hero.home .stats{grid-template-columns:repeat(2,minmax(0,1fr))}.heyebrow{letter-spacing:.08em}}
+@media (prefers-reduced-motion:reduce){.hwave g,.hmeter .needle,.hread .led{animation:none!important}}
+@media print{.hero.home .hwave,.hero.home .hmeter{display:none}.hero.home .stat b{color:#000;text-shadow:none}}
+.hero.home{padding-bottom:clamp(64px,8vw,96px)}
+.hero.home .hwave{height:30%;opacity:.5}
+.hero.home h1{max-width:19ch}
+@media (max-width:640px){.hero.home{padding-bottom:64px}.hero.home .hwave{height:16%;opacity:.45}}
